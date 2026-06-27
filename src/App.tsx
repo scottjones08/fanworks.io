@@ -10,8 +10,8 @@ const storyItems = [
   },
   {
     label: "02",
-    title: "Make the human pattern visible",
-    body: "We turn scattered rituals into a clear map of where trust, memory, judgment, and attention carry the work.",
+    title: "Surface clarity in complexity",
+    body: "Our core ethos is surfacing clarity in complex environments, turning scattered rituals into a map of where trust, memory, judgment, and attention carry the work.",
   },
   {
     label: "03",
@@ -143,8 +143,8 @@ export default function App() {
             <h2>We design technology around the parts of work that still need people.</h2>
             <p className="panel-lede">
               The alley is the metaphor: old brick, living green, hand-laid stone, and a path that has learned from
-              everyone who crossed it. FanWorks helps teams build AI and workflow systems with that same respect for
-              texture, memory, and use.
+              everyone who crossed it. FanWorks surfaces clarity in complex environments so teams can build AI and
+              workflow systems with respect for texture, memory, and use.
             </p>
             <div className="story-list">
               {storyItems.map((item) => (
