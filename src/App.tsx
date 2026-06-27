@@ -34,13 +34,22 @@ export default function App() {
     let cursorY = mouseY;
     let frame = 0;
 
-    const handleMouseMove = (event: MouseEvent) => {
-      mouseX = event.clientX;
-      mouseY = event.clientY;
+    const updatePosition = (clientX: number, clientY: number) => {
+      mouseX = clientX;
+      mouseY = clientY;
       if (dot) {
         dot.style.left = `${mouseX}px`;
         dot.style.top = `${mouseY}px`;
       }
+    };
+
+    const handlePointer = (event: PointerEvent) => {
+      updatePosition(event.clientX, event.clientY);
+    };
+
+    const handleTouch = (event: TouchEvent) => {
+      const [touch] = event.touches;
+      if (touch) updatePosition(touch.clientX, touch.clientY);
     };
 
     const animate = () => {
@@ -55,11 +64,19 @@ export default function App() {
       frame = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handlePointer);
+    window.addEventListener("pointerdown", handlePointer);
+    window.addEventListener("pointermove", handlePointer);
+    window.addEventListener("touchstart", handleTouch, { passive: true });
+    window.addEventListener("touchmove", handleTouch, { passive: true });
     animate();
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousemove", handlePointer);
+      window.removeEventListener("pointerdown", handlePointer);
+      window.removeEventListener("pointermove", handlePointer);
+      window.removeEventListener("touchstart", handleTouch);
+      window.removeEventListener("touchmove", handleTouch);
       cancelAnimationFrame(frame);
     };
   }, []);
