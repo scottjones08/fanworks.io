@@ -1,26 +1,37 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Loader2, Mic, MicOff, Radio, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Loader2,
+  Mail,
+  Mic,
+  MicOff,
+  Radio,
+  Sparkles,
+} from "lucide-react";
 
 type RealtimeStatus = "idle" | "connecting" | "connected" | "listening" | "error";
 
-const PRINCIPLES = [
+const STORY_BEATS = [
   {
-    kicker: "01",
-    title: "Start with the day",
-    body: "The workday is the artifact. Calls, handoffs, pauses, worries, shortcuts, and rituals come before systems.",
+    marker: "01",
+    title: "Begin with the lived day",
+    body: "We sit with the calls, handoffs, notes, pauses, side conversations, and small recoveries that keep a team moving. The operating system is already there; it just needs to be seen clearly.",
   },
   {
-    kicker: "02",
-    title: "Name the friction",
-    body: "Most teams do not need another screen first. They need the real process made visible, spoken plainly, and respected.",
+    marker: "02",
+    title: "Translate friction into shape",
+    body: "The work becomes a map of where people lose context, repeat themselves, or bend around software. From there, we can decide what deserves automation and what deserves more human attention.",
   },
   {
-    kicker: "03",
-    title: "Shape the stack",
-    body: "GPT-Realtime becomes useful when it follows the human path instead of forcing people to rebuild themselves around software.",
+    marker: "03",
+    title: "Build technology that remembers",
+    body: "Realtime voice, AI workflows, and product interfaces become useful when they respect the way people actually speak, decide, forget, repair, and trust.",
   },
 ];
+
+const ENGAGE_OPTIONS = ["Discovery sprint", "Realtime prototype", "Operating model", "Something unfolding"];
 
 function statusCopy(status: RealtimeStatus): string {
   switch (status) {
@@ -32,7 +43,7 @@ function statusCopy(status: RealtimeStatus): string {
     case "error":
       return "Voice paused";
     default:
-      return "Start the journey";
+      return "Begin with voice";
   }
 }
 
@@ -65,6 +76,7 @@ export default function App() {
   const [visitorText, setVisitorText] = useState("");
   const [assistantText, setAssistantText] = useState("");
   const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const peerRef = useRef<RTCPeerConnection | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -148,13 +160,15 @@ export default function App() {
       const dc = pc.createDataChannel("oai-events");
       dc.addEventListener("open", () => {
         setStatus("listening");
-        dc.send(JSON.stringify({
-          type: "response.create",
-          response: {
-            instructions:
-              "Greet the visitor warmly in one short sentence, then ask how their day has been and what part of being human at work they want technology to understand better.",
-          },
-        }));
+        dc.send(
+          JSON.stringify({
+            type: "response.create",
+            response: {
+              instructions:
+                "Greet the visitor warmly in one short sentence, then ask how their day has been and what part of being human at work they want technology to understand better.",
+            },
+          }),
+        );
       });
       dc.addEventListener("message", (event) => handleRealtimeEvent(String(event.data)));
       dc.addEventListener("close", () => setStatus("idle"));
@@ -179,133 +193,192 @@ export default function App() {
     }
   }, [active, handleRealtimeEvent, stopRealtime]);
 
+  const submitEngage = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitted(true);
+  };
+
   useEffect(() => stopRealtime, [stopRealtime]);
 
   return (
     <main className="site-shell">
-      <section className="hero-section">
-        <div className="page-frame">
-          <nav className="top-nav">
-            <a href="/" className="wordmark">Fan Works</a>
-            <div className="realtime-label">
-              <Radio aria-hidden="true" size={14} />
-              GPT-Realtime
-            </div>
-          </nav>
+      <section className="hero-section" aria-labelledby="hero-title">
+        <div className="hero-bg hero-bg-sharp" aria-hidden="true" />
+        <div className="hero-bg hero-bg-soft" aria-hidden="true" />
+        <div className="hero-noise" aria-hidden="true" />
 
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                className="hero-intro"
-              >
-                <div className="tag-row">
-                  <span className="tag">Human-centered consulting</span>
-                  <span className="drop"><Sparkles aria-hidden="true" size={14} /> Drop 01</span>
-                </div>
-                <h1>Bring the human back.</h1>
-                <p className="lede">
-                  Technology promised easier work. Then it gave us more tabs, more steps, more passwords, more
-                  forgetting. Fan Works starts with your process, your day, and the parts of being human worth
-                  protecting.
-                </p>
-              </motion.div>
+        <div className="hero-frame">
+          <header className="top-nav">
+            <a href="#top" className="wordmark">
+              FanWorks
+            </a>
+            <nav className="nav-links" aria-label="Primary navigation">
+              <a href="#story">Expertise</a>
+              <a href="#voice">Voice</a>
+              <a href="#engage">Engage</a>
+            </nav>
+          </header>
 
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.12, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                className="principles"
-              >
-                {PRINCIPLES.map((principle) => (
-                  <article key={principle.title}>
-                    <p className="kicker">{principle.kicker}</p>
-                    <h2>{principle.title}</h2>
-                    <p>{principle.body}</p>
-                  </article>
-                ))}
-              </motion.div>
-            </div>
+          <motion.div
+            className="hero-copy"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <h1 id="hero-title">Be More Human</h1>
+            <p>Human centered consulting for teams building AI, voice, and workflow systems that should feel less like machinery and more like memory.</p>
+          </motion.div>
 
-            <motion.aside
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.18, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-              className="hero-image-card"
-            >
-              <img src="/fan-works-hero.png" alt="Matte microphone beside a clean sneaker sole on concrete" />
-              <div className="image-control">
-                <div>
-                  <p className="kicker">Voice room</p>
-                  <p>{statusLabel}</p>
-                </div>
-                <button type="button" className="small-mic" onClick={startRealtime}>
-                  {active ? <MicOff aria-hidden="true" size={16} /> : <Mic aria-hidden="true" size={16} />}
-                  {active ? "Stop" : "Open"}
-                </button>
-              </div>
-            </motion.aside>
+          <div className="hero-footer">
+            <p>EST. 2025</p>
+            <a href="#story" className="initiate-link" aria-label="Continue into the FanWorks story">
+              <span />
+              Initiate
+            </a>
           </div>
         </div>
       </section>
 
-      <section className="voice-section">
-        <div className="voice-grid">
-          <div>
-            <p className="kicker wide">The first conversation</p>
-            <h2>Your workflow has a pulse.</h2>
+      <section className="story-section" id="story" aria-labelledby="story-title">
+        <div className="section-frame story-intro">
+          <p className="section-label">The story</p>
+          <h2 id="story-title">The future of work is not less human. It is more carefully designed around the human parts that already carry the work.</h2>
+          <p>
+            FanWorks helps founders, operators, and product teams slow down long enough to notice the real system:
+            the spoken context, half-remembered constraints, emotional labor, and judgment calls that never make it
+            into a requirements doc. Then we build from there.
+          </p>
+        </div>
+
+        <div className="section-frame story-beats">
+          {STORY_BEATS.map((beat) => (
+            <article key={beat.title} className="story-card">
+              <p>{beat.marker}</p>
+              <h3>{beat.title}</h3>
+              <span>{beat.body}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="voice-section" id="voice" aria-labelledby="voice-title">
+        <div className="section-frame voice-grid">
+          <div className="voice-copy">
+            <p className="section-label">GPT-Realtime</p>
+            <h2 id="voice-title">Start with a conversation before you start with a screen.</h2>
             <p>
-              Press the mic and the Realtime host begins where most consulting skips ahead: your day, your language,
-              the workarounds you built, and the moments where software should move quietly.
+              Press the room open and the Realtime host begins where most consulting skips ahead: your day, your
+              language, the workarounds you built, and the moments where software should move quietly.
             </p>
           </div>
 
-          <div className="voice-control-grid">
+          <div className="voice-panel">
             <div className="mic-wrap">
               <span className={active ? "pulse-ring is-active" : "pulse-ring"} aria-hidden="true" />
               <button
                 type="button"
                 onClick={startRealtime}
-                aria-label={active ? "Stop Fan Works Realtime voice" : "Start Fan Works Realtime voice"}
+                aria-label={active ? "Stop FanWorks Realtime voice" : "Start FanWorks Realtime voice"}
                 aria-pressed={active}
                 className={status === "error" ? "main-mic is-error" : "main-mic"}
               >
                 {status === "connecting" ? (
-                  <Loader2 className="spin" aria-hidden="true" size={80} />
+                  <Loader2 className="spin" aria-hidden="true" size={58} />
                 ) : active ? (
-                  <MicOff aria-hidden="true" size={80} />
+                  <MicOff aria-hidden="true" size={58} />
                 ) : (
-                  <Mic aria-hidden="true" size={80} />
+                  <Mic aria-hidden="true" size={58} />
                 )}
               </button>
             </div>
 
             <div className="transcript">
-              <p className="kicker wide">{statusLabel}</p>
+              <p className="status-line">
+                <Radio aria-hidden="true" size={14} />
+                {statusLabel}
+              </p>
               {error ? (
                 <p className="error-copy">{error}</p>
               ) : (
                 <>
-                  <p className="kicker">Host</p>
+                  <p className="transcript-label">Host</p>
                   <p className="host-copy">
                     {assistantText.trim() || "How has your day been, and what should technology understand about it?"}
                   </p>
-                  <p className="kicker">You</p>
+                  <p className="transcript-label">You</p>
                   <p className="visitor-copy">
                     {visitorText.trim() || "Your words will appear here once the room is listening."}
                   </p>
                 </>
               )}
-              <a href="mailto:hello@fan.works?subject=Start%20the%20journey" className="mail-link">
-                Start without voice <ArrowRight aria-hidden="true" size={16} />
-              </a>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="engage-section" id="engage" aria-labelledby="engage-title">
+        <div className="section-frame engage-grid">
+          <div className="engage-copy">
+            <p className="section-label">Engage</p>
+            <h2 id="engage-title">Bring a messy workflow, a voice idea, or a product that needs to remember the person using it.</h2>
+            <p>
+              The first step is a small, honest conversation. Tell us where the work feels least human, what you are
+              trying to protect, and what should change without creating another layer of noise.
+            </p>
+            <div className="engage-proof">
+              <div>
+                <Sparkles aria-hidden="true" size={18} />
+                AI strategy rooted in operational reality
+              </div>
+              <div>
+                <CheckCircle2 aria-hidden="true" size={18} />
+                Realtime prototypes that make the story testable
+              </div>
+            </div>
+          </div>
+
+          <form className="contact-form" onSubmit={submitEngage}>
+            <div className="form-row">
+              <label>
+                Name
+                <input name="name" autoComplete="name" required />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" autoComplete="email" required />
+              </label>
+            </div>
+            <label>
+              Organization
+              <input name="organization" autoComplete="organization" />
+            </label>
+            <label>
+              What are we exploring?
+              <select name="engagement" defaultValue={ENGAGE_OPTIONS[0]}>
+                {ENGAGE_OPTIONS.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Where does the work feel least human?
+              <textarea name="story" rows={5} required />
+            </label>
+            <button type="submit" className="submit-button">
+              Send the signal
+              <ArrowRight aria-hidden="true" size={18} />
+            </button>
+            {submitted ? (
+              <p className="success-message" role="status">
+                <Mail aria-hidden="true" size={16} />
+                Thank you. The signal is captured locally for this prototype.
+              </p>
+            ) : (
+              <p className="form-note">Prefer email? hello@fan.works</p>
+            )}
+          </form>
         </div>
       </section>
     </main>
   );
 }
-
