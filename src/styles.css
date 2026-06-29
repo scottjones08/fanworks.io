@@ -15,6 +15,7 @@
   --font-sans: "Manrope", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --x: 50%;
   --y: 50%;
+  --clarity-radius: 350px;
   font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -81,8 +82,9 @@ button {
   background-size: cover;
   filter: blur(30px) brightness(0.8) sepia(0.25) hue-rotate(-5deg) saturate(1.1);
   transform: scale(1.1);
-  mask-image: radial-gradient(circle 350px at var(--x) var(--y), transparent 0%, black 100%);
-  -webkit-mask-image: radial-gradient(circle 350px at var(--x) var(--y), transparent 0%, black 100%);
+  mask-image: radial-gradient(circle var(--clarity-radius) at var(--x) var(--y), transparent 0%, black 100%);
+  -webkit-mask-image: radial-gradient(circle var(--clarity-radius) at var(--x) var(--y), transparent 0%, black 100%);
+  transition: mask-size 260ms ease;
 }
 
 .noise-overlay {
@@ -217,62 +219,239 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 1.2rem;
   transform: translateX(-50%);
   pointer-events: auto;
 }
 
-.orb-btn {
+.clarity-portal {
+  --drag-x: 0px;
+  --drag-y: 0px;
+  --portal-scale: 1;
   position: relative;
-  width: 12px;
-  height: 12px;
+  width: clamp(7rem, 13vw, 9.25rem);
+  height: clamp(7rem, 13vw, 9.25rem);
+  display: grid;
+  place-items: center;
   overflow: visible;
-  border: 1px solid rgba(244, 232, 222, 0.6);
+  border: 1px solid rgba(244, 232, 222, 0.36);
   border-radius: 50%;
-  background: transparent;
+  background:
+    radial-gradient(circle at 48% 37%, rgba(255, 246, 233, 0.72), rgba(244, 232, 222, 0.18) 42%, rgba(192, 124, 100, 0.1) 72%, transparent 100%),
+    rgba(244, 232, 222, 0.1);
+  box-shadow:
+    inset 0 0.25rem 1.4rem rgba(255, 255, 255, 0.18),
+    inset 0 -1.1rem 2.2rem rgba(18, 25, 20, 0.3),
+    0 1.2rem 3.8rem rgba(0, 0, 0, 0.34);
+  color: var(--c-text-main);
   cursor: none;
-  transition: transform 600ms var(--ease-fluid), border-color 400ms ease, background 400ms ease;
+  touch-action: none;
+  transform: translate3d(var(--drag-x), var(--drag-y), 0) scale(var(--portal-scale));
+  transition:
+    transform 420ms var(--ease-fluid),
+    border-color 260ms ease,
+    background 260ms ease,
+    box-shadow 260ms ease;
 }
 
-.orb-btn::before {
+.clarity-portal::before,
+.clarity-portal::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(244, 232, 222, 0.2);
   border-radius: 50%;
+  pointer-events: none;
   transform: translate(-50%, -50%);
-  transition: width 400ms var(--ease-fluid), height 400ms var(--ease-fluid), border-color 400ms ease;
 }
 
-.orb-btn::after {
-  content: "";
+.clarity-portal::before {
+  width: 125%;
+  height: 125%;
+  border: 1px solid rgba(244, 232, 222, 0.2);
+  opacity: 0.72;
+  transition: width 420ms var(--ease-fluid), height 420ms var(--ease-fluid), opacity 220ms ease, border-color 220ms ease;
+}
+
+.clarity-portal::after {
+  width: 72%;
+  height: 72%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.34), transparent 67%);
+  opacity: 0.58;
+  mix-blend-mode: screen;
+}
+
+.portal-core {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 48% 40%, rgba(244, 232, 222, 0.92), rgba(244, 232, 222, 0.18) 44%, rgba(192, 124, 100, 0.08) 68%, transparent 100%);
+  filter: blur(0.2px);
+  pointer-events: none;
+  transform: scale(0.82);
+  transition: transform 420ms var(--ease-fluid), opacity 240ms ease;
+}
+
+.portal-copy {
+  position: absolute;
+  left: 50%;
+  bottom: 1.48rem;
+  width: 100%;
+  min-height: 1rem;
+  color: rgba(45, 36, 28, 0.66);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  pointer-events: none;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
+.portal-state {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: var(--c-accent);
-  transform: scale(0);
-  transition: transform 900ms var(--ease-fluid);
+  display: grid;
+  place-items: center;
+  transition: opacity 180ms ease, transform 220ms var(--ease-fluid);
 }
 
-.orb-btn:hover,
-.orb-btn:focus-visible {
-  border-color: rgba(244, 232, 222, 0.9);
-  background: rgba(192, 124, 100, 0.2);
+.portal-state-primed {
+  opacity: 0;
+  transform: translateY(0.25rem);
+}
+
+.signal-cloud {
+  position: absolute;
+  inset: -3.8rem -4.5rem 2.8rem;
+  pointer-events: none;
+}
+
+.signal-cloud span {
+  position: absolute;
+  min-width: 3.4rem;
+  border: 1px solid rgba(244, 232, 222, 0.28);
+  border-radius: 999px;
+  background: rgba(18, 25, 20, 0.58);
+  box-shadow: 0 0.65rem 1.8rem rgba(0, 0, 0, 0.22);
+  color: rgba(244, 232, 222, 0.78);
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  opacity: 0;
+  padding: 0.5rem 0.58rem;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translate3d(0, 1rem, 0) scale(0.84);
+  transition:
+    opacity 360ms ease,
+    transform 520ms var(--ease-fluid),
+    border-color 260ms ease,
+    background 260ms ease;
+}
+
+.signal-cloud span:nth-child(1) {
+  top: 2.2rem;
+  left: 1.5rem;
+}
+
+.signal-cloud span:nth-child(2) {
+  top: 0.2rem;
+  left: 50%;
+  transform: translate3d(-50%, 1rem, 0) scale(0.84);
+}
+
+.signal-cloud span:nth-child(3) {
+  top: 2.1rem;
+  right: 1.8rem;
+}
+
+.signal-cloud span:nth-child(4) {
+  top: 5.7rem;
+  left: 0.1rem;
+}
+
+.signal-cloud span:nth-child(5) {
+  top: 5.9rem;
+  right: 0.1rem;
+}
+
+.clarity-portal:hover,
+.clarity-portal:focus-visible {
+  border-color: rgba(244, 232, 222, 0.72);
+  background:
+    radial-gradient(circle at 48% 37%, rgba(255, 246, 233, 0.82), rgba(244, 232, 222, 0.22) 44%, rgba(192, 124, 100, 0.13) 76%, transparent 100%),
+    rgba(244, 232, 222, 0.12);
   outline: none;
 }
 
-.orb-btn:hover::before,
-.orb-btn:focus-visible::before {
-  width: 50px;
-  height: 50px;
+.clarity-portal:hover::before,
+.clarity-portal:focus-visible::before {
+  width: 139%;
+  height: 139%;
   border-color: var(--c-accent);
 }
 
-.orb-btn:active::after {
+.clarity-portal:hover .signal-cloud span,
+.clarity-portal:focus-visible .signal-cloud span,
+.is-portal-pressing .signal-cloud span {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.clarity-portal:hover .signal-cloud span:nth-child(2),
+.clarity-portal:focus-visible .signal-cloud span:nth-child(2),
+.is-portal-pressing .signal-cloud span:nth-child(2) {
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
+
+.is-portal-pressing {
+  --clarity-radius: 430px;
+}
+
+.is-portal-pressing .clarity-portal {
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+  border-color: rgba(244, 232, 222, 0.82);
+  box-shadow:
+    inset 0 0.45rem 1.6rem rgba(255, 255, 255, 0.24),
+    inset 0 -1.25rem 2.45rem rgba(18, 25, 20, 0.34),
+    0 1.55rem 4.4rem rgba(0, 0, 0, 0.42);
+}
+
+.is-portal-pressing .portal-core {
   transform: scale(1);
+}
+
+.is-portal-primed {
+  --clarity-radius: 520px;
+}
+
+.is-portal-primed .clarity-portal::before {
+  width: 164%;
+  height: 164%;
+  border-color: rgba(192, 124, 100, 0.72);
+  opacity: 1;
+}
+
+.is-portal-primed .portal-state-idle {
+  opacity: 0;
+  transform: translateY(-0.24rem);
+}
+
+.is-portal-primed .portal-state-primed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.is-portal-primed .signal-cloud span {
+  border-color: rgba(192, 124, 100, 0.6);
+  background: rgba(62, 42, 31, 0.66);
 }
 
 .label-enter {
@@ -603,8 +782,39 @@ body:active .cursor-outline {
     display: none;
   }
 
+  .clarity-portal {
+    width: 7.25rem;
+    height: 7.25rem;
+  }
+
+  .signal-cloud {
+    inset: -3.4rem -2.7rem 2.7rem;
+  }
+
+  .signal-cloud span {
+    min-width: 2.9rem;
+    font-size: 0.48rem;
+    padding: 0.44rem 0.5rem;
+  }
+
+  .signal-cloud span:nth-child(1) {
+    left: 0.9rem;
+  }
+
+  .signal-cloud span:nth-child(3) {
+    right: 0.9rem;
+  }
+
+  .signal-cloud span:nth-child(4) {
+    left: 0;
+  }
+
+  .signal-cloud span:nth-child(5) {
+    right: 0;
+  }
+
   .nav-text,
-  .orb-btn,
+  .clarity-portal,
   .panel-close,
   .contact-form button {
     cursor: pointer;

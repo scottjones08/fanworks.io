@@ -1,6 +1,8 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, KeyboardEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
 type Panel = "expertise" | "engage" | null;
+
+const claritySignals = ["Voice", "Workflow", "AI", "Rituals", "Trust"];
 
 const storyItems = [
   {
@@ -23,6 +25,11 @@ const storyItems = [
 export default function App() {
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [portalPressed, setPortalPressed] = useState(false);
+  const [portalPrimed, setPortalPrimed] = useState(false);
+  const portalRef = useRef<HTMLButtonElement>(null);
+  const portalActive = useRef(false);
+  const portalStart = useRef({ x: 0, y: 0, primed: false });
 
   useEffect(() => {
     const root = document.documentElement;
@@ -91,8 +98,78 @@ export default function App() {
     setActivePanel((current) => (current === panel ? null : panel));
   };
 
+  const resetPortal = () => {
+    const portal = portalRef.current;
+    if (!portal) return;
+    portal.style.setProperty("--drag-x", "0px");
+    portal.style.setProperty("--drag-y", "0px");
+    portal.style.setProperty("--portal-scale", "1");
+    portalActive.current = false;
+    portalStart.current.primed = false;
+    setPortalPressed(false);
+    setPortalPrimed(false);
+  };
+
+  const updatePortal = (clientX: number, clientY: number) => {
+    const portal = portalRef.current;
+    if (!portal) return;
+
+    const dx = Math.max(-70, Math.min(70, clientX - portalStart.current.x));
+    const dy = Math.max(-110, Math.min(40, clientY - portalStart.current.y));
+    const distance = Math.hypot(dx, dy);
+    const scale = 1 + Math.min(distance / 280, 0.34);
+    const primed = distance > 68 || dy < -54;
+
+    portal.style.setProperty("--drag-x", `${dx}px`);
+    portal.style.setProperty("--drag-y", `${dy}px`);
+    portal.style.setProperty("--portal-scale", scale.toFixed(3));
+    document.documentElement.style.setProperty("--x", `${(clientX / window.innerWidth) * 100}%`);
+    document.documentElement.style.setProperty("--y", `${(clientY / window.innerHeight) * 100}%`);
+
+    if (portalStart.current.primed !== primed) {
+      portalStart.current.primed = primed;
+      setPortalPrimed(primed);
+    }
+  };
+
+  const pressPortal = (event: PointerEvent<HTMLButtonElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    portalActive.current = true;
+    portalStart.current = { x: event.clientX, y: event.clientY, primed: false };
+    setPortalPressed(true);
+    updatePortal(event.clientX, event.clientY);
+  };
+
+  const movePortal = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!portalActive.current) return;
+    updatePortal(event.clientX, event.clientY);
+  };
+
+  const releasePortal = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!portalActive.current) return;
+    event.currentTarget.releasePointerCapture(event.pointerId);
+    const distance = Math.hypot(event.clientX - portalStart.current.x, event.clientY - portalStart.current.y);
+    const shouldOpen = portalStart.current.primed || distance < 8;
+    resetPortal();
+    if (shouldOpen) {
+      setSubmitted(false);
+      setActivePanel("expertise");
+    }
+  };
+
+  const activatePortalFromKeyboard = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setSubmitted(false);
+    setActivePanel("expertise");
+  };
+
+  const stageClass = ["stage", activePanel ? "has-panel" : "", portalPressed ? "is-portal-pressing" : "", portalPrimed ? "is-portal-primed" : ""]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <main className={activePanel ? "stage has-panel" : "stage"}>
+    <main className={stageClass}>
       <div className="layer-sharp" aria-hidden="true" />
       <div className="layer-blur" aria-hidden="true" />
       <div className="noise-overlay" aria-hidden="true" />
@@ -124,10 +201,27 @@ export default function App() {
         <div className="interaction-anchor">
           <button
             type="button"
-            className="orb-btn"
-            aria-label="Open the FanWorks story"
-            onClick={() => openPanel("expertise")}
-          />
+            ref={portalRef}
+            className="clarity-portal"
+            aria-label="Drag to surface clarity and open the FanWorks story"
+            onKeyDown={activatePortalFromKeyboard}
+            onPointerCancel={resetPortal}
+            onPointerDown={pressPortal}
+            onPointerLeave={movePortal}
+            onPointerMove={movePortal}
+            onPointerUp={releasePortal}
+          >
+            <span className="portal-core" aria-hidden="true" />
+            <span className="portal-copy">
+              <span className="portal-state portal-state-idle">Press to clarify</span>
+              <span className="portal-state portal-state-primed">Release the path</span>
+            </span>
+            <span className="signal-cloud" aria-hidden="true">
+              {claritySignals.map((signal) => (
+                <span key={signal}>{signal}</span>
+              ))}
+            </span>
+          </button>
           <span className="label-enter">Initiate</span>
         </div>
       </section>
