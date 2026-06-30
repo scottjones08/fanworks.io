@@ -1,8 +1,31 @@
-import { FormEvent, KeyboardEvent, PointerEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
 
 type Panel = "expertise" | "engage" | null;
 
-const claritySignals = ["Voice", "Workflow", "AI", "Rituals", "Trust"];
+const claritySignals = ["Human", "Authentic", "Voice", "Workflow", "Automation", "Trust"];
+
+const guideSections = [
+  {
+    label: "Human",
+    title: "Human centered consulting",
+    body: "The work begins with people: how they decide, relate, remember, and carry trust through the day.",
+  },
+  {
+    label: "Observe",
+    title: "Observe the living system",
+    body: "We study the real path of meetings, handoffs, voice, judgment, and attention before prescribing a tool.",
+  },
+  {
+    label: "Clarify",
+    title: "Surface clarity in complexity",
+    body: "We turn tangled workflows into a clear map of what should stay human and what can be supported by systems.",
+  },
+  {
+    label: "Shape",
+    title: "Shape automation around people",
+    body: "Automation becomes useful when it protects authenticity and follows the human path instead of replacing it.",
+  },
+];
 
 const storyItems = [
   {
@@ -13,12 +36,12 @@ const storyItems = [
   {
     label: "02",
     title: "Surface clarity in complexity",
-    body: "Our core ethos is surfacing clarity in complex environments, turning scattered rituals into a map of where trust, memory, judgment, and attention carry the work.",
+    body: "Our core ethos is surfacing clarity in complex environments, turning scattered work into a map of where trust, memory, judgment, and attention carry the human path.",
   },
   {
     label: "03",
-    title: "Shape technology around it",
-    body: "Voice, AI, and workflow products become useful when they follow the human path instead of forcing people to become operators.",
+    title: "Shape automation around it",
+    body: "Voice, automation, and workflow products become useful when they follow the human path instead of forcing people to become operators.",
   },
 ];
 
@@ -27,9 +50,10 @@ export default function App() {
   const [submitted, setSubmitted] = useState(false);
   const [portalPressed, setPortalPressed] = useState(false);
   const [portalPrimed, setPortalPrimed] = useState(false);
+  const [guideIndex, setGuideIndex] = useState(0);
   const portalRef = useRef<HTMLButtonElement>(null);
   const portalActive = useRef(false);
-  const portalStart = useRef({ x: 0, y: 0, primed: false });
+  const portalStart = useRef({ x: 0, y: 0, progress: 0, primed: false });
 
   useEffect(() => {
     const root = document.documentElement;
@@ -50,7 +74,11 @@ export default function App() {
       }
     };
 
-    const handlePointer = (event: PointerEvent) => {
+    const handleMouse = (event: MouseEvent) => {
+      updatePosition(event.clientX, event.clientY);
+    };
+
+    const handlePointer = (event: globalThis.PointerEvent) => {
       updatePosition(event.clientX, event.clientY);
     };
 
@@ -71,7 +99,7 @@ export default function App() {
       frame = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("mousemove", handlePointer);
+    window.addEventListener("mousemove", handleMouse);
     window.addEventListener("pointerdown", handlePointer);
     window.addEventListener("pointermove", handlePointer);
     window.addEventListener("touchstart", handleTouch, { passive: true });
@@ -79,7 +107,7 @@ export default function App() {
     animate();
 
     return () => {
-      window.removeEventListener("mousemove", handlePointer);
+      window.removeEventListener("mousemove", handleMouse);
       window.removeEventListener("pointerdown", handlePointer);
       window.removeEventListener("pointermove", handlePointer);
       window.removeEventListener("touchstart", handleTouch);
@@ -104,52 +132,65 @@ export default function App() {
     portal.style.setProperty("--drag-x", "0px");
     portal.style.setProperty("--drag-y", "0px");
     portal.style.setProperty("--portal-scale", "1");
+    portal.style.setProperty("--path-progress", "0");
     portalActive.current = false;
+    portalStart.current.progress = 0;
     portalStart.current.primed = false;
     setPortalPressed(false);
     setPortalPrimed(false);
+    setGuideIndex(0);
   };
 
   const updatePortal = (clientX: number, clientY: number) => {
     const portal = portalRef.current;
     if (!portal) return;
 
-    const dx = Math.max(-70, Math.min(70, clientX - portalStart.current.x));
-    const dy = Math.max(-110, Math.min(40, clientY - portalStart.current.y));
+    const isCompact = window.matchMedia("(max-width: 760px)").matches;
+    const maxLift = isCompact ? 250 : 285;
+    const dx = Math.max(-42, Math.min(42, clientX - portalStart.current.x));
+    const dy = Math.max(-maxLift, Math.min(28, clientY - portalStart.current.y));
     const distance = Math.hypot(dx, dy);
-    const scale = 1 + Math.min(distance / 280, 0.34);
-    const primed = distance > 68 || dy < -54;
+    const progress = Math.max(0, Math.min(1, -dy / maxLift));
+    const scale = 1 + Math.min(distance / 520, 0.24);
+    const primed = progress > 0.88;
+    const nextGuideIndex = Math.min(guideSections.length - 1, Math.floor(progress * guideSections.length));
 
     portal.style.setProperty("--drag-x", `${dx}px`);
     portal.style.setProperty("--drag-y", `${dy}px`);
     portal.style.setProperty("--portal-scale", scale.toFixed(3));
+    portal.style.setProperty("--path-progress", progress.toFixed(3));
     document.documentElement.style.setProperty("--x", `${(clientX / window.innerWidth) * 100}%`);
     document.documentElement.style.setProperty("--y", `${(clientY / window.innerHeight) * 100}%`);
+    portalStart.current.progress = progress;
 
     if (portalStart.current.primed !== primed) {
       portalStart.current.primed = primed;
       setPortalPrimed(primed);
     }
+    setGuideIndex((current) => (current === nextGuideIndex ? current : nextGuideIndex));
   };
 
-  const pressPortal = (event: PointerEvent<HTMLButtonElement>) => {
+  const pressPortal = (event: ReactPointerEvent<HTMLButtonElement>) => {
     event.currentTarget.setPointerCapture(event.pointerId);
     portalActive.current = true;
-    portalStart.current = { x: event.clientX, y: event.clientY, primed: false };
+    portalStart.current = { x: event.clientX, y: event.clientY, progress: 0, primed: false };
     setPortalPressed(true);
     updatePortal(event.clientX, event.clientY);
   };
 
-  const movePortal = (event: PointerEvent<HTMLButtonElement>) => {
+  const movePortal = (event: ReactPointerEvent<HTMLElement>) => {
     if (!portalActive.current) return;
     updatePortal(event.clientX, event.clientY);
   };
 
-  const releasePortal = (event: PointerEvent<HTMLButtonElement>) => {
+  const releasePortal = (event: ReactPointerEvent<HTMLElement>) => {
     if (!portalActive.current) return;
-    event.currentTarget.releasePointerCapture(event.pointerId);
+    const portal = portalRef.current;
+    if (portal?.hasPointerCapture(event.pointerId)) {
+      portal.releasePointerCapture(event.pointerId);
+    }
     const distance = Math.hypot(event.clientX - portalStart.current.x, event.clientY - portalStart.current.y);
-    const shouldOpen = portalStart.current.primed || distance < 8;
+    const shouldOpen = portalStart.current.progress > 0.88 || distance < 8;
     resetPortal();
     if (shouldOpen) {
       setSubmitted(false);
@@ -169,7 +210,7 @@ export default function App() {
     .join(" ");
 
   return (
-    <main className={stageClass}>
+    <main className={stageClass} onPointerMove={movePortal} onPointerUp={releasePortal}>
       <div className="layer-sharp" aria-hidden="true" />
       <div className="layer-blur" aria-hidden="true" />
       <div className="noise-overlay" aria-hidden="true" />
@@ -211,10 +252,25 @@ export default function App() {
             onPointerMove={movePortal}
             onPointerUp={releasePortal}
           >
+            <span className="guide-rail" aria-hidden="true">
+              {guideSections.map((section, index) => (
+                <span
+                  key={section.label}
+                  className={index <= guideIndex ? "guide-node is-active" : "guide-node"}
+                >
+                  {section.label}
+                </span>
+              ))}
+            </span>
             <span className="portal-core" aria-hidden="true" />
             <span className="portal-copy">
-              <span className="portal-state portal-state-idle">Press to clarify</span>
+              <span className="portal-state portal-state-idle">Drag upward</span>
               <span className="portal-state portal-state-primed">Release the path</span>
+            </span>
+            <span className="guide-card" aria-live="polite">
+              <span>{guideSections[guideIndex].label}</span>
+              <strong>{guideSections[guideIndex].title}</strong>
+              <em>{guideSections[guideIndex].body}</em>
             </span>
             <span className="signal-cloud" aria-hidden="true">
               {claritySignals.map((signal) => (
@@ -237,8 +293,8 @@ export default function App() {
             <h2>We design technology around the parts of work that still need people.</h2>
             <p className="panel-lede">
               The alley is the metaphor: old brick, living green, hand-laid stone, and a path that has learned from
-              everyone who crossed it. FanWorks surfaces clarity in complex environments so teams can build AI and
-              workflow systems with respect for texture, memory, and use.
+              everyone who crossed it. FanWorks surfaces clarity in complex environments so teams can build automation
+              and workflow systems with respect for human texture, memory, authenticity, and use.
             </p>
             <div className="story-list">
               {storyItems.map((item) => (
@@ -259,8 +315,8 @@ export default function App() {
             <p className="panel-label">Engage</p>
             <h2>Tell us where the work feels least human.</h2>
             <p className="panel-lede">
-              Bring a workflow, a product idea, a voice interface, or a team ritual that needs to be understood before
-              it gets automated.
+              Bring a workflow, a product idea, a voice interface, or a team practice that needs to be understood before
+              automation is shaped around it.
             </p>
             <form className="contact-form" onSubmit={submitContact}>
               <label>
