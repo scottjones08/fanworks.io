@@ -1,47 +1,42 @@
 import { FormEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
 
-type Panel = "expertise" | "engage" | null;
+type GuideId = "human" | "authentic" | "workflow" | "automation";
+type Panel = GuideId | "engage" | null;
 
-const claritySignals = ["Human", "Authentic", "Voice", "Workflow", "Automation", "Trust"];
-
-const guideSections = [
+const guideOptions: Array<{
+  id: GuideId;
+  label: string;
+  title: string;
+  body: string;
+  points: string[];
+}> = [
   {
+    id: "human",
     label: "Human",
     title: "Human centered consulting",
-    body: "The work begins with people: how they decide, relate, remember, and carry trust through the day.",
+    body: "We start with the people inside the work: how they decide, remember, relate, and carry trust through complexity.",
+    points: ["Decision paths", "Team judgment", "Human texture"],
   },
   {
-    label: "Observe",
-    title: "Observe the living system",
-    body: "We study the real path of meetings, handoffs, voice, judgment, and attention before prescribing a tool.",
+    id: "authentic",
+    label: "Authentic",
+    title: "Authentic systems",
+    body: "We protect what makes the work believable, specific, and useful before a process becomes software.",
+    points: ["Voice and tone", "Real context", "Trust-preserving design"],
   },
   {
-    label: "Clarify",
-    title: "Surface clarity in complexity",
-    body: "We turn tangled workflows into a clear map of what should stay human and what can be supported by systems.",
+    id: "workflow",
+    label: "Workflow",
+    title: "Workflow clarity",
+    body: "We map where work actually moves, where it stalls, and where teams need cleaner handoffs or better memory.",
+    points: ["Handoffs", "Operating rhythm", "Clarity maps"],
   },
   {
-    label: "Shape",
-    title: "Shape automation around people",
-    body: "Automation becomes useful when it protects authenticity and follows the human path instead of replacing it.",
-  },
-];
-
-const storyItems = [
-  {
-    label: "01",
-    title: "Observe the living system",
-    body: "FanWorks starts inside the actual day: meetings, handoffs, client moments, unfinished thoughts, and the workarounds people quietly maintain.",
-  },
-  {
-    label: "02",
-    title: "Surface clarity in complexity",
-    body: "Our core ethos is surfacing clarity in complex environments, turning scattered work into a map of where trust, memory, judgment, and attention carry the human path.",
-  },
-  {
-    label: "03",
-    title: "Shape automation around it",
-    body: "Voice, automation, and workflow products become useful when they follow the human path instead of forcing people to become operators.",
+    id: "automation",
+    label: "Automation",
+    title: "Automation around people",
+    body: "We shape automation to support human judgment instead of flattening the work into generic operations.",
+    points: ["Useful automation", "Human oversight", "Adoption-ready systems"],
   },
 ];
 
@@ -153,7 +148,7 @@ export default function App() {
     const progress = Math.max(0, Math.min(1, -dy / maxLift));
     const scale = 1 + Math.min(distance / 520, 0.24);
     const primed = progress > 0.88;
-    const nextGuideIndex = Math.min(guideSections.length - 1, Math.floor(progress * guideSections.length));
+    const nextGuideIndex = Math.min(guideOptions.length - 1, Math.floor(progress * guideOptions.length));
 
     portal.style.setProperty("--drag-x", `${dx}px`);
     portal.style.setProperty("--drag-y", `${dy}px`);
@@ -190,11 +185,12 @@ export default function App() {
       portal.releasePointerCapture(event.pointerId);
     }
     const distance = Math.hypot(event.clientX - portalStart.current.x, event.clientY - portalStart.current.y);
-    const shouldOpen = portalStart.current.progress > 0.88 || distance < 8;
+    const selectedGuide = guideOptions[guideIndex].id;
+    const shouldOpen = portalStart.current.progress > 0.08 || distance < 8;
     resetPortal();
     if (shouldOpen) {
       setSubmitted(false);
-      setActivePanel("expertise");
+      setActivePanel(selectedGuide);
     }
   };
 
@@ -202,8 +198,12 @@ export default function App() {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
     setSubmitted(false);
-    setActivePanel("expertise");
+    setActivePanel("human");
   };
+
+  const activeGuidePanel = activePanel && activePanel !== "engage"
+    ? guideOptions.find((option) => option.id === activePanel)
+    : null;
 
   const stageClass = ["stage", activePanel ? "has-panel" : "", portalPressed ? "is-portal-pressing" : "", portalPrimed ? "is-portal-primed" : ""]
     .filter(Boolean)
@@ -221,7 +221,7 @@ export default function App() {
             FanWorks
           </button>
           <nav className="nav-stack" aria-label="Primary navigation">
-            <button type="button" className="nav-text" onClick={() => openPanel("expertise")}>
+            <button type="button" className="nav-text" onClick={() => openPanel("human")}>
               Expertise
             </button>
             <button type="button" className="nav-text" onClick={() => openPanel("engage")}>
@@ -253,12 +253,12 @@ export default function App() {
             onPointerUp={releasePortal}
           >
             <span className="guide-rail" aria-hidden="true">
-              {guideSections.map((section, index) => (
+              {guideOptions.map((option, index) => (
                 <span
-                  key={section.label}
+                  key={option.id}
                   className={index <= guideIndex ? "guide-node is-active" : "guide-node"}
                 >
-                  {section.label}
+                  {option.label}
                 </span>
               ))}
             </span>
@@ -268,14 +268,9 @@ export default function App() {
               <span className="portal-state portal-state-primed">Release the path</span>
             </span>
             <span className="guide-card" aria-live="polite">
-              <span>{guideSections[guideIndex].label}</span>
-              <strong>{guideSections[guideIndex].title}</strong>
-              <em>{guideSections[guideIndex].body}</em>
-            </span>
-            <span className="signal-cloud" aria-hidden="true">
-              {claritySignals.map((signal) => (
-                <span key={signal}>{signal}</span>
-              ))}
+              <span>{guideOptions[guideIndex].label}</span>
+              <strong>{guideOptions[guideIndex].title}</strong>
+              <em>{guideOptions[guideIndex].body}</em>
             </span>
           </button>
           <span className="label-enter">Initiate</span>
@@ -287,24 +282,14 @@ export default function App() {
           Close
         </button>
 
-        {activePanel === "expertise" ? (
+        {activeGuidePanel ? (
           <div className="panel-content">
-            <p className="panel-label">What we do</p>
-            <h2>We design technology around the parts of work that still need people.</h2>
-            <p className="panel-lede">
-              The alley is the metaphor: old brick, living green, hand-laid stone, and a path that has learned from
-              everyone who crossed it. FanWorks surfaces clarity in complex environments so teams can build automation
-              and workflow systems with respect for human texture, memory, authenticity, and use.
-            </p>
-            <div className="story-list">
-              {storyItems.map((item) => (
-                <article key={item.title}>
-                  <span>{item.label}</span>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.body}</p>
-                  </div>
-                </article>
+            <p className="panel-label">{activeGuidePanel.label}</p>
+            <h2>{activeGuidePanel.title}</h2>
+            <p className="panel-lede">{activeGuidePanel.body}</p>
+            <div className="popup-points">
+              {activeGuidePanel.points.map((point) => (
+                <span key={point}>{point}</span>
               ))}
             </div>
           </div>
