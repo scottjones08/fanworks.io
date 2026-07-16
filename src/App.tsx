@@ -1,332 +1,460 @@
-import { FormEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import {
+  ArrowDown,
+  ArrowRight,
+  BriefcaseBusiness,
+  Cable,
+  Coffee,
+  Compass,
+  HeartHandshake,
+  Landmark,
+  MapPin,
+  Menu,
+  SearchCheck,
+  ShoppingBag,
+  Workflow,
+  X,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-type GuideId = "human" | "authentic" | "workflow" | "automation";
-type Panel = GuideId | "engage" | null;
+type ServiceId = "assess" | "concierge" | "integrate" | "automate";
 
-const guideOptions: Array<{
-  id: GuideId;
-  label: string;
+type Service = {
+  id: ServiceId;
+  eyebrow: string;
   title: string;
-  body: string;
-  points: string[];
-}> = [
+  summary: string;
+  detail: string;
+  outcome: string;
+  icon: LucideIcon;
+};
+
+const services: Service[] = [
   {
-    id: "human",
-    label: "Human",
-    title: "Human centered consulting",
-    body: "We start with the people inside the work: how they decide, remember, relate, and carry trust through complexity.",
-    points: ["Decision paths", "Team judgment", "Human texture"],
+    id: "assess",
+    eyebrow: "01 / Assess",
+    title: "See the business clearly.",
+    summary: "A practical assessment of the work, the tools, and where AI may or may not help.",
+    detail:
+      "We listen to the people doing the work, trace the real process, and separate the useful opportunities from the noise.",
+    outcome: "A plain-language view of what to keep, fix, stop, and explore next.",
+    icon: SearchCheck,
   },
   {
-    id: "authentic",
-    label: "Authentic",
-    title: "Authentic systems",
-    body: "We protect what makes the work believable, specific, and useful before a process becomes software.",
-    points: ["Voice and tone", "Real context", "Trust-preserving design"],
+    id: "concierge",
+    eyebrow: "02 / Guide",
+    title: "Keep the work moving.",
+    summary: "Hands-on business concierge support for decisions that do not fit neatly into a ticket.",
+    detail:
+      "We stay close to the day-to-day, connect the right people, and help carry important work from question to decision.",
+    outcome: "Steady progress without adding another layer of management overhead.",
+    icon: Compass,
   },
   {
-    id: "workflow",
-    label: "Workflow",
-    title: "Workflow clarity",
-    body: "We map where work actually moves, where it stalls, and where teams need cleaner handoffs or better memory.",
-    points: ["Handoffs", "Operating rhythm", "Clarity maps"],
+    id: "integrate",
+    eyebrow: "03 / Integrate",
+    title: "Make the tools belong.",
+    summary: "Technology integration shaped around the business instead of forcing the business around software.",
+    detail:
+      "We connect systems, information, and handoffs while protecting the judgment and relationships that make the business work.",
+    outcome: "A simpler operating environment that people can understand and use.",
+    icon: Cable,
   },
   {
-    id: "automation",
-    label: "Automation",
-    title: "Automation around people",
-    body: "We shape automation to support human judgment instead of flattening the work into generic operations.",
-    points: ["Useful automation", "Human oversight", "Adoption-ready systems"],
+    id: "automate",
+    eyebrow: "04 / Automate",
+    title: "Take repetition off the team.",
+    summary: "Practical automation for the repeatable work, with people still in control of the meaningful decisions.",
+    detail:
+      "We automate the right steps, build in human review where it matters, and leave the team with a system they can own.",
+    outcome: "More room for judgment, service, craft, and the work only people can do.",
+    icon: Workflow,
   },
 ];
 
+const sectors = [
+  { label: "Retail & hospitality", icon: ShoppingBag },
+  { label: "Financial services", icon: Landmark },
+  { label: "Professional services", icon: BriefcaseBusiness },
+  { label: "Community organizations", icon: HeartHandshake },
+  { label: "Makers & local business", icon: Coffee },
+];
+
+const reveal = {
+  hidden: { opacity: 0, y: 28 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export default function App() {
-  const [activePanel, setActivePanel] = useState<Panel>(null);
+  const [activeService, setActiveService] = useState<ServiceId>("assess");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [portalPressed, setPortalPressed] = useState(false);
-  const [portalPrimed, setPortalPrimed] = useState(false);
-  const [guideIndex, setGuideIndex] = useState(0);
-  const portalRef = useRef<HTMLButtonElement>(null);
-  const portalActive = useRef(false);
-  const portalStart = useRef({ x: 0, y: 0, progress: 0, primed: false });
+  const heroRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 110, damping: 28, mass: 0.25 });
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const imageY = useTransform(heroScroll, [0, 1], [0, reduceMotion ? 0 : 80]);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    const dot = document.querySelector<HTMLElement>(".cursor-dot");
-    const outline = document.querySelector<HTMLElement>(".cursor-outline");
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let cursorX = mouseX;
-    let cursorY = mouseY;
-    let frame = 0;
+  const selectedService = services.find((service) => service.id === activeService) ?? services[0];
 
-    const updatePosition = (clientX: number, clientY: number) => {
-      mouseX = clientX;
-      mouseY = clientY;
-      if (dot) {
-        dot.style.left = `${mouseX}px`;
-        dot.style.top = `${mouseY}px`;
-      }
-    };
-
-    const handleMouse = (event: MouseEvent) => {
-      updatePosition(event.clientX, event.clientY);
-    };
-
-    const handlePointer = (event: globalThis.PointerEvent) => {
-      updatePosition(event.clientX, event.clientY);
-    };
-
-    const handleTouch = (event: TouchEvent) => {
-      const [touch] = event.touches;
-      if (touch) updatePosition(touch.clientX, touch.clientY);
-    };
-
-    const animate = () => {
-      cursorX += (mouseX - cursorX) * 0.1;
-      cursorY += (mouseY - cursorY) * 0.1;
-      if (outline) {
-        outline.style.left = `${cursorX}px`;
-        outline.style.top = `${cursorY}px`;
-      }
-      root.style.setProperty("--x", `${(cursorX / window.innerWidth) * 100}%`);
-      root.style.setProperty("--y", `${(cursorY / window.innerHeight) * 100}%`);
-      frame = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("mousemove", handleMouse);
-    window.addEventListener("pointerdown", handlePointer);
-    window.addEventListener("pointermove", handlePointer);
-    window.addEventListener("touchstart", handleTouch, { passive: true });
-    window.addEventListener("touchmove", handleTouch, { passive: true });
-    animate();
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouse);
-      window.removeEventListener("pointerdown", handlePointer);
-      window.removeEventListener("pointermove", handlePointer);
-      window.removeEventListener("touchstart", handleTouch);
-      window.removeEventListener("touchmove", handleTouch);
-      cancelAnimationFrame(frame);
-    };
-  }, []);
+  const scrollTo = (id: string) => {
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  };
 
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const name = String(form.get("name") || "");
+    const business = String(form.get("business") || "");
+    const message = String(form.get("message") || "");
+    const subject = encodeURIComponent(`FanWorks conversation: ${business || name}`);
+    const body = encodeURIComponent(`${message}\n\nFrom: ${name}\nBusiness: ${business}\nEmail: ${form.get("email") || ""}`);
     setSubmitted(true);
+    window.location.href = `mailto:hello@fanworks.io?subject=${subject}&body=${body}`;
   };
-
-  const openPanel = (panel: Panel) => {
-    setSubmitted(false);
-    setActivePanel((current) => (current === panel ? null : panel));
-  };
-
-  const resetPortal = () => {
-    const portal = portalRef.current;
-    if (!portal) return;
-    portal.style.setProperty("--drag-x", "0px");
-    portal.style.setProperty("--drag-y", "0px");
-    portal.style.setProperty("--portal-scale", "1");
-    portal.style.setProperty("--path-progress", "0");
-    portalActive.current = false;
-    portalStart.current.progress = 0;
-    portalStart.current.primed = false;
-    setPortalPressed(false);
-    setPortalPrimed(false);
-    setGuideIndex(0);
-  };
-
-  const updatePortal = (clientX: number, clientY: number) => {
-    const portal = portalRef.current;
-    if (!portal) return;
-
-    const isCompact = window.matchMedia("(max-width: 760px)").matches;
-    const maxLift = isCompact ? 250 : 285;
-    const dx = Math.max(-42, Math.min(42, clientX - portalStart.current.x));
-    const dy = Math.max(-maxLift, Math.min(28, clientY - portalStart.current.y));
-    const distance = Math.hypot(dx, dy);
-    const progress = Math.max(0, Math.min(1, -dy / maxLift));
-    const scale = 1 + Math.min(distance / 520, 0.24);
-    const primed = progress > 0.88;
-    const nextGuideIndex = Math.min(guideOptions.length - 1, Math.floor(progress * guideOptions.length));
-
-    portal.style.setProperty("--drag-x", `${dx}px`);
-    portal.style.setProperty("--drag-y", `${dy}px`);
-    portal.style.setProperty("--portal-scale", scale.toFixed(3));
-    portal.style.setProperty("--path-progress", progress.toFixed(3));
-    document.documentElement.style.setProperty("--x", `${(clientX / window.innerWidth) * 100}%`);
-    document.documentElement.style.setProperty("--y", `${(clientY / window.innerHeight) * 100}%`);
-    portalStart.current.progress = progress;
-
-    if (portalStart.current.primed !== primed) {
-      portalStart.current.primed = primed;
-      setPortalPrimed(primed);
-    }
-    setGuideIndex((current) => (current === nextGuideIndex ? current : nextGuideIndex));
-  };
-
-  const pressPortal = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    event.currentTarget.setPointerCapture(event.pointerId);
-    portalActive.current = true;
-    portalStart.current = { x: event.clientX, y: event.clientY, progress: 0, primed: false };
-    setPortalPressed(true);
-    updatePortal(event.clientX, event.clientY);
-  };
-
-  const movePortal = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!portalActive.current) return;
-    updatePortal(event.clientX, event.clientY);
-  };
-
-  const releasePortal = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!portalActive.current) return;
-    const portal = portalRef.current;
-    if (portal?.hasPointerCapture(event.pointerId)) {
-      portal.releasePointerCapture(event.pointerId);
-    }
-    const distance = Math.hypot(event.clientX - portalStart.current.x, event.clientY - portalStart.current.y);
-    const selectedGuide = guideOptions[guideIndex].id;
-    const shouldOpen = portalStart.current.progress > 0.08 || distance < 8;
-    resetPortal();
-    if (shouldOpen) {
-      setSubmitted(false);
-      setActivePanel(selectedGuide);
-    }
-  };
-
-  const activatePortalFromKeyboard = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    setSubmitted(false);
-    setActivePanel("human");
-  };
-
-  const activeGuidePanel = activePanel && activePanel !== "engage"
-    ? guideOptions.find((option) => option.id === activePanel)
-    : null;
-
-  const stageClass = ["stage", activePanel ? "has-panel" : "", portalPressed ? "is-portal-pressing" : "", portalPrimed ? "is-portal-primed" : ""]
-    .filter(Boolean)
-    .join(" ");
 
   return (
-    <main className={stageClass} onPointerMove={movePortal} onPointerUp={releasePortal}>
-      <div className="layer-sharp" aria-hidden="true" />
-      <div className="layer-blur" aria-hidden="true" />
-      <div className="noise-overlay" aria-hidden="true" />
+    <main>
+      <motion.div className="scroll-progress" style={{ scaleX: smoothProgress }} aria-hidden="true" />
 
-      <section className="ui-layer" aria-labelledby="hero-title">
-        <header className="header-top">
-          <button type="button" className="nav-text brand" onClick={() => setActivePanel(null)}>
-            FanWorks
+      <section className="hero" id="top" ref={heroRef} aria-labelledby="hero-title">
+        <header className="site-header">
+          <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
+            <span className="wordmark">FanWorks</span>
+            <span className="brand-subtitle">Human-centered consulting</span>
           </button>
-          <nav className="nav-stack" aria-label="Primary navigation">
-            <button type="button" className="nav-text" onClick={() => openPanel("human")}>
-              Expertise
-            </button>
-            <button type="button" className="nav-text" onClick={() => openPanel("engage")}>
-              Engage
-            </button>
+
+          <nav className="desktop-nav" aria-label="Primary navigation">
+            <button type="button" onClick={() => scrollTo("services")}>Services</button>
+            <button type="button" onClick={() => scrollTo("approach")}>Approach</button>
+            <button type="button" onClick={() => scrollTo("story")}>Our story</button>
+            <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Talk to us</button>
           </nav>
-        </header>
 
-        <div className="hero-text">
-          <h1 id="hero-title" className="prompt-main">
-            Be More Human
-          </h1>
-          <p className="prompt-sub">human centered consulting</p>
-        </div>
-
-        <div className="coords">EST. 2025</div>
-
-        <div className="interaction-anchor">
           <button
             type="button"
-            ref={portalRef}
-            className="clarity-portal"
-            aria-label="Drag to surface clarity and open the FanWorks story"
-            onKeyDown={activatePortalFromKeyboard}
-            onPointerCancel={resetPortal}
-            onPointerDown={pressPortal}
-            onPointerLeave={movePortal}
-            onPointerMove={movePortal}
-            onPointerUp={releasePortal}
+            className="menu-toggle"
+            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            <span className="guide-rail" aria-hidden="true">
-              {guideOptions.map((option, index) => (
-                <span
-                  key={option.id}
-                  className={index <= guideIndex ? "guide-node is-active" : "guide-node"}
-                >
-                  {option.label}
-                </span>
-              ))}
-            </span>
-            <span className="portal-core" aria-hidden="true" />
-            <span className="portal-copy">
-              <span className="portal-state portal-state-idle">Drag upward</span>
-              <span className="portal-state portal-state-primed">Release the path</span>
-            </span>
-            <span className="guide-card" aria-live="polite">
-              <span>{guideOptions[guideIndex].label}</span>
-              <strong>{guideOptions[guideIndex].title}</strong>
-              <em>{guideOptions[guideIndex].body}</em>
-            </span>
+            {menuOpen ? <X /> : <Menu />}
           </button>
-          <span className="label-enter">Initiate</span>
+        </header>
+
+        <AnimatePresence>
+          {menuOpen ? (
+            <motion.nav
+              className="mobile-nav"
+              aria-label="Mobile navigation"
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+            >
+              <button type="button" onClick={() => scrollTo("services")}>Services</button>
+              <button type="button" onClick={() => scrollTo("approach")}>Approach</button>
+              <button type="button" onClick={() => scrollTo("story")}>Our story</button>
+              <button type="button" onClick={() => scrollTo("engage")}>Talk to us</button>
+            </motion.nav>
+          ) : null}
+        </AnimatePresence>
+
+        <motion.div
+          className="hero-image"
+          style={{ y: imageY }}
+          initial={reduceMotion ? false : { clipPath: "inset(0 0 0 100%)" }}
+          animate={{ clipPath: "inset(0 0 0 0%)" }}
+          transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden="true"
+        />
+        <div className="hero-paper" aria-hidden="true" />
+
+        <div className="hero-content">
+          <motion.p
+            className="origin-line"
+            initial="hidden"
+            animate="visible"
+            variants={reveal}
+            transition={{ delay: 0.25, duration: 0.7 }}
+          >
+            <MapPin aria-hidden="true" />
+            Born in The Fan, Richmond, Virginia
+          </motion.p>
+
+          <motion.h1
+            id="hero-title"
+            initial="hidden"
+            animate="visible"
+            variants={reveal}
+            transition={{ delay: 0.38, duration: 0.85 }}
+          >
+            <span>Make technology</span>
+            <span>feel like it <em>belongs.</em></span>
+          </motion.h1>
+
+          <motion.div
+            className="hero-rule"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.85, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          />
+
+          <motion.div
+            className="hero-copy"
+            initial="hidden"
+            animate="visible"
+            variants={reveal}
+            transition={{ delay: 0.58, duration: 0.8 }}
+          >
+            <p>
+              FanWorks helps owners make sense of the work, choose the right technology, and put it in place without losing
+              what makes the business human.
+            </p>
+            <p className="service-sentence">
+              Business and AI assessments. Hands-on concierge support. Thoughtful integration. Practical automation.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="hero-actions"
+            initial="hidden"
+            animate="visible"
+            variants={reveal}
+            transition={{ delay: 0.72, duration: 0.8 }}
+          >
+            <button className="button button-primary" type="button" onClick={() => scrollTo("engage")}>
+              Tell us what feels complicated <ArrowRight aria-hidden="true" />
+            </button>
+            <button className="button button-secondary" type="button" onClick={() => scrollTo("approach")}>
+              See our approach
+            </button>
+          </motion.div>
+        </div>
+
+        <motion.div
+          className="sector-rail"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+        >
+          {sectors.map(({ label, icon: Icon }) => (
+            <div className="sector" key={label}>
+              <Icon aria-hidden="true" />
+              <span>{label}</span>
+            </div>
+          ))}
+        </motion.div>
+
+        <button className="scroll-cue" type="button" onClick={() => scrollTo("services")} aria-label="Continue to services">
+          <span>Keep going</span>
+          <ArrowDown aria-hidden="true" />
+        </button>
+      </section>
+
+      <section className="services-section" id="services" aria-labelledby="services-title">
+        <motion.div
+          className="section-heading services-heading"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={reveal}
+          transition={{ duration: 0.75 }}
+        >
+          <p className="eyebrow">Here is how</p>
+          <h2 id="services-title">Four ways we help the work <em>move.</em></h2>
+          <p>We meet the business where it is and stay close enough to make the next step useful.</p>
+        </motion.div>
+
+        <div className="service-explorer">
+          <div className="service-tabs" role="tablist" aria-label="FanWorks services">
+            {services.map((service) => {
+              const Icon = service.icon;
+              const selected = service.id === activeService;
+              return (
+                <button
+                  key={service.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls="service-detail"
+                  className={selected ? "service-tab is-active" : "service-tab"}
+                  onClick={() => setActiveService(service.id)}
+                >
+                  <Icon aria-hidden="true" />
+                  <span>{service.eyebrow}</span>
+                  <strong>{service.title}</strong>
+                  <ArrowRight aria-hidden="true" />
+                </button>
+              );
+            })}
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.article
+              id="service-detail"
+              role="tabpanel"
+              className="service-detail"
+              key={selectedService.id}
+              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <p className="detail-number">{selectedService.eyebrow}</p>
+              <h3>{selectedService.summary}</h3>
+              <p>{selectedService.detail}</p>
+              <div className="detail-outcome">
+                <span>What you leave with</span>
+                <p>{selectedService.outcome}</p>
+              </div>
+            </motion.article>
+          </AnimatePresence>
         </div>
       </section>
 
-      <aside className={activePanel ? "story-panel is-open" : "story-panel"} aria-hidden={!activePanel}>
-        <button type="button" className="panel-close" onClick={() => setActivePanel(null)}>
-          Close
-        </button>
+      <section className="approach-section" id="approach" aria-labelledby="approach-title">
+        <div className="approach-intro">
+          <motion.p className="eyebrow" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
+            Our approach
+          </motion.p>
+          <motion.h2 id="approach-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
+            We look before we reach for tools.
+          </motion.h2>
+          <motion.p initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
+            The useful answer is rarely “more software.” We begin with the people, decisions, and routines already carrying
+            the business, then shape the technology around them.
+          </motion.p>
+        </div>
 
-        {activeGuidePanel ? (
-          <div className="panel-content">
-            <p className="panel-label">{activeGuidePanel.label}</p>
-            <h2>{activeGuidePanel.title}</h2>
-            <p className="panel-lede">{activeGuidePanel.body}</p>
-            <div className="popup-points">
-              {activeGuidePanel.points.map((point) => (
-                <span key={point}>{point}</span>
-              ))}
-            </div>
+        <div className="approach-steps">
+          {[
+            ["01", "Listen in context", "We talk with the people closest to the work and see how it actually moves."],
+            ["02", "Name what matters", "We surface the friction, the useful signals, and the human moments worth protecting."],
+            ["03", "Build the right amount", "We integrate or automate only what earns its place in the business."],
+            ["04", "Leave capability behind", "We document the system, teach the team, and make ownership clear."],
+          ].map(([number, title, body], index) => (
+            <motion.article
+              className="approach-step"
+              key={number}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.45 }}
+              transition={{ delay: reduceMotion ? 0 : index * 0.1, duration: 0.65 }}
+            >
+              <span>{number}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      <section className="story-section" id="story" aria-labelledby="story-title">
+        <motion.div
+          className="story-image"
+          initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }}
+          whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden="true"
+        />
+        <motion.div
+          className="story-copy"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.35 }}
+          variants={reveal}
+          transition={{ duration: 0.8 }}
+        >
+          <p className="eyebrow">The neighborhood behind the name</p>
+          <h2 id="story-title">Built in The Fan. Shaped by small business.</h2>
+          <p>
+            The Fan is a neighborhood of old brick, new ideas, and people who know one another by the work they do. Behind
+            its doors are retailers, advisers, makers, operators, and entrepreneurs building businesses at every scale.
+          </p>
+          <p>
+            FanWorks carries that same spirit into consulting: practical expertise shared across the block, different
+            disciplines meeting around a real problem, and technology that strengthens the connection instead of replacing it.
+          </p>
+          <blockquote>Surfacing clarity in complex environments, with the human still at the center.</blockquote>
+        </motion.div>
+      </section>
+
+      <section className="engage-section" id="engage" aria-labelledby="engage-title">
+        <div className="engage-copy">
+          <p className="eyebrow">Start with the real thing</p>
+          <h2 id="engage-title">Tell us what feels complicated.</h2>
+          <p>
+            Bring us a tangled process, a technology decision, an overloaded team, or an idea that needs a practical path.
+            We will start by understanding it.
+          </p>
+          <a href="mailto:hello@fanworks.io">hello@fanworks.io</a>
+          <span>Richmond, Virginia</span>
+        </div>
+
+        <motion.form
+          className="contact-form"
+          onSubmit={submitContact}
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="form-row">
+            <label>
+              <span>Your name</span>
+              <input name="name" autoComplete="name" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input name="email" type="email" autoComplete="email" required />
+            </label>
           </div>
-        ) : null}
-
-        {activePanel === "engage" ? (
-          <div className="panel-content">
-            <p className="panel-label">Engage</p>
-            <h2>Tell us where the work feels least human.</h2>
-            <p className="panel-lede">
-              Bring a workflow, a product idea, a voice interface, or a team practice that needs to be understood before
-              automation is shaped around it.
+          <label>
+            <span>Business or organization</span>
+            <input name="business" autoComplete="organization" />
+          </label>
+          <label>
+            <span>What should we understand?</span>
+            <textarea
+              name="message"
+              rows={5}
+              required
+              placeholder="A process, a decision, a team constraint, or simply where the work is getting heavy."
+            />
+          </label>
+          <div className="form-footer">
+            <button className="button button-light" type="submit">
+              Start the conversation <ArrowRight aria-hidden="true" />
+            </button>
+            <p role="status">
+              {submitted ? "Your email app should open with this note ready to send." : "No pitch deck required. A few honest sentences are enough."}
             </p>
-            <form className="contact-form" onSubmit={submitContact}>
-              <label>
-                Name
-                <input name="name" autoComplete="name" required />
-              </label>
-              <label>
-                Email
-                <input name="email" type="email" autoComplete="email" required />
-              </label>
-              <label>
-                What should we understand?
-                <textarea name="story" rows={5} required />
-              </label>
-              <button type="submit">Send the signal</button>
-              <p className="form-status" role="status">
-                {submitted ? "Thank you. The signal is captured for this prototype." : "Prefer email? hello@fan.works"}
-              </p>
-            </form>
           </div>
-        ) : null}
-      </aside>
+        </motion.form>
+      </section>
 
-      <div className="cursor-dot" aria-hidden="true" />
-      <div className="cursor-outline" aria-hidden="true" />
+      <footer className="site-footer">
+        <div className="brand-lockup footer-brand">
+          <span className="wordmark">FanWorks</span>
+          <span className="brand-subtitle">Human-centered consulting</span>
+        </div>
+        <p>Business clarity, technology integration, and automation built around people.</p>
+        <span>Richmond, Virginia · Est. 2025</span>
+      </footer>
     </main>
   );
 }
