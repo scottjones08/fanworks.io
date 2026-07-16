@@ -202,6 +202,7 @@ export default function App() {
             transition={{ delay: 0.38, duration: 0.85 }}
           >
             <span>Make technology</span>
+            {" "}
             <span>feel like it <em>belongs.</em></span>
           </motion.h1>
 
