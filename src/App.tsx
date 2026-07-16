@@ -10,16 +10,11 @@ import {
 import {
   ArrowDown,
   ArrowRight,
-  BriefcaseBusiness,
   Cable,
-  Coffee,
   Compass,
-  HeartHandshake,
-  Landmark,
   MapPin,
   Menu,
   SearchCheck,
-  ShoppingBag,
   Workflow,
   X,
 } from "lucide-react";
@@ -80,14 +75,6 @@ const services: Service[] = [
   },
 ];
 
-const sectors = [
-  { label: "Retail & hospitality", icon: ShoppingBag },
-  { label: "Financial services", icon: Landmark },
-  { label: "Professional services", icon: BriefcaseBusiness },
-  { label: "Community organizations", icon: HeartHandshake },
-  { label: "Makers & local business", icon: Coffee },
-];
-
 const reveal = {
   hidden: { opacity: 0, y: 28 },
   visible: { opacity: 1, y: 0 },
@@ -133,7 +120,7 @@ export default function App() {
       <section className="hero" id="top" ref={heroRef} aria-labelledby="hero-title">
         <header className="site-header">
           <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
-            <span className="wordmark">FanWorks</span>
+            <span className="wordmark">FANWORKS</span>
             <span className="brand-subtitle">Human-centered consulting</span>
           </button>
 
@@ -191,7 +178,7 @@ export default function App() {
             transition={{ delay: 0.25, duration: 0.7 }}
           >
             <MapPin aria-hidden="true" />
-            Born in The Fan, Richmond, Virginia
+            The Fan / Richmond, Virginia
           </motion.p>
 
           <motion.h1
@@ -201,9 +188,8 @@ export default function App() {
             variants={reveal}
             transition={{ delay: 0.38, duration: 0.85 }}
           >
-            <span>Make technology</span>
-            {" "}
-            <span>feel like it <em>belongs.</em></span>
+            <span>Human-centered consulting</span>
+            <span>for complicated <em>work.</em></span>
           </motion.h1>
 
           <motion.div
@@ -221,11 +207,11 @@ export default function App() {
             transition={{ delay: 0.58, duration: 0.8 }}
           >
             <p>
-              FanWorks helps owners make sense of the work, choose the right technology, and put it in place without losing
-              what makes the business human.
+              We get inside the real work, find the friction, and build practical systems around the people who make the
+              business run.
             </p>
             <p className="service-sentence">
-              Business and AI assessments. Hands-on concierge support. Thoughtful integration. Practical automation.
+              Assessments. Business concierge. Technology integration. Automation with judgment.
             </p>
           </motion.div>
 
@@ -237,7 +223,7 @@ export default function App() {
             transition={{ delay: 0.72, duration: 0.8 }}
           >
             <button className="button button-primary" type="button" onClick={() => scrollTo("engage")}>
-              Tell us what feels complicated <ArrowRight aria-hidden="true" />
+              Bring us the messy part <ArrowRight aria-hidden="true" />
             </button>
             <button className="button button-secondary" type="button" onClick={() => scrollTo("approach")}>
               See our approach
@@ -246,23 +232,61 @@ export default function App() {
         </div>
 
         <motion.div
-          className="sector-rail"
+          className="hero-service-line"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
         >
-          {sectors.map(({ label, icon: Icon }) => (
-            <div className="sector" key={label}>
-              <Icon aria-hidden="true" />
-              <span>{label}</span>
-            </div>
-          ))}
+          <span>Business clarity</span>
+          <span>Human judgment</span>
+          <span>Useful systems</span>
+          <span>Work that holds up</span>
         </motion.div>
 
         <button className="scroll-cue" type="button" onClick={() => scrollTo("services")} aria-label="Continue to services">
           <span>Keep going</span>
           <ArrowDown aria-hidden="true" />
         </button>
+      </section>
+
+      <section className="field-note" aria-labelledby="field-note-title">
+        <div className="field-note-label">
+          <span>Field note</span>
+          <span>FW / 001</span>
+        </div>
+        <motion.h2
+          id="field-note-title"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.45 }}
+          variants={reveal}
+        >
+          Most businesses do not need more technology. They need the technology they already have to make more sense.
+        </motion.h2>
+        <motion.div
+          className="field-note-copy"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.45 }}
+          variants={reveal}
+        >
+          <p>
+            Complexity gathers in the handoffs: between a customer and a system, a decision and its data, a good idea and
+            the day there is never enough time to test it.
+          </p>
+          <p>
+            FanWorks works in that middle. We surface clarity, make the useful connections, and leave the human judgment
+            where it belongs: at the center.
+          </p>
+        </motion.div>
+        <motion.div
+          className="field-note-art"
+          initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }}
+          whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden="true"
+        />
       </section>
 
       <section className="services-section" id="services" aria-labelledby="services-title">
@@ -274,9 +298,9 @@ export default function App() {
           variants={reveal}
           transition={{ duration: 0.75 }}
         >
-          <p className="eyebrow">Here is how</p>
-          <h2 id="services-title">Four ways we help the work <em>move.</em></h2>
-          <p>We meet the business where it is and stay close enough to make the next step useful.</p>
+          <p className="eyebrow">Where we enter</p>
+          <h2 id="services-title">Four ways we get the work <em>unstuck.</em></h2>
+          <p>No transformation theater. We meet the business where it is, work beside the people in it, and make the next move real.</p>
         </motion.div>
 
         <div className="service-explorer">
@@ -321,6 +345,7 @@ export default function App() {
                 <span>What you leave with</span>
                 <p>{selectedService.outcome}</p>
               </div>
+              <div className={`service-sketch service-sketch-${selectedService.id}`} aria-hidden="true" />
             </motion.article>
           </AnimatePresence>
         </div>
@@ -332,20 +357,29 @@ export default function App() {
             Our approach
           </motion.p>
           <motion.h2 id="approach-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-            We look before we reach for tools.
+            We work close to the mess.
           </motion.h2>
           <motion.p initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-            The useful answer is rarely “more software.” We begin with the people, decisions, and routines already carrying
-            the business, then shape the technology around them.
+            The useful answer is rarely “more software.” We listen to the people carrying the work, follow the actual
+            handoffs, and build only what earns its place.
           </motion.p>
         </div>
+
+        <motion.div
+          className="approach-sketch"
+          initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.8 }}
+          aria-hidden="true"
+        />
 
         <div className="approach-steps">
           {[
             ["01", "Listen in context", "We talk with the people closest to the work and see how it actually moves."],
             ["02", "Name what matters", "We surface the friction, the useful signals, and the human moments worth protecting."],
-            ["03", "Build the right amount", "We integrate or automate only what earns its place in the business."],
-            ["04", "Leave capability behind", "We document the system, teach the team, and make ownership clear."],
+            ["03", "Build the right amount", "We integrate or automate only what makes the work clearer and stronger."],
+            ["04", "Leave it in your hands", "We document the system, teach the team, and make ownership unmistakable."],
           ].map(([number, title, body], index) => (
             <motion.article
               className="approach-step"
@@ -366,8 +400,8 @@ export default function App() {
       <section className="story-section" id="story" aria-labelledby="story-title">
         <motion.div
           className="story-image"
-          initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }}
-          whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+          initial={reduceMotion ? false : { opacity: 0.25 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
           aria-hidden="true"
@@ -380,15 +414,15 @@ export default function App() {
           variants={reveal}
           transition={{ duration: 0.8 }}
         >
-          <p className="eyebrow">The neighborhood behind the name</p>
-          <h2 id="story-title">Built in The Fan. Shaped by small business.</h2>
+          <p className="eyebrow">Why FanWorks</p>
+          <h2 id="story-title">The neighborhood taught us how to work.</h2>
           <p>
-            The Fan is a neighborhood of old brick, new ideas, and people who know one another by the work they do. Behind
-            its doors are retailers, advisers, makers, operators, and entrepreneurs building businesses at every scale.
+            The Fan is old brick, uneven streets, independent storefronts, and people known by the quality of their work.
+            Behind its doors are retailers, advisers, makers, operators, and entrepreneurs building at every scale.
           </p>
           <p>
-            FanWorks carries that same spirit into consulting: practical expertise shared across the block, different
-            disciplines meeting around a real problem, and technology that strengthens the connection instead of replacing it.
+            That is our model: bring different kinds of expertise to the same table, stay grounded in the real problem, and
+            make something useful enough to last. Technology is part of the work. People are the point of it.
           </p>
           <blockquote>Surfacing clarity in complex environments, with the human still at the center.</blockquote>
         </motion.div>
@@ -396,14 +430,15 @@ export default function App() {
 
       <section className="engage-section" id="engage" aria-labelledby="engage-title">
         <div className="engage-copy">
-          <p className="eyebrow">Start with the real thing</p>
-          <h2 id="engage-title">Tell us what feels complicated.</h2>
+          <p className="eyebrow">The door is open</p>
+          <h2 id="engage-title">Start with the part nobody has time to untangle.</h2>
           <p>
-            Bring us a tangled process, a technology decision, an overloaded team, or an idea that needs a practical path.
-            We will start by understanding it.
+            A tangled process. A technology decision. An overloaded team. An idea without a practical path. Give us the
+            honest version and we will start there.
           </p>
           <a href="mailto:hello@fanworks.io">hello@fanworks.io</a>
           <span>Richmond, Virginia</span>
+          <div className="engage-sketch" aria-hidden="true" />
         </div>
 
         <motion.form
@@ -450,7 +485,7 @@ export default function App() {
 
       <footer className="site-footer">
         <div className="brand-lockup footer-brand">
-          <span className="wordmark">FanWorks</span>
+          <span className="wordmark">FANWORKS</span>
           <span className="brand-subtitle">Human-centered consulting</span>
         </div>
         <p>Business clarity, technology integration, and automation built around people.</p>
