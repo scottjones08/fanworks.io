@@ -88,7 +88,7 @@ a {
   inset: 0;
   z-index: -2;
   background: rgba(20, 23, 19, 0.94);
-  clip-path: polygon(0 0, 67% 0, 56% 100%, 0 100%);
+  clip-path: polygon(0 0, 59% 0, 50% 100%, 0 100%);
 }
 
 .hero::after {
@@ -185,7 +185,7 @@ a {
 .hero-copy {
   position: relative;
   z-index: 2;
-  width: min(59rem, 64vw);
+  width: min(54rem, 58vw);
   padding: clamp(4rem, 9vh, 7.5rem) 0 10rem var(--pad);
   animation: copy-in 650ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -208,7 +208,7 @@ a {
 .hero h1 {
   max-width: 11ch;
   font-family: var(--display);
-  font-size: clamp(4.8rem, 8vw, 8.4rem);
+  font-size: clamp(4.6rem, 7vw, 7.4rem);
   font-weight: 900;
   letter-spacing: 0;
   line-height: 0.82;
@@ -260,7 +260,7 @@ a {
 
 .hero-tags {
   position: absolute;
-  right: 36%;
+  right: 43%;
   bottom: 1.5rem;
   left: var(--pad);
   z-index: 2;
