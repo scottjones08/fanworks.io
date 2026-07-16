@@ -1,123 +1,80 @@
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
-import {
-  ArrowDown,
+  ArrowDownRight,
   ArrowRight,
   Cable,
   Compass,
-  MapPin,
   Menu,
   SearchCheck,
   Workflow,
   X,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-type ServiceId = "assess" | "concierge" | "integrate" | "automate";
-
-type Service = {
-  id: ServiceId;
-  eyebrow: string;
-  title: string;
-  summary: string;
-  detail: string;
-  outcome: string;
-  icon: LucideIcon;
-};
-
-const services: Service[] = [
+const services = [
   {
-    id: "assess",
-    eyebrow: "01 / Assess",
-    title: "See the business clearly.",
-    summary: "A practical assessment of the work, the tools, and where AI may or may not help.",
-    detail:
-      "We listen to the people doing the work, trace the real process, and separate the useful opportunities from the noise.",
-    outcome: "A plain-language view of what to keep, fix, stop, and explore next.",
+    number: "01",
+    name: "Assess",
+    line: "Find the friction. Name the next move.",
     icon: SearchCheck,
   },
   {
-    id: "concierge",
-    eyebrow: "02 / Guide",
-    title: "Keep the work moving.",
-    summary: "Hands-on business concierge support for decisions that do not fit neatly into a ticket.",
-    detail:
-      "We stay close to the day-to-day, connect the right people, and help carry important work from question to decision.",
-    outcome: "Steady progress without adding another layer of management overhead.",
+    number: "02",
+    name: "Guide",
+    line: "Turn open questions into decisions.",
     icon: Compass,
   },
   {
-    id: "integrate",
-    eyebrow: "03 / Integrate",
-    title: "Make the tools belong.",
-    summary: "Technology integration shaped around the business instead of forcing the business around software.",
-    detail:
-      "We connect systems, information, and handoffs while protecting the judgment and relationships that make the business work.",
-    outcome: "A simpler operating environment that people can understand and use.",
+    number: "03",
+    name: "Connect",
+    line: "Make the tools work together.",
     icon: Cable,
   },
   {
-    id: "automate",
-    eyebrow: "04 / Automate",
-    title: "Take repetition off the team.",
-    summary: "Practical automation for the repeatable work, with people still in control of the meaningful decisions.",
-    detail:
-      "We automate the right steps, build in human review where it matters, and leave the team with a system they can own.",
-    outcome: "More room for judgment, service, craft, and the work only people can do.",
+    number: "04",
+    name: "Automate",
+    line: "Remove repetition. Keep judgment.",
     icon: Workflow,
   },
 ];
 
-const reveal = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0 },
-};
+const principles = [
+  ["People first", "Start with the people doing the work."],
+  ["Right-size the tools", "Build only what earns its place."],
+  ["Leave proof", "Create a system the team can own."],
+];
 
 export default function App() {
-  const [activeService, setActiveService] = useState<ServiceId>("assess");
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const heroRef = useRef<HTMLElement>(null);
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 110, damping: 28, mass: 0.25 });
-  const { scrollYProgress: heroScroll } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const imageY = useTransform(heroScroll, [0, 1], [0, reduceMotion ? 0 : 80]);
-
-  const selectedService = services.find((service) => service.id === activeService) ?? services[0];
 
   const scrollTo = (id: string) => {
     setMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const name = String(form.get("name") || "");
-    const business = String(form.get("business") || "");
     const message = String(form.get("message") || "");
-    const subject = encodeURIComponent(`FanWorks conversation: ${business || name}`);
-    const body = encodeURIComponent(`${message}\n\nFrom: ${name}\nBusiness: ${business}\nEmail: ${form.get("email") || ""}`);
+    const subject = encodeURIComponent(`FanWorks conversation: ${name}`);
+    const body = encodeURIComponent(`${message}\n\nFrom: ${name}\nEmail: ${form.get("email") || ""}`);
     setSubmitted(true);
     window.location.href = `mailto:hello@fanworks.io?subject=${subject}&body=${body}`;
   };
 
   return (
     <main>
-      <motion.div className="scroll-progress" style={{ scaleX: smoothProgress }} aria-hidden="true" />
+      <section className="hero" id="top" aria-labelledby="hero-title">
+        <img
+          className="hero-image"
+          src="/fan-works-hero.webp"
+          alt="A brick alley in The Fan neighborhood of Richmond, Virginia"
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div className="hero-ink" aria-hidden="true" />
 
-      <section className="hero" id="top" ref={heroRef} aria-labelledby="hero-title">
         <header className="site-header">
           <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
             <span className="wordmark">FANWORKS</span>
@@ -125,10 +82,10 @@ export default function App() {
           </button>
 
           <nav className="desktop-nav" aria-label="Primary navigation">
-            <button type="button" onClick={() => scrollTo("services")}>Services</button>
-            <button type="button" onClick={() => scrollTo("approach")}>Approach</button>
-            <button type="button" onClick={() => scrollTo("story")}>Our story</button>
-            <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Talk to us</button>
+            <button type="button" onClick={() => scrollTo("work")}>Work</button>
+            <button type="button" onClick={() => scrollTo("ethos")}>Ethos</button>
+            <button type="button" onClick={() => scrollTo("story")}>Story</button>
+            <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Engage</button>
           </nav>
 
           <button
@@ -142,316 +99,106 @@ export default function App() {
           </button>
         </header>
 
-        <AnimatePresence>
-          {menuOpen ? (
-            <motion.nav
-              className="mobile-nav"
-              aria-label="Mobile navigation"
-              initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-            >
-              <button type="button" onClick={() => scrollTo("services")}>Services</button>
-              <button type="button" onClick={() => scrollTo("approach")}>Approach</button>
-              <button type="button" onClick={() => scrollTo("story")}>Our story</button>
-              <button type="button" onClick={() => scrollTo("engage")}>Talk to us</button>
-            </motion.nav>
-          ) : null}
-        </AnimatePresence>
+        {menuOpen ? (
+          <nav className="mobile-nav" aria-label="Mobile navigation">
+            <button type="button" onClick={() => scrollTo("work")}>Work</button>
+            <button type="button" onClick={() => scrollTo("ethos")}>Ethos</button>
+            <button type="button" onClick={() => scrollTo("story")}>Story</button>
+            <button type="button" onClick={() => scrollTo("engage")}>Engage</button>
+          </nav>
+        ) : null}
 
-        <motion.div
-          className="hero-image"
-          style={{ y: imageY }}
-          initial={reduceMotion ? false : { clipPath: "inset(0 0 0 100%)" }}
-          animate={{ clipPath: "inset(0 0 0 0%)" }}
-          transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
-          aria-hidden="true"
-        />
-        <div className="hero-paper" aria-hidden="true" />
-
-        <div className="hero-content">
-          <motion.p
-            className="origin-line"
-            initial="hidden"
-            animate="visible"
-            variants={reveal}
-            transition={{ delay: 0.25, duration: 0.7 }}
-          >
-            <MapPin aria-hidden="true" />
-            The Fan / Richmond, Virginia
-          </motion.p>
-
-          <motion.h1
-            id="hero-title"
-            initial="hidden"
-            animate="visible"
-            variants={reveal}
-            transition={{ delay: 0.38, duration: 0.85 }}
-          >
-            <span>Human-centered consulting</span>
-            <span>for complicated <em>work.</em></span>
-          </motion.h1>
-
-          <motion.div
-            className="hero-rule"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.85, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          />
-
-          <motion.div
-            className="hero-copy"
-            initial="hidden"
-            animate="visible"
-            variants={reveal}
-            transition={{ delay: 0.58, duration: 0.8 }}
-          >
-            <p>
-              We get inside the real work, find the friction, and build practical systems around the people who make the
-              business run.
-            </p>
-            <p className="service-sentence">
-              Assessments. Business concierge. Technology integration. Automation with judgment.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="hero-actions"
-            initial="hidden"
-            animate="visible"
-            variants={reveal}
-            transition={{ delay: 0.72, duration: 0.8 }}
-          >
-            <button className="button button-primary" type="button" onClick={() => scrollTo("engage")}>
-              Bring us the messy part <ArrowRight aria-hidden="true" />
-            </button>
-            <button className="button button-secondary" type="button" onClick={() => scrollTo("approach")}>
-              See our approach
-            </button>
-          </motion.div>
+        <div className="hero-copy">
+          <p className="location">Richmond, Virginia / The Fan</p>
+          <h1 id="hero-title">
+            Clear the mess.
+            <span>Keep the human.</span>
+          </h1>
+          <p>Business, technology, and automation shaped around people.</p>
+          <button className="hero-cta" type="button" onClick={() => scrollTo("engage")}>
+            Start here <ArrowDownRight aria-hidden="true" />
+          </button>
         </div>
 
-        <motion.div
-          className="hero-service-line"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-        >
-          <span>Business clarity</span>
-          <span>Human judgment</span>
-          <span>Useful systems</span>
-          <span>Work that holds up</span>
-        </motion.div>
-
-        <button className="scroll-cue" type="button" onClick={() => scrollTo("services")} aria-label="Continue to services">
-          <span>Keep going</span>
-          <ArrowDown aria-hidden="true" />
-        </button>
-      </section>
-
-      <section className="field-note" aria-labelledby="field-note-title">
-        <div className="field-note-label">
-          <span>Field note</span>
-          <span>FW / 001</span>
-        </div>
-        <motion.h2
-          id="field-note-title"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.45 }}
-          variants={reveal}
-        >
-          Most businesses do not need more technology. They need the technology they already have to make more sense.
-        </motion.h2>
-        <motion.div
-          className="field-note-copy"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.45 }}
-          variants={reveal}
-        >
-          <p>
-            Complexity gathers in the handoffs: between a customer and a system, a decision and its data, a good idea and
-            the day there is never enough time to test it.
-          </p>
-          <p>
-            FanWorks works in that middle. We surface clarity, make the useful connections, and leave the human judgment
-            where it belongs: at the center.
-          </p>
-        </motion.div>
-        <motion.div
-          className="field-note-art"
-          initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }}
-          whileInView={{ clipPath: "inset(0 0% 0 0)" }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          aria-hidden="true"
-        />
-      </section>
-
-      <section className="services-section" id="services" aria-labelledby="services-title">
-        <motion.div
-          className="section-heading services-heading"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          variants={reveal}
-          transition={{ duration: 0.75 }}
-        >
-          <p className="eyebrow">Where we enter</p>
-          <h2 id="services-title">Four ways we get the work <em>unstuck.</em></h2>
-          <p>No transformation theater. We meet the business where it is, work beside the people in it, and make the next move real.</p>
-        </motion.div>
-
-        <div className="service-explorer">
-          <div className="service-tabs" role="tablist" aria-label="FanWorks services">
-            {services.map((service) => {
-              const Icon = service.icon;
-              const selected = service.id === activeService;
-              return (
-                <button
-                  key={service.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  aria-controls="service-detail"
-                  className={selected ? "service-tab is-active" : "service-tab"}
-                  onClick={() => setActiveService(service.id)}
-                >
-                  <Icon aria-hidden="true" />
-                  <span>{service.eyebrow}</span>
-                  <strong>{service.title}</strong>
-                  <ArrowRight aria-hidden="true" />
-                </button>
-              );
-            })}
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.article
-              id="service-detail"
-              role="tabpanel"
-              className="service-detail"
-              key={selectedService.id}
-              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <p className="detail-number">{selectedService.eyebrow}</p>
-              <h3>{selectedService.summary}</h3>
-              <p>{selectedService.detail}</p>
-              <div className="detail-outcome">
-                <span>What you leave with</span>
-                <p>{selectedService.outcome}</p>
-              </div>
-              <div className={`service-sketch service-sketch-${selectedService.id}`} aria-hidden="true" />
-            </motion.article>
-          </AnimatePresence>
+        <div className="hero-tags" aria-label="FanWorks services">
+          <span>Assess</span>
+          <span>Guide</span>
+          <span>Connect</span>
+          <span>Automate</span>
         </div>
       </section>
 
-      <section className="approach-section" id="approach" aria-labelledby="approach-title">
-        <div className="approach-intro">
-          <motion.p className="eyebrow" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-            Our approach
-          </motion.p>
-          <motion.h2 id="approach-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-            We work close to the mess.
-          </motion.h2>
-          <motion.p initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-            The useful answer is rarely “more software.” We listen to the people carrying the work, follow the actual
-            handoffs, and build only what earns its place.
-          </motion.p>
+      <section className="work-section" id="work" aria-labelledby="work-title">
+        <div className="section-mark">
+          <span>01</span>
+          <span>What we do</span>
         </div>
+        <h2 id="work-title">Useful work.<br />No theater.</h2>
 
-        <motion.div
-          className="approach-sketch"
-          initial={reduceMotion ? false : { opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.8 }}
-          aria-hidden="true"
-        />
-
-        <div className="approach-steps">
-          {[
-            ["01", "Listen in context", "We talk with the people closest to the work and see how it actually moves."],
-            ["02", "Name what matters", "We surface the friction, the useful signals, and the human moments worth protecting."],
-            ["03", "Build the right amount", "We integrate or automate only what makes the work clearer and stronger."],
-            ["04", "Leave it in your hands", "We document the system, teach the team, and make ownership unmistakable."],
-          ].map(([number, title, body], index) => (
-            <motion.article
-              className="approach-step"
-              key={number}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.45 }}
-              transition={{ delay: reduceMotion ? 0 : index * 0.1, duration: 0.65 }}
-            >
+        <div className="service-list">
+          {services.map(({ number, name, line, icon: Icon }) => (
+            <article className="service-row" key={name}>
               <span>{number}</span>
+              <Icon aria-hidden="true" />
+              <h3>{name}</h3>
+              <p>{line}</p>
+              <ArrowRight aria-hidden="true" />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="ethos-section" id="ethos" aria-labelledby="ethos-title">
+        <div className="section-mark section-mark-light">
+          <span>02</span>
+          <span>How we work</span>
+        </div>
+        <h2 id="ethos-title">Human judgment.<br />Useful systems.</h2>
+        <div className="principle-list">
+          {principles.map(([title, line], index) => (
+            <article key={title}>
+              <span>0{index + 1}</span>
               <h3>{title}</h3>
-              <p>{body}</p>
-            </motion.article>
+              <p>{line}</p>
+            </article>
           ))}
         </div>
       </section>
 
       <section className="story-section" id="story" aria-labelledby="story-title">
-        <motion.div
-          className="story-image"
-          initial={reduceMotion ? false : { opacity: 0.25 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
-          aria-hidden="true"
-        />
-        <motion.div
-          className="story-copy"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.35 }}
-          variants={reveal}
-          transition={{ duration: 0.8 }}
-        >
-          <p className="eyebrow">Why FanWorks</p>
-          <h2 id="story-title">The neighborhood taught us how to work.</h2>
-          <p>
-            The Fan is old brick, uneven streets, independent storefronts, and people known by the quality of their work.
-            Behind its doors are retailers, advisers, makers, operators, and entrepreneurs building at every scale.
-          </p>
-          <p>
-            That is our model: bring different kinds of expertise to the same table, stay grounded in the real problem, and
-            make something useful enough to last. Technology is part of the work. People are the point of it.
-          </p>
-          <blockquote>Surfacing clarity in complex environments, with the human still at the center.</blockquote>
-        </motion.div>
+        <div className="story-art">
+          <img
+            src="/fanworks-workflow-sketch.webp"
+            alt="Hand-drawn people mapping work, connecting systems, and moving toward a Richmond neighborhood"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="story-copy">
+          <div className="section-mark">
+            <span>03</span>
+            <span>Why FanWorks</span>
+          </div>
+          <h2 id="story-title">Built on the block.</h2>
+          <p>The Fan taught us the value of craft, connection, and work that holds up.</p>
+          <blockquote>Surface clarity. Keep people at the center.</blockquote>
+        </div>
       </section>
 
       <section className="engage-section" id="engage" aria-labelledby="engage-title">
         <div className="engage-copy">
-          <p className="eyebrow">The door is open</p>
-          <h2 id="engage-title">Start with the part nobody has time to untangle.</h2>
-          <p>
-            A tangled process. A technology decision. An overloaded team. An idea without a practical path. Give us the
-            honest version and we will start there.
-          </p>
+          <div className="section-mark section-mark-light">
+            <span>04</span>
+            <span>Engage</span>
+          </div>
+          <h2 id="engage-title">Bring us the stuck part.</h2>
           <a href="mailto:hello@fanworks.io">hello@fanworks.io</a>
-          <span>Richmond, Virginia</span>
-          <div className="engage-sketch" aria-hidden="true" />
         </div>
 
-        <motion.form
-          className="contact-form"
-          onSubmit={submitContact}
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.8 }}
-        >
+        <form className="contact-form" onSubmit={submitContact}>
           <div className="form-row">
             <label>
-              <span>Your name</span>
+              <span>Name</span>
               <input name="name" autoComplete="name" required />
             </label>
             <label>
@@ -460,27 +207,16 @@ export default function App() {
             </label>
           </div>
           <label>
-            <span>Business or organization</span>
-            <input name="business" autoComplete="organization" />
-          </label>
-          <label>
-            <span>What should we understand?</span>
-            <textarea
-              name="message"
-              rows={5}
-              required
-              placeholder="A process, a decision, a team constraint, or simply where the work is getting heavy."
-            />
+            <span>What feels stuck?</span>
+            <textarea name="message" rows={4} required />
           </label>
           <div className="form-footer">
-            <button className="button button-light" type="submit">
-              Start the conversation <ArrowRight aria-hidden="true" />
+            <button type="submit">
+              Send it <ArrowRight aria-hidden="true" />
             </button>
-            <p role="status">
-              {submitted ? "Your email app should open with this note ready to send." : "No pitch deck required. A few honest sentences are enough."}
-            </p>
+            <p role="status">{submitted ? "Your email app is ready." : "A few honest lines are enough."}</p>
           </div>
-        </motion.form>
+        </form>
       </section>
 
       <footer className="site-footer">
@@ -488,8 +224,8 @@ export default function App() {
           <span className="wordmark">FANWORKS</span>
           <span className="brand-subtitle">Human-centered consulting</span>
         </div>
-        <p>Business clarity, technology integration, and automation built around people.</p>
-        <span>Richmond, Virginia · Est. 2025</span>
+        <span>Richmond, Virginia</span>
+        <span>Est. 2025</span>
       </footer>
     </main>
   );
