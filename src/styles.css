@@ -109,9 +109,9 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  margin: 0 var(--pad);
-  border-bottom: 1px solid rgba(242, 238, 228, 0.46);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
+  padding: 0 var(--pad);
+  border-bottom: 1px solid rgba(242, 238, 228, 0.38);
+  background: rgba(17, 19, 17, 0.9);
 }
 
 .brand-lockup {
@@ -134,7 +134,7 @@ a {
   font-family: var(--mono);
   font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -147,11 +147,11 @@ a {
 .desktop-nav button,
 .mobile-nav button {
   background: transparent;
-  color: var(--paper);
+  color: #fff;
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

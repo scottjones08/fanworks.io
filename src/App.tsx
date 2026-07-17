@@ -69,7 +69,7 @@ export default function App() {
         <img
           className="hero-image"
           src="/fan-works-hero.webp"
-          alt="A brick alley in The Fan neighborhood of Richmond, Virginia"
+          alt="Four collaborators reviewing brewery, finance, coffee, and customer research workflows"
           decoding="async"
         />
         <div className="hero-ink" aria-hidden="true" />
