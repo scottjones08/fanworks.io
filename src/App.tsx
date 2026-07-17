@@ -14,33 +14,33 @@ const services = [
   {
     number: "01",
     name: "Assess",
-    line: "Find the friction. Name the next move.",
+    line: "See the operation clearly.",
     icon: SearchCheck,
   },
   {
     number: "02",
     name: "Guide",
-    line: "Turn open questions into decisions.",
+    line: "Turn questions into decisions.",
     icon: Compass,
   },
   {
     number: "03",
-    name: "Connect",
+    name: "Integrate",
     line: "Make the tools work together.",
     icon: Cable,
   },
   {
     number: "04",
     name: "Automate",
-    line: "Remove repetition. Keep judgment.",
+    line: "Remove repetitive work.",
     icon: Workflow,
   },
 ];
 
 const principles = [
-  ["People first", "Start with the people doing the work."],
-  ["Right-size the tools", "Build only what earns its place."],
-  ["Leave proof", "Create a system the team can own."],
+  ["Map reality", "Follow the work as it runs today."],
+  ["Choose the move", "Fix the constraint that matters."],
+  ["Make it stick", "Leave clear ownership behind."],
 ];
 
 export default function App() {
@@ -78,14 +78,14 @@ export default function App() {
         <header className="site-header">
           <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
             <span className="wordmark">FANWORKS</span>
-            <span className="brand-subtitle">Human-centered consulting</span>
+            <span className="brand-subtitle">Business systems consulting</span>
           </button>
 
           <nav className="desktop-nav" aria-label="Primary navigation">
             <button type="button" onClick={() => scrollTo("work")}>Work</button>
-            <button type="button" onClick={() => scrollTo("ethos")}>Ethos</button>
+            <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
             <button type="button" onClick={() => scrollTo("story")}>Story</button>
-            <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Engage</button>
+            <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Contact</button>
           </nav>
 
           <button
@@ -102,29 +102,29 @@ export default function App() {
         {menuOpen ? (
           <nav className="mobile-nav" aria-label="Mobile navigation">
             <button type="button" onClick={() => scrollTo("work")}>Work</button>
-            <button type="button" onClick={() => scrollTo("ethos")}>Ethos</button>
+            <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
             <button type="button" onClick={() => scrollTo("story")}>Story</button>
-            <button type="button" onClick={() => scrollTo("engage")}>Engage</button>
+            <button type="button" onClick={() => scrollTo("engage")}>Contact</button>
           </nav>
         ) : null}
 
         <div className="hero-copy">
-          <p className="location">Richmond, Virginia / The Fan</p>
+          <p className="location">Richmond, Virginia</p>
           <h1 id="hero-title">
-            Clear the mess.
-            <span>Keep the human.</span>
+            Make the work
+            <span>make sense.</span>
           </h1>
-          <p>Business, technology, and automation shaped around people.</p>
+          <p>We assess operations, connect technology, and automate what slows the business down.</p>
           <button className="hero-cta" type="button" onClick={() => scrollTo("engage")}>
-            Start here <ArrowDownRight aria-hidden="true" />
+            Start a conversation <ArrowDownRight aria-hidden="true" />
           </button>
         </div>
 
         <div className="hero-tags" aria-label="FanWorks services">
-          <span>Assess</span>
-          <span>Guide</span>
-          <span>Connect</span>
-          <span>Automate</span>
+          <span><b>01</b>Assess</span>
+          <span><b>02</b>Decide</span>
+          <span><b>03</b>Integrate</span>
+          <span><b>04</b>Automate</span>
         </div>
       </section>
 
@@ -133,7 +133,7 @@ export default function App() {
           <span>01</span>
           <span>What we do</span>
         </div>
-        <h2 id="work-title">Useful work.<br />No theater.</h2>
+        <h2 id="work-title">Where we help.</h2>
 
         <div className="service-list">
           {services.map(({ number, name, line, icon: Icon }) => (
@@ -153,7 +153,7 @@ export default function App() {
           <span>02</span>
           <span>How we work</span>
         </div>
-        <h2 id="ethos-title">Human judgment.<br />Useful systems.</h2>
+        <h2 id="ethos-title">Start with the work.</h2>
         <div className="principle-list">
           {principles.map(([title, line], index) => (
             <article key={title}>
@@ -170,7 +170,6 @@ export default function App() {
           <img
             src="/fanworks-workflow-sketch.webp"
             alt="Hand-drawn people mapping work, connecting systems, and moving toward a Richmond neighborhood"
-            loading="lazy"
             decoding="async"
           />
         </div>
@@ -179,9 +178,9 @@ export default function App() {
             <span>03</span>
             <span>Why FanWorks</span>
           </div>
-          <h2 id="story-title">Built on the block.</h2>
-          <p>The Fan taught us the value of craft, connection, and work that holds up.</p>
-          <blockquote>Surface clarity. Keep people at the center.</blockquote>
+          <h2 id="story-title">From Richmond. Built for operators.</h2>
+          <p>FanWorks brings business, process, and technology experience to the same table.</p>
+          <blockquote>Clear work. Useful systems.</blockquote>
         </div>
       </section>
 
@@ -189,9 +188,9 @@ export default function App() {
         <div className="engage-copy">
           <div className="section-mark section-mark-light">
             <span>04</span>
-            <span>Engage</span>
+            <span>Contact</span>
           </div>
-          <h2 id="engage-title">Bring us the stuck part.</h2>
+          <h2 id="engage-title">What is slowing you down?</h2>
           <a href="mailto:hello@fanworks.io">hello@fanworks.io</a>
         </div>
 
@@ -207,7 +206,7 @@ export default function App() {
             </label>
           </div>
           <label>
-            <span>What feels stuck?</span>
+            <span>What should we look at?</span>
             <textarea name="message" rows={4} required />
           </label>
           <div className="form-footer">
@@ -222,7 +221,7 @@ export default function App() {
       <footer className="site-footer">
         <div className="brand-lockup footer-brand">
           <span className="wordmark">FANWORKS</span>
-          <span className="brand-subtitle">Human-centered consulting</span>
+          <span className="brand-subtitle">Business systems consulting</span>
         </div>
         <span>Richmond, Virginia</span>
         <span>Est. 2025</span>
