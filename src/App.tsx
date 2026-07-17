@@ -70,7 +70,6 @@ export default function App() {
           className="hero-image"
           src="/fan-works-hero.webp"
           alt="A brick alley in The Fan neighborhood of Richmond, Virginia"
-          fetchPriority="high"
           decoding="async"
         />
         <div className="hero-ink" aria-hidden="true" />
