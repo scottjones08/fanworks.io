@@ -69,7 +69,7 @@ export default function App() {
         <img
           className="hero-image"
           src="/fan-works-hero.webp"
-          alt="Four collaborators reviewing brewery, finance, coffee, and customer research workflows"
+          alt="Four collaborators connecting business operations, finance, technology, and customer research"
           decoding="async"
         />
         <div className="hero-ink" aria-hidden="true" />
