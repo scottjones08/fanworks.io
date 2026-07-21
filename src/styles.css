@@ -975,3 +975,231 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Cinematic scroll narrative */
+.hero {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 72% 62%, rgba(213, 161, 59, 0.06), transparent 24rem),
+    #090b0a;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero::after {
+  border-left-color: var(--ochre);
+  opacity: 0.72;
+}
+
+.hero .site-header {
+  background: transparent;
+  border-bottom-color: rgba(242, 238, 228, 0.16);
+}
+
+.hero-copy {
+  width: min(75rem, calc(100% - var(--pad) * 2));
+  padding-top: clamp(7rem, 17vh, 11rem);
+}
+
+.hero h1 {
+  max-width: 11ch;
+  font-size: clamp(4.4rem, 9.2vw, 10.2rem);
+  letter-spacing: -0.065em;
+  line-height: 0.78;
+}
+
+.hero h1 span {
+  color: var(--paper);
+  font-size: 0.5em;
+  letter-spacing: -0.035em;
+}
+
+.hero-copy > p:not(.location) {
+  color: rgba(242, 238, 228, 0.58);
+}
+
+.scroll-cue {
+  position: absolute;
+  right: var(--pad);
+  bottom: 2.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: rgba(242, 238, 228, 0.6);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scroll-cue i {
+  width: 3.5rem;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(242, 238, 228, 0.28);
+}
+
+.scroll-cue i::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--ochre);
+  animation: scroll-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes scroll-pulse {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(110%); }
+}
+
+.journey {
+  --journey: 0;
+  position: relative;
+  height: 360svh;
+  background: #0b0d0c;
+}
+
+.journey-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--paper);
+}
+
+.journey-frame {
+  position: absolute;
+  inset: -5%;
+  z-index: -4;
+  width: 110%;
+  height: 110%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(calc(1.08 - var(--journey) * 0.08)) translateY(calc(var(--journey) * -1.2%));
+  will-change: opacity, transform;
+}
+
+.journey-frame-dark {
+  filter: saturate(0.75) brightness(0.72);
+  opacity: clamp(0, calc(1.35 - var(--journey) * 2), 1);
+}
+
+.journey-frame-light {
+  filter: saturate(0.92) contrast(1.03);
+  opacity: clamp(0, calc(var(--journey) * 2 - 0.25), 1);
+}
+
+.journey-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(7, 10, 8, 0.86) 0%, rgba(7, 10, 8, 0.46) 38%, transparent 69%),
+    linear-gradient(180deg, rgba(7, 9, 8, 0.35), transparent 45%, rgba(7, 9, 8, 0.32));
+  opacity: calc(0.96 - var(--journey) * 0.34);
+}
+
+.journey-copy {
+  position: absolute;
+  top: 50%;
+  left: var(--pad);
+  width: min(34rem, calc(100vw - var(--pad) * 2));
+  transform: translateY(calc(-42% + (var(--journey) * -2rem)));
+  will-change: opacity, transform;
+}
+
+.journey-copy span {
+  color: var(--ochre);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.journey-copy h2 {
+  margin-top: 1.2rem;
+  font-family: var(--display);
+  font-size: clamp(3.3rem, 6vw, 6.6rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 0.84;
+  text-transform: uppercase;
+}
+
+.journey-copy p {
+  max-width: 31rem;
+  margin-top: 1.35rem;
+  color: rgba(242, 238, 228, 0.76);
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  line-height: 1.55;
+}
+
+.journey-copy-one { opacity: clamp(0, calc(1.25 - var(--journey) * 5), 1); }
+.journey-copy-two { opacity: clamp(0, calc((var(--journey) - 0.2) * 5), calc((0.7 - var(--journey)) * 5)); }
+.journey-copy-three { opacity: clamp(0, calc((var(--journey) - 0.66) * 6), 1); }
+
+.journey-progress {
+  position: absolute;
+  right: var(--pad);
+  bottom: 2.2rem;
+  width: min(15rem, 35vw);
+  height: 2px;
+  background: rgba(242, 238, 228, 0.25);
+}
+
+.journey-progress i {
+  display: block;
+  width: calc(var(--journey) * 100%);
+  height: 100%;
+  background: var(--ochre);
+}
+
+.vine {
+  position: absolute;
+  bottom: -2rem;
+  z-index: -1;
+  width: 4px;
+  height: calc(var(--journey) * 52vh);
+  border-radius: 100% 100% 0 0;
+  background: #3f693e;
+  opacity: clamp(0, calc((var(--journey) - 0.48) * 4), 0.8);
+  transform-origin: bottom;
+}
+
+.vine-left { left: 6%; transform: rotate(-8deg); }
+.vine-right { right: 8%; transform: rotate(10deg); height: calc(var(--journey) * 42vh); }
+.vine i { position: absolute; width: 2.4rem; height: 1.1rem; border-radius: 100% 0 100% 0; background: #57804d; }
+.vine i:nth-child(1) { top: 14%; left: -2.1rem; transform: rotate(26deg); }
+.vine i:nth-child(2) { top: 37%; left: 0.3rem; transform: scaleX(-1) rotate(18deg); }
+.vine i:nth-child(3) { top: 61%; left: -2.1rem; transform: rotate(32deg); }
+.vine i:nth-child(4) { top: 78%; left: 0.3rem; transform: scaleX(-1) rotate(24deg); }
+
+@media (max-width: 700px) {
+  .hero-copy { padding-top: clamp(7rem, 15vh, 9rem); }
+  .hero h1 { font-size: clamp(3.2rem, 14vw, 4.2rem); letter-spacing: -0.075em; }
+  .scroll-cue span { display: none; }
+  .journey { height: 320svh; }
+  .journey-frame { inset: 0; width: 100%; height: 100%; object-position: 61% center; }
+  .journey-shade { background: linear-gradient(90deg, rgba(7, 10, 8, 0.88), rgba(7, 10, 8, 0.2)), linear-gradient(0deg, rgba(7, 10, 8, 0.55), transparent 65%); }
+  .journey-copy { top: auto; bottom: 14vh; transform: translateY(0); }
+  .journey-copy h2 { font-size: clamp(3rem, 13vw, 4.4rem); }
+  .vine-left { left: 2%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey { height: 100svh; }
+  .journey-frame-dark, .journey-copy-one, .journey-copy-two { display: none; }
+  .journey-frame-light, .journey-copy-three { opacity: 1; }
+  .scroll-cue i::after { animation: none; }
+}
