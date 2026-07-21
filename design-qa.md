@@ -3,7 +3,7 @@
 ## Evidence
 
 - People-filled panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-0a8834ec-e77a-47ba-82e7-17cc31694580.png`
-- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama.webp`
+- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v2.webp`
 - Operator-proof illustration: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-operator-proof.webp`
 - Final people-filled hero: `/tmp/fanworks-people-hero-desktop.png`
 - Final target-market and friction section: `/tmp/fanworks-friction-market-desktop.png`
