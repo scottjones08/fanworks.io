@@ -1187,7 +1187,7 @@ a {
 
 @media (max-width: 700px) {
   .hero-copy { padding-top: clamp(7rem, 15vh, 9rem); }
-  .hero h1 { font-size: clamp(3.2rem, 14vw, 4.2rem); letter-spacing: -0.075em; }
+  .hero h1 { font-size: min(13vw, 3.25rem); letter-spacing: -0.075em; }
   .scroll-cue span { display: none; }
   .journey { height: 320svh; }
   .journey-frame { inset: 0; width: 100%; height: 100%; object-position: 61% center; }
@@ -1202,4 +1202,240 @@ a {
   .journey-frame-dark, .journey-copy-one, .journey-copy-two { display: none; }
   .journey-frame-light, .journey-copy-three { opacity: 1; }
   .scroll-cue i::after { animation: none; }
+}
+
+/* Continuous room-to-room camera */
+.journey.cutaway-journey {
+  height: 460svh;
+  background: #101210;
+}
+
+.cutaway-stage {
+  background: #121412;
+}
+
+.floating-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 8;
+  background: rgba(9, 11, 9, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.floating-header .nav-cta,
+.floating-header .menu-toggle,
+.room-pin {
+  border-radius: 0.65rem;
+}
+
+.cutaway-mobile-nav {
+  position: absolute;
+  top: 6.4rem;
+}
+
+.cutaway-world {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: -3;
+  width: max(118rem, 188vw);
+  transform: translate3d(calc(var(--journey) * -43%), calc(-50% + (var(--journey) - 0.5) * -2.5rem), 0)
+    scale(calc(1.02 + var(--journey) * 0.13));
+  transform-origin: center;
+  will-change: transform;
+}
+
+.cutaway-world img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cutaway-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(9, 11, 9, 0.83), rgba(9, 11, 9, 0.12) 38%, rgba(9, 11, 9, 0.02) 72%, rgba(9, 11, 9, 0.3)),
+    linear-gradient(180deg, rgba(9, 11, 9, 0.6), transparent 25%, transparent 72%, rgba(9, 11, 9, 0.66));
+}
+
+.cutaway-header {
+  position: absolute;
+  top: 7.7rem;
+  right: var(--pad);
+  left: var(--pad);
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(242, 238, 228, 0.42);
+  color: rgba(242, 238, 228, 0.7);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.room-narrative {
+  position: absolute;
+  bottom: clamp(5rem, 10vh, 8rem);
+  left: var(--pad);
+  width: min(38rem, calc(100vw - var(--pad) * 2));
+  min-height: 20rem;
+}
+
+.room-narrative article {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  transform: translate3d(-3rem, 1.5rem, 0) rotate(-1deg);
+  transition:
+    opacity 260ms ease,
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0ms 620ms;
+}
+
+.room-narrative article.is-active {
+  visibility: visible;
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(0deg);
+  transition-delay: 80ms, 0ms, 0ms;
+}
+
+.room-narrative span {
+  color: var(--ochre);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.room-narrative h2 {
+  max-width: 9ch;
+  margin-top: 1rem;
+  color: var(--paper);
+  font-family: Impact, "Arial Narrow", var(--display);
+  font-size: clamp(3.4rem, 6.4vw, 7rem);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 0.88;
+  text-transform: uppercase;
+  text-shadow: 0 0.16em 0.8em rgba(0, 0, 0, 0.32);
+}
+
+.room-narrative p {
+  max-width: 35rem;
+  margin-top: 1.25rem;
+  color: rgba(242, 238, 228, 0.78);
+  font-size: clamp(0.92rem, 1.2vw, 1.08rem);
+  line-height: 1.55;
+}
+
+.room-pin {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(213, 161, 59, 0.76);
+  background: rgba(17, 19, 17, 0.88);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 0.7rem 2rem rgba(0, 0, 0, 0.22);
+}
+
+.room-pin b { color: var(--ochre); }
+.room-pin-1 { top: 42%; left: 12%; }
+.room-pin-2 { top: 27%; left: 35%; }
+.room-pin-3 { top: 33%; left: 61%; }
+.room-pin-4 { top: 28%; left: 84%; }
+
+.cutaway-progress {
+  bottom: 2rem;
+  width: min(20rem, 32vw);
+}
+
+.cutaway-hint {
+  position: absolute;
+  right: calc(var(--pad) + min(20rem, 32vw) + 1rem);
+  bottom: 1.75rem;
+  color: rgba(242, 238, 228, 0.52);
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  .journey.cutaway-journey { height: 400svh; }
+  .cutaway-world {
+    width: max(102rem, 410vw);
+    transform: translate3d(calc(var(--journey) * -70%), -50%, 0) scale(calc(1.02 + var(--journey) * 0.06));
+  }
+  .cutaway-vignette {
+    background:
+      linear-gradient(180deg, rgba(9, 11, 9, 0.52), transparent 28%, transparent 48%, rgba(9, 11, 9, 0.82) 79%),
+      linear-gradient(90deg, rgba(9, 11, 9, 0.28), transparent 70%);
+  }
+  .cutaway-header { top: 7.5rem; }
+  .room-narrative { bottom: 5.5rem; min-height: 18rem; }
+  .room-narrative h2 { max-width: 10ch; font-size: clamp(3rem, 13vw, 4.25rem); }
+  .room-narrative p { max-width: 34ch; font-size: 0.88rem; }
+  .room-pin { font-size: 0.48rem; padding: 0.45rem 0.55rem; }
+  .cutaway-progress { width: 42vw; }
+  .cutaway-hint { display: none; }
+}
+
+/* Rounded editorial story image that matches the operator-focused cutaway */
+.story-section {
+  gap: clamp(2.5rem, 5vw, 6rem);
+  padding: clamp(2rem, 4vw, 4rem) var(--pad);
+}
+
+.story-art {
+  min-height: 36rem;
+  border: 0;
+  border-radius: clamp(1.1rem, 2vw, 2rem);
+  box-shadow: 0 1.5rem 4rem rgba(23, 25, 22, 0.16);
+}
+
+.story-art img {
+  object-position: 50% center;
+  mix-blend-mode: normal;
+}
+
+.story-copy {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.story-copy blockquote,
+.section-mark,
+.hero-cta,
+.form-footer button {
+  border-radius: 0.65rem;
+}
+
+@media (max-width: 900px) {
+  .story-section { gap: 0; }
+  .story-art { height: 30rem; min-height: 0; border: 0; border-radius: 1.25rem; }
+  .story-copy { padding-right: 0; padding-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey.cutaway-journey { height: 100svh; }
+  .cutaway-world { width: 178vw; transform: translate3d(-39%, -50%, 0); }
+  .room-narrative article { display: none; }
+  .room-narrative article:last-child { display: block; visibility: visible; opacity: 1; transform: none; }
 }
