@@ -1265,7 +1265,7 @@ a {
   left: 0;
   z-index: -3;
   width: max(118rem, 188vw);
-  transform: translate3d(calc(var(--journey) * -43%), calc(-50% + (var(--journey) - 0.5) * -2.5rem), 0)
+  transform: translate3d(calc(var(--journey) * -50%), calc(-50% + (var(--journey) - 0.5) * -2.5rem), 0)
     scale(calc(1.02 + var(--journey) * 0.13));
   transform-origin: center;
   will-change: transform;
@@ -1275,6 +1275,7 @@ a {
   width: 100%;
   height: auto;
   display: block;
+  filter: saturate(1.02) brightness(calc(0.94 + var(--journey) * 0.12));
 }
 
 .cutaway-vignette {
@@ -1283,8 +1284,8 @@ a {
   z-index: -2;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(9, 11, 9, 0.83), rgba(9, 11, 9, 0.12) 38%, rgba(9, 11, 9, 0.02) 72%, rgba(9, 11, 9, 0.3)),
-    linear-gradient(180deg, rgba(9, 11, 9, 0.6), transparent 25%, transparent 72%, rgba(9, 11, 9, 0.66));
+    linear-gradient(90deg, rgba(9, 11, 9, 0.72), rgba(9, 11, 9, 0.16) 36%, rgba(9, 11, 9, 0.01) 72%, rgba(9, 11, 9, 0.06)),
+    linear-gradient(180deg, rgba(9, 11, 9, 0.44), transparent 25%, transparent 72%, rgba(9, 11, 9, 0.5));
 }
 
 .cutaway-header {
@@ -1405,7 +1406,7 @@ a {
   .journey.cutaway-journey { height: 400svh; }
   .cutaway-world {
     width: max(102rem, 410vw);
-    transform: translate3d(calc(var(--journey) * -70%), -50%, 0) scale(calc(1.02 + var(--journey) * 0.06));
+    transform: translate3d(calc(var(--journey) * -76%), -50%, 0) scale(calc(1.02 + var(--journey) * 0.06));
   }
   .cutaway-vignette {
     background:

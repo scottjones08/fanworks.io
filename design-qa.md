@@ -3,8 +3,13 @@
 ## Evidence
 
 - People-filled panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-0a8834ec-e77a-47ba-82e7-17cc31694580.png`
-- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v2.webp`
+- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v3.webp`
 - Operator-proof illustration: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-operator-proof.webp`
+- Bright-office panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-3ed9ad45-61cc-4449-b4c1-a1844104c584.png`
+- Human progression, desktop opening: `/tmp/fanworks-human-progression-desktop-start.png`
+- Human progression, desktop final office: `/tmp/fanworks-human-progression-desktop-final.png`
+- Human progression, mobile opening: `/tmp/fanworks-human-progression-mobile-start.png`
+- Human progression, mobile final office: `/tmp/fanworks-human-progression-mobile-final.png`
 - Final people-filled hero: `/tmp/fanworks-people-hero-desktop.png`
 - Final target-market and friction section: `/tmp/fanworks-friction-market-desktop.png`
 - Final How We Work section without diagonal: `/tmp/fanworks-how-we-work-no-slash.png`
@@ -60,6 +65,14 @@
 - Fix: pinned the work-intro block to the single tablet column and restored the 23rem phone artwork height in the final cascade.
 - Post-fix evidence: `/tmp/fanworks-people-hero-desktop.png`, `/tmp/fanworks-friction-market-desktop.png`, `/tmp/fanworks-how-we-work-no-slash.png`, and `/tmp/fanworks-operator-proof-kpis.png`.
 - Result: no actionable P0, P1, or P2 findings remain in the updated desktop narrative, proof section, or reviewed responsive rules.
+
+### Iteration 5
+
+- User-directed refinement: simplified the journey and supporting copy into plain, human language; rebuilt the fourth room as a bright modern office with three people working calmly together; and kept the golden conduit as the continuous visual thread.
+- P2 finding: the final narrative previously became active before the camera had fully revealed the fourth room, making the payoff feel partially hidden.
+- Fix: delayed the fourth narrative threshold, increased the final camera travel on desktop and mobile, brightened the image progressively, and reduced the right-side vignette. The final office now fills the phone viewport and remains clearly readable at the end of the desktop journey.
+- Post-fix evidence: `/tmp/fanworks-human-progression-desktop-start.png`, `/tmp/fanworks-human-progression-desktop-final.png`, `/tmp/fanworks-human-progression-mobile-start.png`, and `/tmp/fanworks-human-progression-mobile-final.png`.
+- Result: the four stages read as one clear progression—busy, understood, connected, calm—with no actionable P0, P1, or P2 findings in the reviewed desktop or mobile states.
 
 ## Primary Interactions Tested
 

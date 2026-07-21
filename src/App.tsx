@@ -17,65 +17,65 @@ const services = [
   {
     number: "01",
     name: "Disconnected systems",
-    line: "Tools and teams working from different versions of the truth.",
+    line: "Your tools do not talk to each other.",
     icon: Cable,
   },
   {
     number: "02",
     name: "Manual work",
-    line: "Repeatable tasks consuming the attention your customers need.",
+    line: "People spend too much time copying, chasing, and checking.",
     icon: Workflow,
   },
   {
     number: "03",
     name: "Unclear ownership",
-    line: "Important work falling into the gaps between roles and teams.",
+    line: "Good work gets stuck between people and teams.",
     icon: Compass,
   },
   {
     number: "04",
     name: "Inconsistent processes",
-    line: "Every person solving the same problem a different way.",
+    line: "The same job gets done five different ways.",
     icon: Shuffle,
   },
   {
     number: "05",
     name: "Lack of visibility",
-    line: "Decisions arriving after the signal has already gone cold.",
+    line: "You find out too late what is slowing things down.",
     icon: EyeOff,
   },
 ];
 
 const principles = [
-  ["Map reality", "Follow the work as it runs today."],
-  ["Choose the move", "Fix the constraint that matters."],
-  ["Make it stick", "Leave clear ownership behind."],
+  ["See the real work", "Sit with the team and watch how the day actually runs."],
+  ["Fix what matters", "Start with the problem creating the most drag."],
+  ["Leave it simpler", "Build a better way your team can understand and own."],
 ];
 
 const rooms = [
   {
     number: "01",
     name: "Listen",
-    title: "Make the mess visible.",
-    body: "We help growing service businesses and founder-led manufacturers eliminate operational friction before they scale.",
+    title: "See the work as it is.",
+    body: "We sit with your team, listen, and watch where the day gets harder than it should.",
   },
   {
     number: "02",
     name: "Assess",
-    title: "Trace how work really moves.",
-    body: "Maps, handoffs, decisions, costs, and constraints reveal where the business is fighting itself.",
+    title: "Find what is getting stuck.",
+    body: "Together, we map the handoffs, delays, and decisions that slow people down.",
   },
   {
     number: "03",
     name: "Integrate",
-    title: "Connect the working system.",
-    body: "We connect the tools, data, and ownership model so information can move without being re-keyed, chased, or reconciled by hand.",
+    title: "Bring the pieces together.",
+    body: "We connect the tools and information your team already uses, so everyone can work from the same picture.",
   },
   {
     number: "04",
     name: "Automate",
-    title: "Make scale feel calm.",
-    body: "Automation carries repeatable work in a production-ready system. Your people keep the judgment; the operation gains capacity.",
+    title: "Make good work feel easy.",
+    body: "Routine work runs quietly in the background. Your team gets a bright, calm place to focus, collaborate, and grow.",
   },
 ];
 
@@ -93,7 +93,7 @@ export default function App() {
       const distance = Math.max(1, element.offsetHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, -rect.top / distance));
       element.style.setProperty("--journey", progress.toFixed(3));
-      setActiveRoom(Math.min(3, Math.floor(progress * 4)));
+      setActiveRoom(progress < 0.23 ? 0 : progress < 0.5 ? 1 : progress < 0.82 ? 2 : 3);
     };
     updateJourney();
     window.addEventListener("scroll", updateJourney, { passive: true });
@@ -154,7 +154,7 @@ export default function App() {
             </nav>
           ) : null}
           <div className="cutaway-world" aria-hidden="true">
-            <img src="/fanworks-cutaway-panorama-v2.webp" alt="" />
+            <img src="/fanworks-cutaway-panorama-v3.webp" alt="" />
             {rooms.map((room, index) => (
               <span className={`room-pin room-pin-${index + 1}`} key={room.name}>
                 <b>{room.number}</b>{room.name}
@@ -187,8 +187,8 @@ export default function App() {
         </div>
         <h2 id="work-title">Where we help.</h2>
         <div className="work-intro">
-          <p>For growing service businesses and founder-led manufacturers where demand has outgrown the operating system behind it.</p>
-          <span>We remove the friction that makes growth harder than it should be.</span>
+          <p>For growing service businesses and founder-led manufacturers that have outgrown the way work gets done today.</p>
+          <span>We make the day-to-day clearer, calmer, and easier to run.</span>
         </div>
 
         <div className="service-list">
@@ -235,14 +235,14 @@ export default function App() {
             <span>Why FanWorks</span>
           </div>
           <h2 id="story-title">We have run the work.</h2>
-          <p>FanWorks is operator-led. We have built teams, improved production, owned the numbers, and lived with the systems after the consultants left.</p>
+          <p>We have built teams, run production, owned the numbers, and lived with the systems after launch. We know what it takes to make the work actually work.</p>
           <div className="proof-stats">
             <article><strong>20+</strong><span>Years improving operations</span></article>
             <article><Factory aria-hidden="true" /><span>Manufacturing expertise</span></article>
-            <article><SearchCheck aria-hidden="true" /><span>Built and run businesses—not just advised them</span></article>
+            <article><SearchCheck aria-hidden="true" /><span>We have run businesses—not just advised them</span></article>
           </div>
           <div className="kpi-band">
-            <div><TrendingUp aria-hidden="true" /><span>KPIs we improve</span></div>
+            <div><TrendingUp aria-hidden="true" /><span>What gets better</span></div>
             <ul>
               <li>Cycle time</li>
               <li>Throughput</li>
