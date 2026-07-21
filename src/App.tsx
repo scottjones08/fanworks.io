@@ -1,26 +1,31 @@
-import { CSSProperties, FormEvent, useEffect, useState } from "react";
-import { ArrowDownRight, ArrowRight, Menu, X } from "lucide-react";
+import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
+import { ArrowDown, ArrowDownRight, ArrowRight, Menu, X } from "lucide-react";
+import Scene from "./Scene";
 
-const services = [
+const milestones = [
   {
     number: "01",
     name: "Assess",
-    line: "See the operation clearly — where time, money, and effort actually go.",
+    line: "First, see clearly. We map where time, money, and effort actually go.",
+    side: "left",
   },
   {
     number: "02",
     name: "Guide",
-    line: "Turn open questions into decisions you can defend.",
+    line: "Then, decide. Open questions become moves you can defend.",
+    side: "right",
   },
   {
     number: "03",
     name: "Integrate",
-    line: "Make the tools you already pay for work as one system.",
+    line: "The tools line up. What you already pay for starts working as one system.",
+    side: "left",
   },
   {
     number: "04",
     name: "Automate",
-    line: "Remove the repetitive work that slows the week down.",
+    line: "The path clears. Repetitive work falls away, and the week gets lighter.",
+    side: "right",
   },
 ];
 
@@ -35,6 +40,7 @@ const delay = (ms: number): CSSProperties => ({ "--reveal-delay": `${ms}ms` } as
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const journeyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
@@ -57,6 +63,34 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const track = journeyRef.current;
+    if (!track) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      track.style.setProperty("--p", "1");
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const rect = track.getBoundingClientRect();
+      const range = rect.height - window.innerHeight;
+      const p = range > 0 ? Math.min(1, Math.max(0, -rect.top / range)) : 1;
+      track.style.setProperty("--p", p.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   const scrollTo = (id: string) => {
     setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -74,7 +108,7 @@ export default function App() {
   };
 
   return (
-    <main>
+    <main id="top">
       <header className="site-header">
         <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
           <span className="wordmark">FanWorks</span>
@@ -82,9 +116,8 @@ export default function App() {
         </button>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          <button type="button" onClick={() => scrollTo("work")}>Work</button>
+          <button type="button" onClick={() => scrollTo("journey")}>The walk</button>
           <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
-          <button type="button" onClick={() => scrollTo("story")}>Story</button>
           <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>
             Start a conversation
           </button>
@@ -103,79 +136,69 @@ export default function App() {
 
       {menuOpen ? (
         <nav className="mobile-nav" aria-label="Mobile navigation">
-          <button type="button" onClick={() => scrollTo("work")}>Work</button>
+          <button type="button" onClick={() => scrollTo("journey")}>The walk</button>
           <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
-          <button type="button" onClick={() => scrollTo("story")}>Story</button>
           <button type="button" onClick={() => scrollTo("engage")}>Start a conversation</button>
         </nav>
       ) : null}
 
-      <section className="hero" id="top" aria-labelledby="hero-title">
-        <div className="hero-copy">
-          <p className="kicker" data-reveal>Richmond, Virginia</p>
-          <h1 id="hero-title" data-reveal style={delay(70)}>
-            Make the work <em>make sense.</em>
-          </h1>
-          <p className="lede" data-reveal style={delay(140)}>
-            We assess operations, connect the tools you already pay for, and automate
-            what slows the business down.
-          </p>
-          <div data-reveal style={delay(210)}>
-            <button className="btn" type="button" onClick={() => scrollTo("engage")}>
-              Start a conversation <ArrowDownRight aria-hidden="true" />
-            </button>
+      <div className="journey" id="journey" ref={journeyRef}>
+        <Scene />
+
+        <section className="stage stage-hero" aria-labelledby="hero-title">
+          <div className="stage-hero-copy">
+            <p className="kicker kicker-light" data-reveal>Richmond, Virginia</p>
+            <h1 id="hero-title" data-reveal style={delay(70)}>
+              Make the work <em>make sense.</em>
+            </h1>
+            <p className="lede" data-reveal style={delay(140)}>
+              Every operation starts somewhere dark — tangled tools, unclear numbers,
+              work that fights itself. The way out is a walk, not a leap.
+            </p>
+            <div data-reveal style={delay(210)}>
+              <button className="btn" type="button" onClick={() => scrollTo("engage")}>
+                Start a conversation <ArrowDownRight aria-hidden="true" />
+              </button>
+            </div>
+            <p className="cue" data-reveal style={delay(280)}>
+              Scroll to walk <ArrowDown aria-hidden="true" />
+            </p>
           </div>
-        </div>
+        </section>
 
-        <div className="hero-media">
-          <img
-            src="/fan-works-hero.webp"
-            alt="Collaborators at a worktable connecting operations, finance, technology, and customer research"
-            decoding="async"
-          />
-        </div>
-      </section>
-
-      <nav className="hero-index" aria-label="FanWorks services">
-        {services.map(({ number, name }) => (
-          <button key={name} type="button" onClick={() => scrollTo("work")}>
-            <b>{number}</b>
-            {name}
-          </button>
-        ))}
-      </nav>
-
-      <section className="work-section" id="work" aria-labelledby="work-title">
-        <div className="section-mark" data-reveal>
-          <span>01</span>
-          <span>What we do</span>
-        </div>
-
-        <div className="work-body">
-          <h2 id="work-title" data-reveal>Where we help.</h2>
-
-          <div className="service-list">
-            {services.map(({ number, name, line }, index) => (
-              <article className="service-row" key={name} data-reveal style={delay(index * 60)}>
+        {milestones.map(({ number, name, line, side }) => (
+          <section className={`stage stage-${side}`} key={name} aria-label={`${name} — step ${number} of the walk`}>
+            <article className="milestone" data-reveal>
+              <div className="milestone-mark">
                 <span>{number}</span>
-                <h3>{name}</h3>
-                <p>{line}</p>
-                <ArrowRight aria-hidden="true" />
-              </article>
-            ))}
-          </div>
+                <span>The walk</span>
+              </div>
+              <h3>{name}</h3>
+              <p>{line}</p>
+            </article>
+          </section>
+        ))}
 
-          <div className="work-cta" data-reveal>
-            <p>Not sure which one you need?</p>
-            <button className="text-cta" type="button" onClick={() => scrollTo("engage")}>
-              Start a conversation <ArrowRight aria-hidden="true" />
-            </button>
+        <section className="stage stage-final" aria-labelledby="final-title">
+          <div className="final-copy">
+            <p className="kicker" data-reveal>The opening</p>
+            <h2 id="final-title" data-reveal style={delay(70)}>
+              Opportunity looks like this.
+            </h2>
+            <p data-reveal style={delay(140)}>
+              Clear work. Useful systems. Room to grow — from Richmond, built for operators.
+            </p>
+            <div data-reveal style={delay(210)}>
+              <button className="btn" type="button" onClick={() => scrollTo("engage")}>
+                Start a conversation <ArrowRight aria-hidden="true" />
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <section className="ethos-section" id="ethos" aria-labelledby="ethos-title">
-        <div className="section-mark section-mark-light" data-reveal>
+        <div className="section-mark" data-reveal>
           <span>02</span>
           <span>How we work</span>
         </div>
@@ -191,36 +214,19 @@ export default function App() {
         </div>
       </section>
 
-      <section className="story-section" id="story" aria-labelledby="story-title">
-        <div className="story-art">
-          <img
-            src="/fanworks-workflow-sketch.webp"
-            alt="Hand-drawn people mapping work, connecting systems, and moving toward a Richmond neighborhood"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-        <div className="story-copy">
-          <div className="section-mark" data-reveal>
-            <span>03</span>
-            <span>Why FanWorks</span>
-          </div>
-          <h2 id="story-title" data-reveal>From Richmond. Built for operators.</h2>
-          <p data-reveal style={delay(70)}>
-            FanWorks brings business, process, and technology experience to the same
-            table — so the fix fits the way you actually run.
-          </p>
-          <blockquote data-reveal style={delay(140)}>Clear work. Useful systems.</blockquote>
-          <button className="text-cta" type="button" onClick={() => scrollTo("engage")} data-reveal style={delay(210)}>
-            Start a conversation <ArrowRight aria-hidden="true" />
-          </button>
-        </div>
-      </section>
+      <div className="sketch-band">
+        <img
+          src="/fanworks-workflow-sketch.webp"
+          alt="Hand-drawn people mapping work, connecting systems, and moving toward a Richmond neighborhood"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
 
       <section className="engage-section" id="engage" aria-labelledby="engage-title">
         <div className="engage-copy">
-          <div className="section-mark section-mark-light" data-reveal>
-            <span>04</span>
+          <div className="section-mark" data-reveal>
+            <span>03</span>
             <span>Contact</span>
           </div>
           <h2 id="engage-title" data-reveal>What is slowing you down?</h2>
@@ -246,7 +252,7 @@ export default function App() {
             <textarea name="message" rows={4} required />
           </label>
           <div className="form-footer">
-            <button className="btn btn-paper" type="submit">
+            <button className="btn" type="submit">
               Start the conversation <ArrowRight aria-hidden="true" />
             </button>
             <p role="status">{submitted ? "Your email app is ready." : ""}</p>

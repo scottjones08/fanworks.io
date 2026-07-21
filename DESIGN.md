@@ -6,10 +6,36 @@ markup or CSS. Every constraint below is enforced as a token in
 
 ## Direction
 
-Warm editorial print-shop. Paper, ink, brick, ochre, porch green. Serif display
-type in mixed case, mono labels, asymmetric layouts. The photography and the
-hand-drawn illustration carry the warmth; the type system carries the
-discipline.
+A scroll-driven walk. The camera sits behind a subject walking a cobblestone
+alley: home is dark, and light grows with every problem solved — windows
+light up, flowers appear, people come around — until the alley opens into
+opportunity. Services are milestones passed along the walk. The visual
+language stays warm editorial print-shop: paper, ink, brick, ochre, porch
+green; serif display type in mixed case; mono labels; letterpress-style
+cards.
+
+## The journey (src/Scene.tsx + .journey styles)
+
+- `.journey` is a 600svh track: a sticky 100svh scene plus six 100svh
+  stages (hero, four milestones, finale). The first stage is pulled up over
+  the scene with a negative top margin — never put the negative margin on
+  the sticky scene itself, or its sticky travel extends past the journey
+  and the positioned scene paints over the static sections that follow.
+- Scroll progress is written to `--p` (0 → 1) on the track by a
+  rAF-throttled scroll handler. Stage *n* of 5 is on screen at `--p ≈ n/5`.
+- Scene elements opt into progress with `.tl` + a `--t` threshold
+  (`--v = clamp(0, (var(--p) - var(--t)) * 4, 1)`), then `.fade`, `.grow`,
+  or `.rise` map `--v` onto opacity/transform. Pair each element's
+  threshold with the milestone it should accompany.
+- Light arc: night sky → dawn → day layers crossfade on `--p`; walls,
+  ground, and the end-of-alley skyline lighten via soft-light washes; the
+  vignette fades to zero; the walker's shadow lengthens toward the camera.
+- `.d-only` / `.m-only` swap side elements between desktop and phone
+  framing — the 1440x900 viewBox is center-cropped on portrait screens
+  (`preserveAspectRatio="xMidYMax slice"`), so anything outside
+  x ∈ [512, 928] needs a mobile counterpart placed nearer the center.
+- Reduced motion pins `--p: 1` (bright, everything present) and kills the
+  walker bob and scroll cue.
 
 ## Ban list
 
@@ -42,9 +68,12 @@ external font requests at runtime.
 `--paper #f5f1e6` · `--ink #1b1d19` · `--brick #922b21` · `--brick-deep
 #6f211a` · `--green-deep #16382a` · `--ochre #d5a13b`
 
-Section band sequence: paper → paper → green → paper → brick → ink. Ochre is
-an accent on dark grounds only; on paper, use brick (ochre fails contrast on
-paper).
+Section sequence: dark journey (arcing to bright) → paper-deep ethos →
+sketch band → paper contact → ink footer. Ochre is an accent on dark
+grounds only; on paper, use brick (ochre fails contrast on paper). Copy
+over the scene's dark stretch must be paper/paper-soft or sit on a paper
+card — the milestone and finale panels exist because ink on the scene
+fails contrast.
 
 ## Rhythm
 
@@ -68,10 +97,14 @@ add a second competing action.
 
 ## QA checklist (run before shipping design changes)
 
-1. `npm run build`, serve `dist`, screenshot at 1440px and 375px.
+1. `npm run build`, serve `dist`, screenshot at 1440px and 375px — and for
+   the journey, capture at progress steps (p = 0, 0.2, …, 1) plus the
+   journey→ethos handoff, not just the page top.
 2. Zero horizontal overflow at both widths.
 3. Zero console errors.
-4. Known capture artifact: the story illustration uses
-   `mix-blend-mode: multiply` and can render blank in *full-page* Playwright
-   captures — verify it with a viewport screenshot scrolled to `#story`
-   before treating it as a bug.
+4. Capture pitfalls: full-page screenshots don't scrub the sticky scene
+   (each stage renders against wherever the scene happens to be), and
+   `scrollIntoView`/`window.scrollTo(x, y)` animate because of
+   `scroll-behavior: smooth` — use `behavior: "instant"` when positioning
+   for a capture. The sketch illustration's `mix-blend-mode: multiply` can
+   also render blank in full-page captures; verify with a viewport shot.
