@@ -154,7 +154,7 @@ export default function App() {
             </nav>
           ) : null}
           <div className="cutaway-world" aria-hidden="true">
-            <img src="/fanworks-cutaway-panorama.webp" alt="" />
+            <img src="/fanworks-cutaway-panorama-v2.webp" alt="" />
             {rooms.map((room, index) => (
               <span className={`room-pin room-pin-${index + 1}`} key={room.name}>
                 <b>{room.number}</b>{room.name}
