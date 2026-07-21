@@ -16,6 +16,12 @@ cards.
 
 ## The journey (src/Scene.tsx + .journey styles)
 
+- The visual layer is **scroll-scrubbed live-action video**
+  (`public/journey.webm` + `.mp4`, all-intra encodes — see FOOTAGE.md for
+  the shot spec and swap instructions). Scroll progress maps onto
+  `video.currentTime`; the illustrated SVG alley underneath is the
+  loading/failure fallback and mirrors the same arc via `--p`. The files
+  currently committed are placeholders rendered from the fallback scene.
 - `.journey` is a 600svh track: a sticky 100svh scene plus six 100svh
   stages (hero, four milestones, finale). The first stage is pulled up over
   the scene with a negative top margin — never put the negative margin on

@@ -1,11 +1,21 @@
-import { CSSProperties } from "react";
+import { CSSProperties, RefObject } from "react";
 
 /*
- * The alley scene. One SVG, camera behind the walker, vanishing point at
- * (720, 360) in a 1440x900 viewBox. Everything scroll-driven reads the --p
- * custom property (0 = home/dark, 1 = opportunity/bright) set on .journey.
- * Elements appear via the .tl utility: --t is each element's progress
- * threshold; .fade/.grow map the resulting --v onto opacity/transform.
+ * The journey's visual layer, two decks:
+ *
+ * 1. `.scene-video` — live-action footage of the walk (public/journey.mp4),
+ *    scrubbed by scroll: App maps progress onto video.currentTime. See
+ *    FOOTAGE.md for the shot spec, encoding recipe, and how to swap footage.
+ * 2. The SVG alley underneath — the loading/failure fallback, matched to the
+ *    same composition (camera behind the walker, vanishing point at
+ *    (720, 360) in a 1440x900 viewBox). It reads the same --p custom
+ *    property (0 = home/dark, 1 = opportunity/bright) set on .journey.
+ *    Elements appear via the .tl utility: --t is an element's progress
+ *    threshold; .fade/.grow/.rise map the resulting --v onto
+ *    opacity/transform.
+ *
+ * The video fades in over the SVG once it can render frames, so the page
+ * never shows a black hole while footage streams in.
  */
 
 const at = (t: number): CSSProperties => ({ "--t": t } as CSSProperties);
@@ -145,7 +155,7 @@ function Ahead({ x, y, s, t }: { x: number; y: number; s: number; t: number }) {
   );
 }
 
-export default function Scene() {
+export default function Scene({ videoRef }: { videoRef?: RefObject<HTMLVideoElement> }) {
   return (
     <div className="scene" aria-hidden="true">
       <div className="sky sky-night" />
@@ -301,6 +311,19 @@ export default function Scene() {
           </g>
         </g>
       </svg>
+
+      <video
+        ref={videoRef}
+        className="scene-video"
+        muted
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        tabIndex={-1}
+      >
+        <source src="/journey.webm" type="video/webm" />
+        <source src="/journey.mp4" type="video/mp4" />
+      </video>
 
       <div className="vignette" />
     </div>

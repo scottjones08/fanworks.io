@@ -41,6 +41,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const journeyRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
@@ -65,29 +66,63 @@ export default function App() {
 
   useEffect(() => {
     const track = journeyRef.current;
+    const video = videoRef.current;
     if (!track) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      track.style.setProperty("--p", "1");
-      return;
-    }
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let ready = false;
     let raf = 0;
+
     const update = () => {
       raf = 0;
       const rect = track.getBoundingClientRect();
       const range = rect.height - window.innerHeight;
       const p = range > 0 ? Math.min(1, Math.max(0, -rect.top / range)) : 1;
       track.style.setProperty("--p", p.toFixed(4));
+      if (ready && video && video.duration) {
+        const target = p * Math.max(0, video.duration - 0.05);
+        if (video.seeking) {
+          // a seek is in flight; keep settling toward the latest target
+          raf = requestAnimationFrame(update);
+        } else if (Math.abs(target - video.currentTime) > 0.02) {
+          video.currentTime = target;
+          raf = requestAnimationFrame(update);
+        }
+      }
     };
-    const onScroll = () => {
+    const kick = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
+
+    // the video is progressive enhancement: fade it in over the SVG scene
+    // once it has a frame to show, and pin it to the arc's end state when
+    // the user prefers reduced motion
+    const markReady = () => {
+      if (!video || video.readyState < 2) return;
+      ready = true;
+      video.classList.add("is-ready");
+      if (reduced) {
+        if (video.duration) video.currentTime = Math.max(0, video.duration - 0.05);
+      } else {
+        kick();
+      }
+    };
+    video?.addEventListener("loadeddata", markReady);
+    if (video && video.readyState >= 2) markReady();
+
+    if (reduced) {
+      track.style.setProperty("--p", "1");
+      return () => video?.removeEventListener("loadeddata", markReady);
+    }
+
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick, { passive: true });
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
       if (raf) cancelAnimationFrame(raf);
+      video?.removeEventListener("loadeddata", markReady);
     };
   }, []);
 
@@ -143,7 +178,7 @@ export default function App() {
       ) : null}
 
       <div className="journey" id="journey" ref={journeyRef}>
-        <Scene />
+        <Scene videoRef={videoRef} />
 
         <section className="stage stage-hero" aria-labelledby="hero-title">
           <div className="stage-hero-copy">
