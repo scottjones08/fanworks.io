@@ -1,6 +1,5 @@
 import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
 import {
-  ArrowDownRight,
   ArrowRight,
   Cable,
   Compass,
@@ -43,9 +42,37 @@ const principles = [
   ["Make it stick", "Leave clear ownership behind."],
 ];
 
+const rooms = [
+  {
+    number: "01",
+    name: "Listen",
+    title: "Start where the work enters.",
+    body: "Customer requests, team questions, and daily exceptions are the first signals. We learn how demand actually reaches the business.",
+  },
+  {
+    number: "02",
+    name: "Assess",
+    title: "Make the operation visible.",
+    body: "We map handoffs, decisions, costs, and constraints—then separate the real bottleneck from the background noise.",
+  },
+  {
+    number: "03",
+    name: "Integrate",
+    title: "Connect the working system.",
+    body: "The right tools, data, and responsibilities begin sharing one clear path instead of creating parallel versions of the truth.",
+  },
+  {
+    number: "04",
+    name: "Automate",
+    title: "Give the team room to move.",
+    body: "Repeatable work becomes dependable infrastructure. People keep the judgment; the system carries the repetition.",
+  },
+];
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [activeRoom, setActiveRoom] = useState(0);
   const journeyRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -56,6 +83,7 @@ export default function App() {
       const distance = Math.max(1, element.offsetHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, -rect.top / distance));
       element.style.setProperty("--journey", progress.toFixed(3));
+      setActiveRoom(Math.min(3, Math.floor(progress * 4)));
     };
     updateJourney();
     window.addEventListener("scroll", updateJourney, { passive: true });
@@ -84,74 +112,61 @@ export default function App() {
 
   return (
     <main>
-      <section className="hero" id="top" aria-labelledby="hero-title">
-        <header className="site-header">
-          <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
-            <span className="wordmark">FANWORKS</span>
-            <span className="brand-subtitle">Business systems consulting</span>
-          </button>
-
-          <nav className="desktop-nav" aria-label="Primary navigation">
-            <button type="button" onClick={() => scrollTo("work")}>Work</button>
-            <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
-            <button type="button" onClick={() => scrollTo("story")}>Story</button>
-            <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Contact</button>
-          </nav>
-
-          <button
-            type="button"
-            className="menu-toggle"
-            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X /> : <Menu />}
-          </button>
-        </header>
-
-        {menuOpen ? (
-          <nav className="mobile-nav" aria-label="Mobile navigation">
-            <button type="button" onClick={() => scrollTo("work")}>Work</button>
-            <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
-            <button type="button" onClick={() => scrollTo("story")}>Story</button>
-            <button type="button" onClick={() => scrollTo("engage")}>Contact</button>
-          </nav>
-        ) : null}
-
-        <div className="hero-copy">
-          <p className="location">Richmond, Virginia · Business systems consulting</p>
-          <h1 id="hero-title">
-            Opportunity
-            <span>is already here.</span>
-          </h1>
-          <p>Sometimes it is hidden in the way the work gets done.</p>
-          <button className="hero-cta" type="button" onClick={() => scrollTo("journey")}>
-            Follow the path <ArrowDownRight aria-hidden="true" />
-          </button>
-        </div>
-
-        <div className="scroll-cue" aria-hidden="true">
-          <span>Scroll to begin</span><i />
-        </div>
-      </section>
-
       <section
-        className="journey"
-        id="journey"
+        className="journey cutaway-journey"
+        id="top"
         ref={journeyRef}
         style={{ "--journey": 0 } as CSSProperties}
-        aria-label="A path from hidden opportunity to practical growth"
+        aria-label="Explore how FanWorks moves through an operation"
       >
-        <div className="journey-stage">
-          <img className="journey-frame journey-frame-dark" src="/fanworks-alley-dark.webp" alt="A person beginning a walk down a dark cobblestone alley" />
-          <img className="journey-frame journey-frame-light" src="/fanworks-alley-sun.webp" alt="The path opening into sunlight and living green vines" />
-          <div className="journey-shade" aria-hidden="true" />
-          <div className="vine vine-left" aria-hidden="true"><i /><i /><i /><i /></div>
-          <div className="vine vine-right" aria-hidden="true"><i /><i /><i /></div>
-          <div className="journey-copy journey-copy-one"><span>01 · Notice</span><h2>See what is really happening.</h2><p>We follow the work, find the friction, and make the real opportunity visible.</p></div>
-          <div className="journey-copy journey-copy-two"><span>02 · Connect</span><h2>Build a clearer way forward.</h2><p>People, process, and technology start moving in the same direction.</p></div>
-          <div className="journey-copy journey-copy-three"><span>03 · Grow</span><h2>Let better systems create room.</h2><p>Less drag. More capacity. A business ready for what comes next.</p></div>
-          <div className="journey-progress" aria-hidden="true"><i /></div>
+        <div className="journey-stage cutaway-stage">
+          <header className="site-header floating-header">
+            <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
+              <span className="wordmark">FANWORKS</span>
+              <span className="brand-subtitle">Business systems consulting</span>
+            </button>
+            <nav className="desktop-nav" aria-label="Primary navigation">
+              <button type="button" onClick={() => scrollTo("work")}>Work</button>
+              <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
+              <button type="button" onClick={() => scrollTo("story")}>Story</button>
+              <button className="nav-cta" type="button" onClick={() => scrollTo("engage")}>Contact</button>
+            </nav>
+            <button type="button" className="menu-toggle" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
+              {menuOpen ? <X /> : <Menu />}
+            </button>
+          </header>
+          {menuOpen ? (
+            <nav className="mobile-nav cutaway-mobile-nav" aria-label="Mobile navigation">
+              <button type="button" onClick={() => scrollTo("work")}>Work</button>
+              <button type="button" onClick={() => scrollTo("ethos")}>Approach</button>
+              <button type="button" onClick={() => scrollTo("story")}>Story</button>
+              <button type="button" onClick={() => scrollTo("engage")}>Contact</button>
+            </nav>
+          ) : null}
+          <div className="cutaway-world" aria-hidden="true">
+            <img src="/fanworks-cutaway-panorama.webp" alt="" />
+            {rooms.map((room, index) => (
+              <span className={`room-pin room-pin-${index + 1}`} key={room.name}>
+                <b>{room.number}</b>{room.name}
+              </span>
+            ))}
+          </div>
+          <div className="cutaway-vignette" aria-hidden="true" />
+          <header className="cutaway-header">
+            <span>Richmond, Virginia · Inside the operation</span>
+            <span>{String(activeRoom + 1).padStart(2, "0")} / 04</span>
+          </header>
+          <div className="room-narrative" aria-live="polite">
+            {rooms.map((room, index) => (
+              <article className={activeRoom === index ? "is-active" : ""} key={room.name} aria-hidden={activeRoom !== index}>
+                <span>{room.number} · {room.name}</span>
+                <h2>{room.title}</h2>
+                <p>{room.body}</p>
+              </article>
+            ))}
+          </div>
+          <div className="journey-progress cutaway-progress" aria-hidden="true"><i /></div>
+          <p className="cutaway-hint">Scroll to move through the business</p>
         </div>
       </section>
 
@@ -195,8 +210,8 @@ export default function App() {
       <section className="story-section" id="story" aria-labelledby="story-title">
         <div className="story-art">
           <img
-            src="/fanworks-workflow-sketch.webp"
-            alt="Hand-drawn people mapping work, connecting systems, and moving toward a Richmond neighborhood"
+            src="/fan-works-hero.webp"
+            alt="Operators reviewing financial, process, technology, and customer evidence around a working table"
             decoding="async"
           />
         </div>
