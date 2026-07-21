@@ -1,9 +1,14 @@
-# FanWorks Cutaway Scroll Design QA
+# FanWorks Operations Journey Design QA
 
 ## Evidence
 
-- Source visual truth: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-a9d1787f-f191-4baa-b050-323a84a88e95.png`
-- Generated panoramic source asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama.webp`
+- People-filled panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-0a8834ec-e77a-47ba-82e7-17cc31694580.png`
+- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama.webp`
+- Operator-proof illustration: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-operator-proof.webp`
+- Final people-filled hero: `/tmp/fanworks-people-hero-desktop.png`
+- Final target-market and friction section: `/tmp/fanworks-friction-market-desktop.png`
+- Final How We Work section without diagonal: `/tmp/fanworks-how-we-work-no-slash.png`
+- Final operator proof, stats, and KPI band: `/tmp/fanworks-operator-proof-kpis.png`
 - Desktop implementation, first room: `/tmp/fanworks-cutaway-desktop-room2-final.png`
 - Desktop implementation, automation room: `/tmp/fanworks-cutaway-desktop-room4.png`
 - Mobile implementation, first room: `/tmp/fanworks-cutaway-mobile-room1.png`
@@ -22,11 +27,13 @@
 - Fonts and typography: room headlines now use a condensed display face and optical weight that matches the selected concept; body and utility copy retain the existing FanWorks sans/monospace system. All tested headings wrap without clipping.
 - Spacing and layout rhythm: the building remains the dominant spatial canvas, the narrative block holds a consistent lower-left position, and header/progress elements stay aligned across camera states.
 - Colors and visual tokens: charcoal, warm brick, porch green, paper, and ochre match the selected direction and the existing FanWorks palette. Text contrast remains readable over the photographic cutaway.
-- Image quality and asset fidelity: the production asset is a dedicated 1944 × 1024 WebP panorama, not a stretched mockup. Four coherent rooms and one continuous physical ochre conduit remain sharp through the desktop and mobile crops.
+- Image quality and asset fidelity: the production hero is a dedicated 1942 × 809 WebP panorama, not a stretched mockup. It contains the requested customer-and-staff intake scene, magnifying-glass assessment, server-rack integration, and clean production-ready automation room. The separate operator illustration is also a high-resolution WebP and uses the same miniature architectural realism.
 - Copy and content: each room explains a distinct business-system stage—Listen, Assess, Integrate, and Automate—without generic growth metaphors.
 - Interaction and accessibility: vertical scroll continuously controls horizontal camera translation, vertical drift, and scale. The active room updates the visible narrative and progress state. Reduced-motion users receive a static final-room composition. Semantic headings, aria-hidden state, mobile navigation, and contact behavior remain intact.
-- Hero and story continuity: the cutaway is now the initial viewport rather than following a detached black intro. The lower story artwork uses real operations-table photography in a rounded editorial frame, matching the evidence-led visual language.
-- Browser console: no warnings or errors in desktop or mobile validation.
+- Hero and story continuity: the people-filled cutaway remains the initial viewport. The lower story artwork now uses a matching generated operator-floor illustration in a rounded editorial frame, carrying the ochre pipeline and industrial palette into the proof section.
+- Market clarity: the first room explicitly names growing service businesses and founder-led manufacturers. “Where we help” now names five operating frictions instead of repeating the four-step hero journey.
+- Operator proof: the page now leads with the supported “20+ years” fact, manufacturing expertise, an operator-led claim, and a KPI band for cycle time, throughput, gross margin, and on-time delivery. No invented client-result percentages were introduced.
+- Responsive review: the current desktop states were captured at 1280 × 720. The existing 390 × 844 baseline and the current breakpoint rules were rechecked; the tablet work-intro grid and mobile story-image height were corrected during this pass.
 
 ## Comparison History
 
@@ -45,6 +52,14 @@
 - User-directed refinement: promoted the cutaway to the first hero, moved navigation into the sticky camera scene, replaced the mismatched illustrated lower graphic with the operator worktable photograph, and introduced restrained rounded corners on labels, controls, and the story image.
 - Post-fix evidence: `/tmp/fanworks-cutaway-first-hero-desktop.png`, `/tmp/fanworks-cutaway-first-hero-mobile.png`, and `/tmp/fanworks-story-rounded-worktable.png` show the unified art direction and unobstructed responsive layout.
 - Result: no actionable P0, P1, or P2 findings in desktop hero, mobile hero/menu, or story-section review.
+
+### Iteration 4
+
+- User-directed refinement: populated every hero room with the requested people and operating detail; separated target-market friction from the process story; removed the red diagonal; replaced the coffee-table stock image with a matching operator-floor illustration; and added operator proof plus KPI language.
+- P2 finding: the new work-intro block retained desktop grid column 2 between 701 and 900 pixels, which could create an unintended implicit tablet column. The later mobile image override also left the story artwork taller than intended at phone widths.
+- Fix: pinned the work-intro block to the single tablet column and restored the 23rem phone artwork height in the final cascade.
+- Post-fix evidence: `/tmp/fanworks-people-hero-desktop.png`, `/tmp/fanworks-friction-market-desktop.png`, `/tmp/fanworks-how-we-work-no-slash.png`, and `/tmp/fanworks-operator-proof-kpis.png`.
+- Result: no actionable P0, P1, or P2 findings remain in the updated desktop narrative, proof section, or reviewed responsive rules.
 
 ## Primary Interactions Tested
 
