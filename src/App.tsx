@@ -3,8 +3,12 @@ import {
   ArrowRight,
   Cable,
   Compass,
+  EyeOff,
+  Factory,
   Menu,
   SearchCheck,
+  Shuffle,
+  TrendingUp,
   Workflow,
   X,
 } from "lucide-react";
@@ -12,27 +16,33 @@ import {
 const services = [
   {
     number: "01",
-    name: "Assess",
-    line: "See the operation clearly.",
-    icon: SearchCheck,
-  },
-  {
-    number: "02",
-    name: "Guide",
-    line: "Turn questions into decisions.",
-    icon: Compass,
-  },
-  {
-    number: "03",
-    name: "Integrate",
-    line: "Make the tools work together.",
+    name: "Disconnected systems",
+    line: "Tools and teams working from different versions of the truth.",
     icon: Cable,
   },
   {
-    number: "04",
-    name: "Automate",
-    line: "Remove repetitive work.",
+    number: "02",
+    name: "Manual work",
+    line: "Repeatable tasks consuming the attention your customers need.",
     icon: Workflow,
+  },
+  {
+    number: "03",
+    name: "Unclear ownership",
+    line: "Important work falling into the gaps between roles and teams.",
+    icon: Compass,
+  },
+  {
+    number: "04",
+    name: "Inconsistent processes",
+    line: "Every person solving the same problem a different way.",
+    icon: Shuffle,
+  },
+  {
+    number: "05",
+    name: "Lack of visibility",
+    line: "Decisions arriving after the signal has already gone cold.",
+    icon: EyeOff,
   },
 ];
 
@@ -46,26 +56,26 @@ const rooms = [
   {
     number: "01",
     name: "Listen",
-    title: "Start where the work enters.",
-    body: "Customer requests, team questions, and daily exceptions are the first signals. We learn how demand actually reaches the business.",
+    title: "Make the mess visible.",
+    body: "We help growing service businesses and founder-led manufacturers eliminate operational friction before they scale.",
   },
   {
     number: "02",
     name: "Assess",
-    title: "Make the operation visible.",
-    body: "We map handoffs, decisions, costs, and constraints—then separate the real bottleneck from the background noise.",
+    title: "Trace how work really moves.",
+    body: "Maps, handoffs, decisions, costs, and constraints reveal where the business is fighting itself.",
   },
   {
     number: "03",
     name: "Integrate",
     title: "Connect the working system.",
-    body: "The right tools, data, and responsibilities begin sharing one clear path instead of creating parallel versions of the truth.",
+    body: "We connect the tools, data, and ownership model so information can move without being re-keyed, chased, or reconciled by hand.",
   },
   {
     number: "04",
     name: "Automate",
-    title: "Give the team room to move.",
-    body: "Repeatable work becomes dependable infrastructure. People keep the judgment; the system carries the repetition.",
+    title: "Make scale feel calm.",
+    body: "Automation carries repeatable work in a production-ready system. Your people keep the judgment; the operation gains capacity.",
   },
 ];
 
@@ -176,6 +186,10 @@ export default function App() {
           <span>What we do</span>
         </div>
         <h2 id="work-title">Where we help.</h2>
+        <div className="work-intro">
+          <p>For growing service businesses and founder-led manufacturers where demand has outgrown the operating system behind it.</p>
+          <span>We remove the friction that makes growth harder than it should be.</span>
+        </div>
 
         <div className="service-list">
           {services.map(({ number, name, line, icon: Icon }) => (
@@ -210,8 +224,8 @@ export default function App() {
       <section className="story-section" id="story" aria-labelledby="story-title">
         <div className="story-art">
           <img
-            src="/fan-works-hero.webp"
-            alt="Operators reviewing financial, process, technology, and customer evidence around a working table"
+            src="/fanworks-operator-proof.webp"
+            alt="Experienced operators reviewing performance and walking a connected service and manufacturing operation"
             decoding="async"
           />
         </div>
@@ -220,9 +234,22 @@ export default function App() {
             <span>03</span>
             <span>Why FanWorks</span>
           </div>
-          <h2 id="story-title">From Richmond. Built for operators.</h2>
-          <p>FanWorks brings business, process, and technology experience to the same table.</p>
-          <blockquote>Clear work. Useful systems.</blockquote>
+          <h2 id="story-title">We have run the work.</h2>
+          <p>FanWorks is operator-led. We have built teams, improved production, owned the numbers, and lived with the systems after the consultants left.</p>
+          <div className="proof-stats">
+            <article><strong>20+</strong><span>Years improving operations</span></article>
+            <article><Factory aria-hidden="true" /><span>Manufacturing expertise</span></article>
+            <article><SearchCheck aria-hidden="true" /><span>Built and run businesses—not just advised them</span></article>
+          </div>
+          <div className="kpi-band">
+            <div><TrendingUp aria-hidden="true" /><span>KPIs we improve</span></div>
+            <ul>
+              <li>Cycle time</li>
+              <li>Throughput</li>
+              <li>Gross margin</li>
+              <li>On-time delivery</li>
+            </ul>
+          </div>
         </div>
       </section>
 
