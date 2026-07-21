@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
 import {
   ArrowDownRight,
   ArrowRight,
@@ -46,6 +46,25 @@ const principles = [
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const journeyRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const updateJourney = () => {
+      const element = journeyRef.current;
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const distance = Math.max(1, element.offsetHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, -rect.top / distance));
+      element.style.setProperty("--journey", progress.toFixed(3));
+    };
+    updateJourney();
+    window.addEventListener("scroll", updateJourney, { passive: true });
+    window.addEventListener("resize", updateJourney);
+    return () => {
+      window.removeEventListener("scroll", updateJourney);
+      window.removeEventListener("resize", updateJourney);
+    };
+  }, []);
 
   const scrollTo = (id: string) => {
     setMenuOpen(false);
@@ -66,14 +85,6 @@ export default function App() {
   return (
     <main>
       <section className="hero" id="top" aria-labelledby="hero-title">
-        <img
-          className="hero-image"
-          src="/fan-works-hero.webp"
-          alt="Four collaborators connecting business operations, finance, technology, and customer research"
-          decoding="async"
-        />
-        <div className="hero-ink" aria-hidden="true" />
-
         <header className="site-header">
           <button className="brand-lockup" type="button" onClick={() => scrollTo("top")} aria-label="FanWorks home">
             <span className="wordmark">FANWORKS</span>
@@ -108,22 +119,39 @@ export default function App() {
         ) : null}
 
         <div className="hero-copy">
-          <p className="location">Richmond, Virginia</p>
+          <p className="location">Richmond, Virginia · Business systems consulting</p>
           <h1 id="hero-title">
-            Make the work
-            <span>make sense.</span>
+            Opportunity
+            <span>is already here.</span>
           </h1>
-          <p>We assess operations, connect technology, and automate what slows the business down.</p>
-          <button className="hero-cta" type="button" onClick={() => scrollTo("engage")}>
-            Start a conversation <ArrowDownRight aria-hidden="true" />
+          <p>Sometimes it is hidden in the way the work gets done.</p>
+          <button className="hero-cta" type="button" onClick={() => scrollTo("journey")}>
+            Follow the path <ArrowDownRight aria-hidden="true" />
           </button>
         </div>
 
-        <div className="hero-tags" aria-label="FanWorks services">
-          <span><b>01</b>Assess</span>
-          <span><b>02</b>Decide</span>
-          <span><b>03</b>Integrate</span>
-          <span><b>04</b>Automate</span>
+        <div className="scroll-cue" aria-hidden="true">
+          <span>Scroll to begin</span><i />
+        </div>
+      </section>
+
+      <section
+        className="journey"
+        id="journey"
+        ref={journeyRef}
+        style={{ "--journey": 0 } as CSSProperties}
+        aria-label="A path from hidden opportunity to practical growth"
+      >
+        <div className="journey-stage">
+          <img className="journey-frame journey-frame-dark" src="/fanworks-alley-dark.webp" alt="A person beginning a walk down a dark cobblestone alley" />
+          <img className="journey-frame journey-frame-light" src="/fanworks-alley-sun.webp" alt="The path opening into sunlight and living green vines" />
+          <div className="journey-shade" aria-hidden="true" />
+          <div className="vine vine-left" aria-hidden="true"><i /><i /><i /><i /></div>
+          <div className="vine vine-right" aria-hidden="true"><i /><i /><i /></div>
+          <div className="journey-copy journey-copy-one"><span>01 · Notice</span><h2>See what is really happening.</h2><p>We follow the work, find the friction, and make the real opportunity visible.</p></div>
+          <div className="journey-copy journey-copy-two"><span>02 · Connect</span><h2>Build a clearer way forward.</h2><p>People, process, and technology start moving in the same direction.</p></div>
+          <div className="journey-copy journey-copy-three"><span>03 · Grow</span><h2>Let better systems create room.</h2><p>Less drag. More capacity. A business ready for what comes next.</p></div>
+          <div className="journey-progress" aria-hidden="true"><i /></div>
         </div>
       </section>
 
