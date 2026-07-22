@@ -3,9 +3,11 @@
 ## Evidence
 
 - People-filled panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-0a8834ec-e77a-47ba-82e7-17cc31694580.png`
-- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v3.webp`
+- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v5.webp`
 - Operator-proof illustration: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-operator-proof.webp`
 - Bright-office panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-3ed9ad45-61cc-4449-b4c1-a1844104c584.png`
+- Customer-counter panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-3ce8bb2b-1f7a-4cf7-abb4-84ee566bfe57.png`
+- Corrected customer-counter source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-a0ce88a2-b290-4bc8-8a4b-02520c57622f.png`
 - Human progression, desktop opening: `/tmp/fanworks-human-progression-desktop-start.png`
 - Human progression, desktop final office: `/tmp/fanworks-human-progression-desktop-final.png`
 - Human progression, mobile opening: `/tmp/fanworks-human-progression-mobile-start.png`
@@ -73,6 +75,13 @@
 - Fix: delayed the fourth narrative threshold, increased the final camera travel on desktop and mobile, brightened the image progressively, and reduced the right-side vignette. The final office now fills the phone viewport and remains clearly readable at the end of the desktop journey.
 - Post-fix evidence: `/tmp/fanworks-human-progression-desktop-start.png`, `/tmp/fanworks-human-progression-desktop-final.png`, `/tmp/fanworks-human-progression-mobile-start.png`, and `/tmp/fanworks-human-progression-mobile-final.png`.
 - Result: the four stages read as one clear progression—busy, understood, connected, calm—with no actionable P0, P1, or P2 findings in the reviewed desktop or mobile states.
+
+### Iteration 6
+
+- User-directed refinement: replaced the fourth-room coworking scene with a bright customer-at-counter interaction that intentionally mirrors the opening room.
+- Source-preservation review: rooms 1–3, the cutaway architecture, and the continuous golden conduit remain recognizable and aligned. Room 4 now contains one customer on the visitor side and one attentive staff member behind a clean service counter.
+- Human and object review: both people have natural posture, hands, eye lines, proportions, and clothing. A focused second edit moved and rotated the desk phone toward the staff member. The monitor back faces the customer while the keyboard, mouse, terminal, paperwork, and phone controls remain reachable from the staff side.
+- Copy alignment: the final narrative now reads “Make every interaction easier” and connects quiet background systems to giving the customer full attention.
 
 ## Primary Interactions Tested
 
