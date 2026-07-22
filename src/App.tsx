@@ -74,8 +74,8 @@ const rooms = [
   {
     number: "04",
     name: "Automate",
-    title: "Make good work feel easy.",
-    body: "Routine work runs quietly in the background. Your team gets a bright, calm place to focus, collaborate, and grow.",
+    title: "Make every interaction easier.",
+    body: "Routine work runs quietly in the background, so your team can give every customer their full attention.",
   },
 ];
 
@@ -154,7 +154,7 @@ export default function App() {
             </nav>
           ) : null}
           <div className="cutaway-world" aria-hidden="true">
-            <img src="/fanworks-cutaway-panorama-v3.webp" alt="" />
+            <img src="/fanworks-cutaway-panorama-v5.webp" alt="" />
             {rooms.map((room, index) => (
               <span className={`room-pin room-pin-${index + 1}`} key={room.name}>
                 <b>{room.number}</b>{room.name}
