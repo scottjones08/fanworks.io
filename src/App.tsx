@@ -162,7 +162,10 @@ export default function App() {
           <div className="cutaway-world" aria-hidden="true">
             <img src="/fanworks-cutaway-panorama-v5.webp" alt="" />
             {rooms.map((room, index) => (
-              <span className={`room-pin room-pin-${index + 1}`} key={room.name}>
+              <span
+                className={`room-pin room-pin-${index + 1}${activeRoom === index ? " is-active" : ""}`}
+                key={room.name}
+              >
                 <b>{room.number}</b>{room.name}
               </span>
             ))}
@@ -170,6 +173,7 @@ export default function App() {
           <div className="cutaway-vignette" aria-hidden="true" />
           <div className="cutaway-grade" aria-hidden="true" />
           <div className="cutaway-grain" aria-hidden="true" />
+          <div className="cutaway-spotlight" aria-hidden="true" />
           <header className="cutaway-header">
             <span>Richmond, Virginia · Inside the operation</span>
             <span>{activeRoom < 0 ? "— —" : String(activeRoom + 1).padStart(2, "0")} / 04</span>
