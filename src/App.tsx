@@ -160,7 +160,7 @@ export default function App() {
             </nav>
           ) : null}
           <div className="cutaway-world" aria-hidden="true">
-            <img src="/fanworks-cutaway-panorama-v5.webp" alt="" />
+            <img src="/fanworks-cutaway-panorama-v7.webp" alt="" />
             {rooms.map((room, index) => (
               <span
                 className={`room-pin room-pin-${index + 1}${activeRoom === index ? " is-active" : ""}`}
@@ -248,7 +248,7 @@ export default function App() {
       <section className="story-section" id="story" aria-labelledby="story-title">
         <div className="story-art">
           <img
-            src="/fanworks-operator-proof.webp"
+            src="/fanworks-operator-proof-v2.webp"
             alt="Experienced operators reviewing performance and walking a connected service and manufacturing operation"
             decoding="async"
           />

@@ -3,8 +3,10 @@
 ## Evidence
 
 - People-filled panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-0a8834ec-e77a-47ba-82e7-17cc31694580.png`
-- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v5.webp`
-- Operator-proof illustration: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-operator-proof.webp`
+- Production panoramic asset: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-cutaway-panorama-v7.webp`
+- Illustrated panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/call_IYURDpRQdE9j4G8LvqvqX3to.png`
+- Operator-proof illustration: `/Users/scottjones/Documents/GitHub/fanworks.io/public/fanworks-operator-proof-v2.webp`
+- Illustrated operator-proof source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/call_Cpp1INLNWAamsBwPmzXLvsnx.png`
 - Bright-office panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-3ed9ad45-61cc-4449-b4c1-a1844104c584.png`
 - Customer-counter panoramic source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-3ce8bb2b-1f7a-4cf7-abb4-84ee566bfe57.png`
 - Corrected customer-counter source: `/Users/scottjones/.codex/generated_images/019f8556-3eba-72b1-be09-1349b132ac29/exec-a0ce88a2-b290-4bc8-8a4b-02520c57622f.png`
@@ -33,8 +35,8 @@
 - No actionable P0, P1, or P2 findings remain.
 - Fonts and typography: room headlines now use a condensed display face and optical weight that matches the selected concept; body and utility copy retain the existing FanWorks sans/monospace system. All tested headings wrap without clipping.
 - Spacing and layout rhythm: the building remains the dominant spatial canvas, the narrative block holds a consistent lower-left position, and header/progress elements stay aligned across camera states.
-- Colors and visual tokens: charcoal, warm brick, porch green, paper, and ochre match the selected direction and the existing FanWorks palette. Text contrast remains readable over the photographic cutaway.
-- Image quality and asset fidelity: the production hero is a dedicated 1942 × 809 WebP panorama, not a stretched mockup. It contains the requested customer-and-staff intake scene, magnifying-glass assessment, server-rack integration, and clean production-ready automation room. The separate operator illustration is also a high-resolution WebP and uses the same miniature architectural realism.
+- Colors and visual tokens: deep navy, warm brick, porch green, paper, teal, coral, and glowing ochre create a brighter premium palette while retaining FanWorks' industrial character. Text contrast remains readable over the illustrated cutaway.
+- Image quality and asset fidelity: the production hero is a dedicated 1934 × 813 WebP panorama, not a stretched mockup. It contains the requested customer-and-staff intake scene, detailed assessment room, credible server-rack integration, and clean production-ready automation room. The separate 1586 × 992 operator illustration uses the same editorial-cartoon rendering, materials, lighting, and golden system line.
 - Copy and content: each room explains a distinct business-system stage—Listen, Assess, Integrate, and Automate—without generic growth metaphors.
 - Interaction and accessibility: vertical scroll continuously controls horizontal camera translation, vertical drift, and scale. The active room updates the visible narrative and progress state. Reduced-motion users receive a static final-room composition. Semantic headings, aria-hidden state, mobile navigation, and contact behavior remain intact.
 - Hero and story continuity: the people-filled cutaway remains the initial viewport. The lower story artwork now uses a matching generated operator-floor illustration in a rounded editorial frame, carrying the ochre pipeline and industrial palette into the proof section.
@@ -82,6 +84,14 @@
 - Source-preservation review: rooms 1–3, the cutaway architecture, and the continuous golden conduit remain recognizable and aligned. Room 4 now contains one customer on the visitor side and one attentive staff member behind a clean service counter.
 - Human and object review: both people have natural posture, hands, eye lines, proportions, and clothing. A focused second edit moved and rotated the desk phone toward the staff member. The monitor back faces the customer while the keyboard, mouse, terminal, paperwork, and phone controls remain reachable from the staff side.
 - Copy alignment: the final narrative now reads “Make every interaction easier” and connects quiet background systems to giving the customer full attention.
+
+### Iteration 7
+
+- User-directed refinement: replaced photoreal miniature rendering with a polished editorial-cartoon art direction across the hero journey and operator-proof section.
+- Source-preservation review: the four-room order, architectural cutaway, human actions, customer-counter bookends, and continuous golden conduit remain intact.
+- Finish review: varied linework, tactile painted texture, richer material definition, layered lighting, correctly oriented equipment, and a controlled bright palette make both scenes feel commissioned and art-directed while avoiding uncanny photoreal humans.
+- Detail review: purposeful papers and call activity support Listen; maps, notes, plans, and tools support Assess; patch panels, cable organization, status lights, and abstract data flows support Integrate; premium millwork, plants, warm daylight, and a calm customer interaction support Automate.
+- Export review: the 1934 × 813 production WebP retains the full panorama and dark layout-safe negative space without cropping any room. The matching operator-proof illustration exports at 1586 × 992.
 
 ## Primary Interactions Tested
 
