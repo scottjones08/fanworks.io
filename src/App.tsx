@@ -58,24 +58,28 @@ const rooms = [
     name: "Listen",
     title: "See the work as it is.",
     body: "We sit with your team, listen, and watch where the day gets harder than it should.",
+    fixes: "Lack of visibility",
   },
   {
     number: "02",
     name: "Assess",
     title: "Find what is getting stuck.",
     body: "Together, we map the handoffs, delays, and decisions that slow people down.",
+    fixes: "Unclear ownership · Inconsistent processes",
   },
   {
     number: "03",
     name: "Integrate",
     title: "Bring the pieces together.",
     body: "We connect the tools and information your team already uses, so everyone can work from the same picture.",
+    fixes: "Disconnected systems",
   },
   {
     number: "04",
     name: "Automate",
     title: "Make every interaction easier.",
     body: "Routine work runs quietly in the background, so your team can give every customer their full attention.",
+    fixes: "Manual work",
   },
 ];
 
@@ -93,7 +97,9 @@ export default function App() {
       const distance = Math.max(1, element.offsetHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, -rect.top / distance));
       element.style.setProperty("--journey", progress.toFixed(3));
-      setActiveRoom(progress < 0.23 ? 0 : progress < 0.5 ? 1 : progress < 0.82 ? 2 : 3);
+      setActiveRoom(
+        progress < 0.14 ? -1 : progress < 0.32 ? 0 : progress < 0.56 ? 1 : progress < 0.82 ? 2 : 3,
+      );
     };
     updateJourney();
     window.addEventListener("scroll", updateJourney, { passive: true });
@@ -156,22 +162,40 @@ export default function App() {
           <div className="cutaway-world" aria-hidden="true">
             <img src="/fanworks-cutaway-panorama-v5.webp" alt="" />
             {rooms.map((room, index) => (
-              <span className={`room-pin room-pin-${index + 1}`} key={room.name}>
+              <span
+                className={`room-pin room-pin-${index + 1}${activeRoom === index ? " is-active" : ""}`}
+                key={room.name}
+              >
                 <b>{room.number}</b>{room.name}
               </span>
             ))}
           </div>
           <div className="cutaway-vignette" aria-hidden="true" />
+          <div className="cutaway-grade" aria-hidden="true" />
+          <div className="cutaway-grain" aria-hidden="true" />
+          <div className="cutaway-spotlight" aria-hidden="true" />
           <header className="cutaway-header">
             <span>Richmond, Virginia · Inside the operation</span>
-            <span>{String(activeRoom + 1).padStart(2, "0")} / 04</span>
+            <span>{activeRoom < 0 ? "— —" : String(activeRoom + 1).padStart(2, "0")} / 04</span>
           </header>
           <div className="room-narrative" aria-live="polite">
+            <article className={`intro-card ${activeRoom === -1 ? "is-active" : ""}`} aria-hidden={activeRoom !== -1}>
+              <span>Business systems consulting</span>
+              <h1>We fix disconnected systems.</h1>
+              <p>
+                Tools that do not talk. Manual work in between. Follow the line through
+                the operation and watch the pieces connect.
+              </p>
+              <button className="hero-cta" type="button" onClick={() => scrollTo("engage")}>
+                Start a conversation <ArrowRight aria-hidden="true" />
+              </button>
+            </article>
             {rooms.map((room, index) => (
               <article className={activeRoom === index ? "is-active" : ""} key={room.name} aria-hidden={activeRoom !== index}>
                 <span>{room.number} · {room.name}</span>
                 <h2>{room.title}</h2>
                 <p>{room.body}</p>
+                <em className="room-fixes">Fixes · {room.fixes}</em>
               </article>
             ))}
           </div>
