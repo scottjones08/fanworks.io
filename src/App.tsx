@@ -52,6 +52,35 @@ const principles = [
   ["Leave it simpler", "Build a better way your team can understand and own."],
 ];
 
+const layers = [
+  {
+    number: "01",
+    name: "Memory",
+    line: "Your documents, email, meetings, and decisions in one place your team can actually ask.",
+  },
+  {
+    number: "02",
+    name: "Judgment",
+    line: "Answers come with their sources, their date, and what is still unknown.",
+  },
+  {
+    number: "03",
+    name: "Approval",
+    line: "Routine work runs on its own. Anything that leaves the building waits for a person.",
+  },
+  {
+    number: "04",
+    name: "Boundary",
+    line: "Separate storage, separate memory, separate records. Your business is never pooled with anyone else's.",
+  },
+];
+
+const layerPromises = [
+  "Private by default",
+  "A person approves anything that leaves",
+  "You can take it with you",
+];
+
 const rooms = [
   {
     number: "01",
@@ -245,6 +274,32 @@ export default function App() {
         </div>
       </section>
 
+      <section className="layer-section" id="layer" aria-labelledby="layer-title">
+        <div className="section-mark section-mark-light">
+          <span>03</span>
+          <span>What runs underneath</span>
+        </div>
+        <h2 id="layer-title">The layer underneath.</h2>
+        <p className="layer-lede">
+          The systems we build run on our own private intelligence layer. It remembers how your
+          business works, so the answer is already there when someone needs it.
+        </p>
+        <div className="layer-list">
+          {layers.map(({ number, name, line }) => (
+            <article key={name}>
+              <span>{number}</span>
+              <h3>{name}</h3>
+              <p>{line}</p>
+            </article>
+          ))}
+        </div>
+        <ul className="layer-promises">
+          {layerPromises.map((promise) => (
+            <li key={promise}>{promise}</li>
+          ))}
+        </ul>
+      </section>
+
       <section className="story-section" id="story" aria-labelledby="story-title">
         <div className="story-art">
           <img
@@ -255,7 +310,7 @@ export default function App() {
         </div>
         <div className="story-copy">
           <div className="section-mark">
-            <span>03</span>
+            <span>04</span>
             <span>Why FanWorks</span>
           </div>
           <h2 id="story-title">We have run the work.</h2>
@@ -280,7 +335,7 @@ export default function App() {
       <section className="engage-section" id="engage" aria-labelledby="engage-title">
         <div className="engage-copy">
           <div className="section-mark section-mark-light">
-            <span>04</span>
+            <span>05</span>
             <span>Contact</span>
           </div>
           <h2 id="engage-title">What is slowing you down?</h2>
