@@ -93,6 +93,16 @@
 - Detail review: purposeful papers and call activity support Listen; maps, notes, plans, and tools support Assess; patch panels, cable organization, status lights, and abstract data flows support Integrate; premium millwork, plants, warm daylight, and a calm customer interaction support Automate.
 - Export review: the 1934 × 813 production WebP retains the full panorama and dark layout-safe negative space without cropping any room. The matching operator-proof illustration exports at 1586 × 992.
 
+### Iteration 8
+
+- User-directed addition: a new section 03, "The layer underneath," expressing the private intelligence layer that the delivered systems run on. Sections renumbered — Work 01, Approach 02, Underneath 03, Why FanWorks 04, Contact 05.
+- Art direction: the section uses the existing porch green (`--green`) as a third page surface between the paper Work section and the ink Approach section, with an ochre base rule closing it into the paper story section below. Type, section mark, mono utility copy, and four-up divider grid reuse the established tokens; no new fonts, colors, or components were introduced.
+- Copy review: operations language, not AI feature language — memory, judgment, approval, and boundary are each stated as something the business gets, and the three promise lines (private by default, a person approves anything that leaves, you can take it with you) are claims the platform can actually evidence. No invented capability, metric, or client result was introduced.
+- P2 finding: the tablet two-column rule for `.layer-list` was authored in the trailing `max-width: 900px` block, which sits after the `max-width: 620px` block in the cascade and therefore overrode the phone single-column stacking. At 390 × 844 the grid rendered two cramped columns with a stray half-width divider under the third card.
+- Fix: scoped the two-column rule to `(max-width: 900px) and (min-width: 621px)` so the phone stacking in the 620px block wins, and left the remaining 900px rules in place.
+- Post-fix evidence: section captured at 1440 × 900, 860 × 1000, and 390 × 844 — four-up, two-up, and single-column respectively, with dividers resolving correctly at each breakpoint and no horizontal overflow.
+- Build review: `vite build` and `tsc --noEmit` both clean.
+
 ## Primary Interactions Tested
 
 - Scrolled continuously through all four desktop room stops and verified the camera, active narrative, room count, and progress line.
