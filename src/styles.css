@@ -1457,9 +1457,26 @@ h2 {
 }
 
 .contact-form {
+  position: relative;
   gap: 20px;
   width: 100%;
   max-width: 560px;
+}
+
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact-form .cta:disabled {
+  opacity: 0.55;
+  transform: none;
+  cursor: default;
 }
 
 .form-row {
