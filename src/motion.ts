@@ -11,11 +11,10 @@ export function useMotionConfig() {
   const fadeUp: Variants = reduced
     ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
     : {
-        hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+        hidden: { opacity: 0, y: 22 },
         show: {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
           transition: { duration: 0.72, ease: easeOut },
         },
       };
