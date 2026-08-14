@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { navItems, scrollToId } from "../content";
-import { easeOut, useMotionConfig } from "../motion";
 
 type HeaderProps = {
   menuOpen: boolean;
@@ -10,29 +7,35 @@ type HeaderProps = {
 };
 
 export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
-  const { reduced, spring } = useMotionConfig();
-  const [dense, setDense] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [narrow, setNarrow] = useState(false);
   const chromeRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setDense(window.scrollY > 36);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const sync = () => {
+      setScrolled(window.scrollY > 40);
+      const isNarrow = window.innerWidth < 720;
+      setNarrow(isNarrow);
+      if (!isNarrow) setMenuOpen(false);
+    };
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    return () => {
+      window.removeEventListener("scroll", sync);
+      window.removeEventListener("resize", sync);
+    };
+  }, [setMenuOpen]);
 
   useEffect(() => {
     if (!menuOpen) return;
-
     const root = chromeRef.current;
     const previous = document.activeElement as HTMLElement | null;
     document.body.style.overflow = "hidden";
 
-    const focusables = () => {
-      if (!root) return [] as HTMLElement[];
-      return Array.from(root.querySelectorAll<HTMLElement>("button:not([disabled])"));
-    };
+    const focusables = () =>
+      root ? Array.from(root.querySelectorAll<HTMLElement>("button:not([disabled]), a[href]")) : [];
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -41,7 +44,7 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
       }
       if (event.key !== "Tab") return;
       const items = focusables();
-      if (items.length === 0) return;
+      if (!items.length) return;
       const first = items[0];
       const last = items[items.length - 1];
       if (event.shiftKey && document.activeElement === first) {
@@ -55,8 +58,9 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
 
     document.addEventListener("keydown", onKey);
     requestAnimationFrame(() => {
-      const items = focusables();
-      items.find((item) => item !== toggleRef.current)?.focus();
+      focusables()
+        .find((item) => item !== toggleRef.current)
+        ?.focus();
     });
 
     return () => {
@@ -73,10 +77,12 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
 
   return (
     <div className="site-chrome" ref={chromeRef}>
-      <header className={`site-header${dense || menuOpen ? " is-dense" : ""}`}>
+      <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
         <button className="brand-lockup" type="button" onClick={() => go("top")} aria-label="FanWorks home">
           <span className="wordmark">FANWORKS</span>
-          <span className="brand-subtitle">Business systems consulting</span>
+          {!narrow && !scrolled ? (
+            <span className="brand-subtitle">Business systems consulting</span>
+          ) : null}
         </button>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
@@ -85,16 +91,9 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
               {item.label}
             </button>
           ))}
-          <motion.button
-            className="nav-cta"
-            type="button"
-            onClick={() => go("engage")}
-            whileHover={reduced ? undefined : { scale: 1.04 }}
-            whileTap={reduced ? undefined : { scale: 0.97 }}
-            transition={spring}
-          >
+          <button className="nav-cta" type="button" onClick={() => go("engage")}>
             Contact
-          </motion.button>
+          </button>
         </nav>
 
         <button
@@ -106,46 +105,22 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
           aria-controls="mobile-navigation"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? <X /> : <Menu />}
+          {menuOpen ? "×" : "≡"}
         </button>
       </header>
 
-      <AnimatePresence>
-        {menuOpen ? (
-          <motion.nav
-            id="mobile-navigation"
-            className="mobile-nav"
-            aria-label="Mobile navigation"
-            initial={reduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reduced ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: reduced ? 0 : 0.32, ease: easeOut }}
-          >
-            {navItems.map((item, index) => (
-              <motion.button
-                type="button"
-                key={item.id}
-                onClick={() => go(item.id)}
-                initial={reduced ? false : { opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reduced ? 0 : 0.45, delay: reduced ? 0 : 0.06 * index, ease: easeOut }}
-              >
-                {item.label}
-              </motion.button>
-            ))}
-            <motion.button
-              type="button"
-              className="mobile-nav-cta"
-              onClick={() => go("engage")}
-              initial={reduced ? false : { opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduced ? 0 : 0.45, delay: reduced ? 0 : 0.24, ease: easeOut }}
-            >
-              Contact
-            </motion.button>
-          </motion.nav>
-        ) : null}
-      </AnimatePresence>
+      {menuOpen ? (
+        <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">
+          {navItems.map((item) => (
+            <button type="button" key={item.id} onClick={() => go(item.id)}>
+              {item.label}
+            </button>
+          ))}
+          <button type="button" className="mobile-nav-cta" onClick={() => go("engage")}>
+            Contact
+          </button>
+        </nav>
+      ) : null}
     </div>
   );
 }

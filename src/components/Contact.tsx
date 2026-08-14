@@ -1,9 +1,10 @@
 import { FormEvent, useState } from "react";
-import { CtaButton } from "./CtaButton";
-import { Reveal } from "./Reveal";
+import { useReveal } from "../hooks/useReveal";
 
 export function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const copyRef = useReveal<HTMLDivElement>();
+  const formRef = useReveal<HTMLFormElement>();
 
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -17,42 +18,50 @@ export function Contact() {
   };
 
   return (
-    <section className="engage-section" id="engage" aria-labelledby="engage-title">
-      <div className="engage-copy">
-        <Reveal className="section-mark section-mark-light">
-          <span>04</span>
-          <span>Contact</span>
-        </Reveal>
-        <Reveal>
+    <section className="engage" id="engage" aria-labelledby="engage-title">
+      <div className="engage-grid">
+        <div className="reveal" ref={copyRef}>
+          <div className="section-kicker kicker-ink">
+            <i />
+            07 · Contact
+          </div>
           <h2 id="engage-title">What is slowing you down?</h2>
-          <a href="mailto:hello@fanworks.io">hello@fanworks.io</a>
-        </Reveal>
-      </div>
+          <p>Tell us where the day grinds. If we can help, we'll say how. If we can't, we'll say that too.</p>
+          <a className="mail-link" href="mailto:hello@fanworks.io">
+            hello@fanworks.io
+          </a>
+        </div>
 
-      <Reveal className="contact-form-wrap" amount={0.18}>
-        <form className="contact-form" onSubmit={submitContact}>
+        <form className="contact-form reveal" ref={formRef} onSubmit={submitContact}>
           <div className="form-row">
-            <label className="field">
+            <label>
               <span>Name</span>
-              <input name="name" autoComplete="name" placeholder=" " required />
+              <input name="name" autoComplete="name" required />
             </label>
-            <label className="field">
+            <label>
               <span>Email</span>
-              <input name="email" type="email" autoComplete="email" placeholder=" " required />
+              <input name="email" type="email" autoComplete="email" required />
             </label>
           </div>
-          <label className="field">
+          <label>
             <span>What should we look at?</span>
-            <textarea name="message" rows={4} placeholder=" " required />
+            <textarea name="message" rows={4} required />
           </label>
           <div className="form-footer">
-            <CtaButton type="submit" className="submit-cta">
-              Send it
-            </CtaButton>
+            <button className="cta cta-ink" type="submit">
+              {submitted ? "Sent" : "Send it"} →
+            </button>
             <p role="status">{submitted ? "Your email app is ready." : "A few honest lines are enough."}</p>
           </div>
         </form>
-      </Reveal>
+      </div>
+
+      <footer className="site-footer">
+        <span className="wordmark">FANWORKS</span>
+        <span>Business systems consulting</span>
+        <span>Richmond, Virginia</span>
+        <span>Est. 2025</span>
+      </footer>
     </section>
   );
 }

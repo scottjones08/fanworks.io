@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { Approach } from "./components/Approach";
 import { Contact } from "./components/Contact";
-import { Ethos } from "./components/Ethos";
-import { Footer } from "./components/Footer";
+import { Frictions } from "./components/Frictions";
 import { Header } from "./components/Header";
-import { Journey } from "./components/Journey";
+import { Hero } from "./components/Hero";
+import { Ledger } from "./components/Ledger";
+import { Practices } from "./components/Practices";
 import { Story } from "./components/Story";
-import { Work } from "./components/Work";
+import { System } from "./components/System";
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -13,12 +15,14 @@ export default function App() {
   return (
     <main>
       <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-      <Journey />
-      <Work />
-      <Ethos />
+      <Hero />
+      <Ledger />
+      <System />
+      <Frictions />
+      <Approach />
+      <Practices />
       <Story />
       <Contact />
-      <Footer />
     </main>
   );
 }

@@ -1,109 +1,124 @@
 import { useEffect, useRef, useState } from "react";
-import { Factory, SearchCheck, TrendingUp } from "lucide-react";
-import { useReducedMotion } from "motion/react";
-import { Reveal } from "./Reveal";
+import { kpis } from "../content";
+import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useReveal } from "../hooks/useReveal";
 
-function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
-  const reduced = !!useReducedMotion();
-  const [count, setCount] = useState(reduced ? value : 0);
-  const ref = useRef<HTMLElement>(null);
+export function Story() {
+  const reduced = useReducedMotion();
+  const copyRef = useReveal<HTMLDivElement>();
+  const statsRef = useReveal<HTMLDivElement>();
+  const kpiRef = useRef<HTMLDivElement>(null);
+  const countRef = useRef<HTMLElement>(null);
+  const imgWrapRef = useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(reduced ? 20 : 0);
+  const [kpiOn, setKpiOn] = useState(reduced);
 
   useEffect(() => {
     if (reduced) {
-      setCount(value);
+      setCount(20);
+      setKpiOn(true);
       return;
     }
+    const countNode = countRef.current;
+    const kpiNode = kpiRef.current;
+    if (!countNode || !kpiNode) return;
 
-    const node = ref.current;
-    if (!node) return;
-    let frame = 0;
-    let started = false;
-
-    const run = () => {
-      if (started) return;
-      started = true;
-      const start = performance.now();
-      const duration = 1200;
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - (1 - progress) ** 3;
-        setCount(Math.round(value * eased));
-        if (progress < 1) frame = requestAnimationFrame(tick);
-      };
-      frame = requestAnimationFrame(tick);
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) run();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          if (entry.target === countNode) {
+            const start = performance.now();
+            const tick = (now: number) => {
+              const progress = Math.min(1, (now - start) / 1200);
+              setCount(Math.round(20 * (1 - (1 - progress) ** 3)));
+              if (progress < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+            io.unobserve(countNode);
+          }
+          if (entry.target === kpiNode) {
+            setKpiOn(true);
+            io.unobserve(kpiNode);
+          }
+        }
       },
-      { threshold: 0.45 },
+      { threshold: 0.35 },
     );
-    observer.observe(node);
+    io.observe(countNode);
+    io.observe(kpiNode);
+    return () => io.disconnect();
+  }, [reduced]);
 
-    return () => {
-      observer.disconnect();
-      if (frame) cancelAnimationFrame(frame);
+  useEffect(() => {
+    const wrap = imgWrapRef.current;
+    if (!wrap || reduced) return;
+    const onScroll = () => {
+      const rect = wrap.getBoundingClientRect();
+      const k = Math.max(-1, Math.min(1, (window.innerHeight / 2 - (rect.top + rect.height / 2)) / window.innerHeight));
+      wrap.style.transform = `translateY(${k * 26}px)`;
     };
-  }, [reduced, value]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [reduced]);
 
   return (
-    <strong ref={ref}>
-      {count}
-      {suffix}
-    </strong>
-  );
-}
-
-export function Story() {
-  return (
-    <section className="story-section" id="story" aria-labelledby="story-title">
-      <Reveal className="story-art" amount={0.15}>
-        <img
-          src="/fanworks-operator-proof-v2.webp"
-          alt="Experienced operators reviewing performance and walking a connected service and manufacturing operation"
-          decoding="async"
-        />
-      </Reveal>
-      <div className="story-copy">
-        <Reveal className="section-mark">
-          <span>03</span>
-          <span>Why FanWorks</span>
-        </Reveal>
-        <Reveal>
+    <section className="story" id="story" aria-labelledby="story-title">
+      <div>
+        <div className="reveal" ref={copyRef}>
+          <div className="section-kicker">
+            <i />
+            06 · Why FanWorks
+          </div>
           <h2 id="story-title">We have run the work.</h2>
           <p>
-            We have built teams, run production, owned the numbers, and lived with the systems after
-            launch. We know what it takes to make the work actually work.
+            Our team is industry executives and entrepreneurs — from founder-led companies to the
+            Fortune 500 — who have built teams, run production, owned the numbers, and lived with
+            the systems after launch.
           </p>
-        </Reveal>
-        <Reveal className="proof-stats">
+        </div>
+
+        <div className="proof-stats reveal" ref={statsRef}>
           <article>
-            <CountUp value={20} suffix="+" />
+            <strong ref={countRef}>{count}+</strong>
             <span>Years improving operations</span>
           </article>
           <article>
-            <Factory aria-hidden="true" />
-            <span>Manufacturing expertise</span>
+            <b>Manufacturing expertise</b>
+            <span>Plants, lines, and shop floors</span>
           </article>
           <article>
-            <SearchCheck aria-hidden="true" />
-            <span>We have run businesses—not just advised them</span>
+            <b>Operator-led</b>
+            <span>Executives & entrepreneurs — startup to Fortune 500</span>
           </article>
-        </Reveal>
-        <Reveal className="kpi-band">
-          <div>
-            <TrendingUp aria-hidden="true" />
-            <span>What gets better</span>
-          </div>
-          <ul>
-            <li>Cycle time</li>
-            <li>Throughput</li>
-            <li>Gross margin</li>
-            <li>On-time delivery</li>
-          </ul>
-        </Reveal>
+        </div>
+
+        <div className={`kpi-panel${kpiOn ? " is-on" : ""}`} ref={kpiRef}>
+          <span>What gets better</span>
+          {kpis.map((item) => (
+            <div className="kpi-row" key={item.name}>
+              <div>
+                <span>{item.name}</span>
+                <em>{item.delta}</em>
+              </div>
+              <div className="kpi-track">
+                <i style={{ width: kpiOn ? `${item.width}%` : "0%" }} />
+              </div>
+            </div>
+          ))}
+          <small>Typical movement across recent engagements</small>
+        </div>
       </div>
+
+      <figure className="story-art">
+        <div ref={imgWrapRef}>
+          <img
+            src="/fan-works-hero.webp"
+            alt="A working session: quarterly financials, a hand-drawn map of how the work moves, and the operators who run it"
+          />
+        </div>
+        <figcaption>At the table · Not in a deck</figcaption>
+      </figure>
     </section>
   );
 }
