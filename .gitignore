@@ -3,6 +3,8 @@ dist
 .env
 .env.*
 !.env.example
+*.bak
+env.prod.bak
 .DS_Store
 *.log
 
