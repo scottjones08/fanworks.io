@@ -13,6 +13,16 @@ export const frictionWords = [
   "lack of visibility",
 ];
 
+export const lineStages = [
+  "Intake",
+  "Quote",
+  "Order",
+  "Schedule",
+  "Production",
+  "Delivery",
+  "Invoice",
+] as const;
+
 export const tickerCopy =
   "Intake ⟶ Quote ⟶ Order ⟶ Schedule ⟶ Production ⟶ Delivery ⟶ Invoice ⟶ Feedback  ·  One line, end to end  ·  ";
 

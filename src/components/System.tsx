@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
+import { lineStages } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useReveal } from "../hooks/useReveal";
 
-const nodes = ["Intake", "Quote", "Order", "Schedule", "Production", "Delivery", "Invoice"];
 const xs = [60, 240, 420, 600, 780, 960, 1140];
 
 const tools = [
@@ -131,7 +131,7 @@ export function System() {
           </g>
           <text x="40" y="368" className="sys-label">AFTER — ONE LINE, END TO END</text>
           <path data-line="true" pathLength={1} d="M60 430 H1140" className="sys-line" />
-          {nodes.map((label, index) => (
+          {lineStages.map((label, index) => (
             <g key={label}>
               <circle data-node={index} cx={xs[index]} cy="430" r="7" />
               <text data-node={index} x={xs[index]} y="472">{label}</text>
@@ -178,7 +178,7 @@ export function System() {
 
           <p className="sys-mobile-label">After — one line, end to end</p>
           <ol className="sys-spine">
-            {nodes.map((label, index) => (
+            {lineStages.map((label, index) => (
               <li key={label} data-node={index}>{label}</li>
             ))}
           </ol>
