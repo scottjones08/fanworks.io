@@ -1,6 +1,7 @@
 export const navItems = [
   { id: "ledger", label: "The day" },
-  { id: "frictions", label: "Frictions" },
+  { id: "system", label: "The layer" },
+  { id: "adopt", label: "People" },
   { id: "approach", label: "Approach" },
 ] as const;
 
