@@ -5,19 +5,41 @@ import { useReveal } from "../hooks/useReveal";
 const nodes = ["Intake", "Quote", "Order", "Schedule", "Production", "Delivery", "Invoice"];
 const xs = [60, 240, 420, 600, 780, 960, 1140];
 
+const tools = [
+  [100, 64, "CRM", 160, 89],
+  [410, 74, "ERP", 470, 99],
+  [580, 64, "SHEETS", 640, 89],
+  [880, 68, "EMAIL", 940, 93],
+  [140, 154, "TEXTS", 200, 179],
+  [410, 168, "WHITEBOARD", 475, 193],
+  [720, 164, "ACCOUNTING", 785, 189],
+  [1000, 150, "SCHEDULER", 1065, 175],
+] as const;
+
+const mobileTools = [
+  { label: "CRM", className: "sys-chip-crm" },
+  { label: "ERP", className: "sys-chip-erp" },
+  { label: "SHEETS", className: "sys-chip-sheets" },
+  { label: "TEXTS", className: "sys-chip-texts" },
+  { label: "WHITEBOARD", className: "sys-chip-whiteboard" },
+  { label: "EMAIL", className: "sys-chip-email" },
+  { label: "ACCOUNTING", className: "sys-chip-accounting" },
+  { label: "SCHEDULER", className: "sys-chip-scheduler" },
+] as const;
+
 export function System() {
   const reduced = useReducedMotion();
   const revealRef = useReveal<HTMLDivElement>();
-  const diagramRef = useRef<SVGSVGElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const svg = diagramRef.current;
-    if (!svg) return;
+    const frame = frameRef.current;
+    if (!frame) return;
     const run = () => {
-      svg.querySelectorAll<SVGElement>("[data-line]").forEach((line) => {
+      frame.querySelectorAll<SVGElement | HTMLElement>("[data-line]").forEach((line) => {
         line.style.strokeDashoffset = "0";
       });
-      svg.querySelectorAll<SVGElement>("[data-node]").forEach((node) => {
+      frame.querySelectorAll<SVGElement | HTMLElement>("[data-node]").forEach((node) => {
         const index = Number(node.dataset.node);
         window.setTimeout(() => {
           node.style.opacity = "1";
@@ -33,7 +55,7 @@ export function System() {
       },
       { threshold: 0.2 },
     );
-    observer.observe(svg);
+    observer.observe(frame);
     return () => observer.disconnect();
   }, [reduced]);
 
@@ -55,9 +77,9 @@ export function System() {
         </div>
       </div>
 
-      <div className="system-frame">
+      <div className="system-frame" ref={frameRef}>
         <svg
-          ref={diagramRef}
+          className="system-desktop"
           viewBox="0 0 1200 560"
           role="img"
           aria-label="Diagram: nine disconnected tools above, one connected line of work below"
@@ -78,18 +100,9 @@ export function System() {
             <path d="M160 86 L780 186" />
           </g>
           <g className="sys-boxes">
-            {[
-              [100, 64, "CRM", 160, 89],
-              [410, 74, "ERP", 470, 99],
-              [580, 64, "SHEETS", 640, 89],
-              [880, 68, "EMAIL", 940, 93],
-              [140, 154, "TEXTS", 200, 179],
-              [410, 168, "WHITEBOARD", 475, 193],
-              [720, 164, "ACCOUNTING", 785, 189],
-              [1000, 150, "SCHEDULER", 1065, 175],
-            ].map(([x, y, label, tx, ty]) => (
-              <g key={String(label)}>
-                <rect x={x} y={y} width={String(label).length > 8 ? 130 : 120} height="40" rx="4" />
+            {tools.map(([x, y, label, tx, ty]) => (
+              <g key={label}>
+                <rect x={x} y={y} width={label.length > 8 ? 130 : 120} height="40" rx="4" />
                 <text x={tx} y={ty}>{label}</text>
               </g>
             ))}
@@ -111,6 +124,43 @@ export function System() {
             EVERY STAGE VISIBLE · EVERY HANDOFF OWNED · ENTERED ONCE
           </text>
         </svg>
+
+        <div className="system-mobile">
+          <p className="sys-mobile-label">Before — nine tools, no line</p>
+          <div className="sys-tangle-board" role="img" aria-label="Disconnected tools in a tangle: CRM, ERP, sheets, texts, whiteboard, email, accounting, and scheduler">
+            <svg className="sys-tangle-lines" viewBox="0 0 100 72" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M12 16 L48 42" />
+              <path d="M12 16 L86 18" />
+              <path d="M48 10 L16 36" />
+              <path d="M48 10 L86 34" />
+              <path d="M86 18 L48 42" />
+              <path d="M16 36 L48 42" />
+              <path d="M16 36 L86 34" />
+              <path d="M48 42 L22 60" />
+              <path d="M86 34 L70 58" />
+              <path d="M12 16 L70 58" />
+              <path d="M86 18 L22 60" />
+              <path d="M16 36 L70 58" />
+              <path d="M48 10 L22 60" />
+            </svg>
+            {mobileTools.map((tool) => (
+              <span key={tool.label} className={`sys-chip ${tool.className}`}>{tool.label}</span>
+            ))}
+          </div>
+
+          <div className="sys-join-mobile">
+            <i aria-hidden="true" />
+            <span>One system of record</span>
+          </div>
+
+          <p className="sys-mobile-label">After — one line, end to end</p>
+          <ol className="sys-spine">
+            {nodes.map((label, index) => (
+              <li key={label} data-node={index}>{label}</li>
+            ))}
+          </ol>
+          <p className="sys-mobile-caption">Every stage visible · every handoff owned · entered once</p>
+        </div>
       </div>
     </section>
   );

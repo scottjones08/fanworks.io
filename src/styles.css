@@ -902,6 +902,7 @@ h2 {
   color: var(--paper);
   border-top: 1px solid rgba(242, 238, 228, 0.14);
   padding: clamp(64px, 11vh, 140px) var(--pad);
+  overflow-x: clip;
 }
 
 .corner {
@@ -919,14 +920,19 @@ h2 {
 
 .system-frame {
   margin-top: clamp(38px, 6vh, 64px);
-  overflow-x: auto;
+  overflow: visible;
+  max-width: 100%;
 }
 
-.system-frame svg {
+.system-desktop {
   display: block;
   width: 100%;
-  min-width: 880px;
   height: auto;
+  max-width: 100%;
+}
+
+.system-mobile {
+  display: none;
 }
 
 .sys-label {
@@ -1000,6 +1006,155 @@ h2 {
   font-size: 13px;
   letter-spacing: 2px;
   text-anchor: middle;
+}
+
+.sys-mobile-label,
+.sys-mobile-caption,
+.sys-join-mobile {
+  margin: 0;
+  font-family: var(--mono);
+  text-transform: uppercase;
+}
+
+.sys-mobile-label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(242, 238, 228, 0.5);
+}
+
+.sys-tangle-board {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 10 / 7.4;
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.sys-tangle-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sys-tangle-lines path {
+  fill: none;
+  stroke: rgba(242, 238, 228, 0.16);
+  stroke-dasharray: 4 6;
+  stroke-width: 0.6;
+}
+
+.sys-chip {
+  position: absolute;
+  border: 1px solid rgba(242, 238, 228, 0.35);
+  border-radius: 4px;
+  padding: 7px 9px;
+  background: var(--ink);
+  color: rgba(242, 238, 228, 0.78);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sys-chip-crm { left: 2%; top: 8%; }
+.sys-chip-erp { left: 38%; top: 1%; }
+.sys-chip-sheets { right: 2%; top: 10%; }
+.sys-chip-texts { left: 4%; top: 38%; }
+.sys-chip-whiteboard { left: 32%; top: 46%; }
+.sys-chip-email { right: 2%; top: 34%; }
+.sys-chip-accounting { left: 6%; top: 74%; }
+.sys-chip-scheduler { right: 4%; top: 70%; }
+
+.sys-join-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0 28px;
+  color: rgba(242, 238, 228, 0.55);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.sys-join-mobile i {
+  position: relative;
+  display: block;
+  width: 1.5px;
+  height: 36px;
+  background: var(--ochre);
+}
+
+.sys-join-mobile i::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--ochre);
+  transform: translateX(-50%);
+}
+
+.sys-spine {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+}
+
+.sys-spine li {
+  position: relative;
+  padding: 0 0 22px 30px;
+  color: rgba(242, 238, 228, 0.78);
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.sys-spine li:last-child {
+  padding-bottom: 0;
+}
+
+.sys-spine li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--ochre);
+  border-radius: 50%;
+  background: var(--ink);
+  z-index: 1;
+}
+
+.sys-spine li::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  bottom: 0;
+  width: 2px;
+  background: var(--ochre);
+}
+
+.sys-spine li:last-child::after {
+  display: none;
+}
+
+.sys-mobile-caption {
+  margin-top: 22px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  color: rgba(242, 238, 228, 0.42);
+  text-wrap: pretty;
 }
 
 /* Frictions */
@@ -1543,6 +1698,17 @@ h2 {
   font-size: clamp(22px, 3.4vw, 44px);
   letter-spacing: 0.02em;
   color: var(--ink-soft);
+}
+
+@media (max-width: 899px) {
+  .system-desktop {
+    display: none;
+  }
+
+  .system-mobile {
+    display: block;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 719px) {
