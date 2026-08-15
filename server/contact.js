@@ -3,6 +3,22 @@ const RATE_WINDOW_MS = 60 * 60 * 1000;
 const RATE_MAX = 6;
 const hits = new Map();
 
+export const DEFAULT_CONTACT_TO = [
+  "scottjones08@gmail.com",
+  "scott@fanworks.io",
+  "mike@fanworks.io",
+  "brant@fanworks.io",
+];
+
+export function contactRecipients() {
+  const raw = process.env.CONTACT_TO;
+  if (!raw || !String(raw).trim()) return [...DEFAULT_CONTACT_TO];
+  return String(raw)
+    .split(/[,;\n]+/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 export function clientIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
   if (typeof forwarded === "string" && forwarded.trim()) {
@@ -60,6 +76,7 @@ function sendJson(res, status, payload) {
 async function sendResend({ to, name, email, text }) {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM || "FanWorks <beth.t@example.com>";
+  const recipients = Array.isArray(to) ? to : [to];
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -68,7 +85,7 @@ async function sendResend({ to, name, email, text }) {
     },
     body: JSON.stringify({
       from,
-      to: [to],
+      to: recipients,
       reply_to: email,
       subject: `FanWorks conversation: ${name}`,
       text,
@@ -103,7 +120,7 @@ async function sendWebhook({ name, email, message, text }) {
 }
 
 export async function deliverContact({ name, email, message }) {
-  const to = process.env.CONTACT_TO || "hello@fanworks.io";
+  const to = contactRecipients();
   const text = `New FanWorks inquiry\n\nName: ${name}\nEmail: ${email}\n\n${message}\n`;
   const jobs = [];
 

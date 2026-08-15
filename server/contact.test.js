@@ -1,6 +1,28 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { validateContact } from "./contact.js";
+import { contactRecipients, DEFAULT_CONTACT_TO, validateContact } from "./contact.js";
+
+test("defaults to the FanWorks inbox list", () => {
+  const previous = process.env.CONTACT_TO;
+  delete process.env.CONTACT_TO;
+  try {
+    assert.deepEqual(contactRecipients(), DEFAULT_CONTACT_TO);
+  } finally {
+    if (previous === undefined) delete process.env.CONTACT_TO;
+    else process.env.CONTACT_TO = previous;
+  }
+});
+
+test("parses comma-separated CONTACT_TO", () => {
+  const previous = process.env.CONTACT_TO;
+  process.env.CONTACT_TO = "scott@fanworks.io, mike@fanworks.io";
+  try {
+    assert.deepEqual(contactRecipients(), ["scott@fanworks.io", "mike@fanworks.io"]);
+  } finally {
+    if (previous === undefined) delete process.env.CONTACT_TO;
+    else process.env.CONTACT_TO = previous;
+  }
+});
 
 test("rejects empty fields", () => {
   const result = validateContact({ name: "", email: "", message: "" });
