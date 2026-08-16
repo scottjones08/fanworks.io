@@ -10,6 +10,41 @@ export const DEFAULT_CONTACT_TO = [
   "brant@fanworks.io",
 ];
 
+const RESEND_TEST_HOST = ["resend", "dev"].join(".");
+export const ONBOARDING_FROM = `FanWorks <${["onboarding", RESEND_TEST_HOST].join("@")}>`;
+
+export function resendFromAddress() {
+  const from = String(process.env.RESEND_FROM || "").trim();
+  return from || ONBOARDING_FROM;
+}
+
+export function resendUsesOnboarding(from = resendFromAddress()) {
+  return from.toLowerCase().includes(RESEND_TEST_HOST);
+}
+
+export function resendRecipients(to) {
+  const recipients = (Array.isArray(to) ? to : [to]).filter(Boolean);
+  if (resendUsesOnboarding() && recipients.length > 1) {
+    return [recipients[0]];
+  }
+  return recipients;
+}
+
+export function contactConfigured() {
+  return Boolean(process.env.RESEND_API_KEY || process.env.CONTACT_WEBHOOK_URL);
+}
+
+export function contactStatus() {
+  return {
+    configured: contactConfigured(),
+    resend: Boolean(process.env.RESEND_API_KEY),
+    webhook: Boolean(process.env.CONTACT_WEBHOOK_URL),
+    from: resendFromAddress(),
+    onboardingSender: resendUsesOnboarding(),
+    recipients: contactRecipients().length,
+  };
+}
+
 export function contactRecipients() {
   const raw = process.env.CONTACT_TO;
   if (!raw || !String(raw).trim()) return [...DEFAULT_CONTACT_TO];
@@ -73,10 +108,23 @@ function sendJson(res, status, payload) {
   res.end(body);
 }
 
-async function sendResend({ to, name, email, text }) {
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+export async function sendResend({ to, name, email, message, text }) {
   const key = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM || "FanWorks <beth.t@example.com>";
-  const recipients = Array.isArray(to) ? to : [to];
+  const from = resendFromAddress();
+  const recipients = resendRecipients(to);
+  const html = `<p>New FanWorks inquiry</p>
+<p><strong>Name:</strong> ${escapeHtml(name)}<br>
+<strong>Email:</strong> ${escapeHtml(email)}</p>
+<p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`;
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -86,18 +134,22 @@ async function sendResend({ to, name, email, text }) {
     body: JSON.stringify({
       from,
       to: recipients,
-      reply_to: email,
+      reply_to: [email],
       subject: `FanWorks conversation: ${name}`,
       text,
+      html,
     }),
     signal: AbortSignal.timeout(12_000),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error("resend_failed");
+    const message = payload?.message || payload?.error?.message || `resend_http_${response.status}`;
+    const error = new Error(message);
+    error.code = "resend_failed";
     error.detail = payload;
     throw error;
   }
+  return payload;
 }
 
 async function sendWebhook({ name, email, message, text }) {
@@ -125,7 +177,7 @@ export async function deliverContact({ name, email, message }) {
   const jobs = [];
 
   if (process.env.RESEND_API_KEY) {
-    jobs.push(sendResend({ to, name, email, text }));
+    jobs.push(sendResend({ to, name, email, message, text }));
   }
   if (process.env.CONTACT_WEBHOOK_URL) {
     jobs.push(sendWebhook({ name, email, message, text }));
@@ -141,9 +193,11 @@ export async function deliverContact({ name, email, message }) {
   if (results.every((result) => result.status === "rejected")) {
     console.error(
       "[fanworks contact] delivery failed",
-      results.map((result) => result.reason?.message || result.reason),
+      results.map((result) => result.reason?.detail || result.reason?.message || result.reason),
     );
-    throw new Error("delivery_failed");
+    const error = new Error("delivery_failed");
+    error.code = "delivery_failed";
+    throw error;
   }
 }
 

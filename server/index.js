@@ -1,7 +1,7 @@
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { respondContact } from "./contact.js";
+import { contactStatus, respondContact } from "./contact.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +37,11 @@ Technology promised easier work, but many teams inherited more screens, more ste
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
+});
+
+app.get("/api/contact", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json(contactStatus());
 });
 
 app.post("/api/contact", (req, res) => {
