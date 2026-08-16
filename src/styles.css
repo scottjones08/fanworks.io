@@ -171,8 +171,8 @@ h2 {
   margin: 0;
   font-family: var(--display);
   text-transform: uppercase;
-  font-size: clamp(40px, 7vw, 108px);
-  line-height: 0.88;
+  font-size: clamp(34px, 4.6vw, 68px);
+  line-height: 0.9;
   letter-spacing: -0.025em;
   font-weight: 400;
 }
@@ -746,8 +746,10 @@ h2 {
   top: 0;
   height: 100vh;
   overflow: hidden;
-  display: grid;
-  align-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: clamp(72px, 10vh, 100px) 0 clamp(18px, 3vh, 32px);
   background: var(--paper);
   color: var(--ink-soft);
 }
@@ -768,15 +770,14 @@ h2 {
 }
 
 .ledger-top {
-  position: absolute;
-  left: var(--pad);
-  right: var(--pad);
-  top: clamp(76px, 11vh, 110px);
+  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
   z-index: 1;
+  padding: 0 var(--pad);
+  flex: none;
 }
 
 .ledger-top span {
@@ -788,28 +789,27 @@ h2 {
 }
 
 .ledger-stage > h2 {
-  position: absolute;
-  left: var(--pad);
-  right: var(--pad);
-  top: clamp(108px, 17vh, 170px);
-  max-width: 20ch;
-  font-size: clamp(28px, 4.2vw, 64px);
-  line-height: 0.9;
+  position: relative;
+  max-width: 16ch;
+  margin-top: 14px;
+  padding: 0 var(--pad);
+  font-size: clamp(26px, 3.2vw, 48px);
+  line-height: 0.92;
   z-index: 1;
+  flex: none;
 }
 
 .ledger-lead {
-  position: absolute;
-  left: var(--pad);
-  right: var(--pad);
-  top: clamp(188px, 28vh, 268px);
+  position: relative;
   max-width: 44ch;
-  margin: 0;
+  margin: 12px 0 0;
+  padding: 0 var(--pad);
   z-index: 1;
-  font-size: clamp(14px, 1.15vw, 17px);
+  font-size: clamp(14px, 1.1vw, 17px);
   line-height: 1.45;
   color: rgba(23, 25, 22, 0.55);
   text-wrap: pretty;
+  flex: none;
 }
 
 .ledger-track {
@@ -819,7 +819,9 @@ h2 {
   padding: 0 var(--pad);
   width: max-content;
   will-change: transform;
-  margin-top: clamp(88px, 16vh, 168px);
+  margin-top: 28px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .ledger-card {
@@ -838,7 +840,7 @@ h2 {
 }
 
 .ledger-card:nth-child(even) {
-  margin-top: clamp(28px, 6vh, 60px);
+  margin-top: clamp(12px, 2.4vh, 28px);
 }
 
 .ledger-card.is-active {
@@ -933,12 +935,12 @@ h2 {
 }
 
 .ledger-rail {
-  position: absolute;
-  left: var(--pad);
-  right: var(--pad);
-  bottom: clamp(28px, 5vh, 48px);
+  position: relative;
+  margin-top: auto;
+  padding: 18px var(--pad) 0;
   display: grid;
   gap: 10px;
+  flex: none;
 }
 
 .ledger-rail > div:first-child {
@@ -1377,8 +1379,8 @@ h2 {
   margin: 0;
   font-family: var(--display);
   text-transform: uppercase;
-  font-size: clamp(24px, 3.4vw, 52px);
-  line-height: 0.96;
+  font-size: clamp(20px, 2.2vw, 34px);
+  line-height: 1;
   letter-spacing: -0.015em;
   font-weight: 400;
 }
@@ -1446,8 +1448,8 @@ h2 {
 }
 
 .approach-panel h2 {
-  font-size: clamp(44px, 9vw, 150px);
-  max-width: 12ch;
+  font-size: clamp(32px, 4.8vw, 64px);
+  max-width: 14ch;
 }
 
 .approach-panel p {
