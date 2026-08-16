@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Adopt } from "./components/Adopt";
 import { Approach } from "./components/Approach";
 import { Contact } from "./components/Contact";
 import { Frictions } from "./components/Frictions";
@@ -20,6 +21,7 @@ export default function App() {
       <System />
       <Frictions />
       <Approach />
+      <Adopt />
       <Practices />
       <Story />
       <Contact />

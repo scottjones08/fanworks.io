@@ -58,7 +58,7 @@ export function Practices() {
       <div className="reveal" ref={headRef}>
         <div className="section-kicker kicker-dark">
           <i />
-          05 · Practice areas
+          06 · Practice areas
         </div>
         <div className="split-head">
           <h2 id="practices-title">Where we've run it.</h2>

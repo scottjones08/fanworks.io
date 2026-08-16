@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { frictionWords, scrollToId, tickerCopy } from "../content";
+import { frictionWords, lineStages, scrollToId, tickerCopy } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const HERO_VIDEO =
@@ -11,6 +11,7 @@ export function Hero() {
   const [clock, setClock] = useState("RVA · --:--");
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
+  const [stageIndex, setStageIndex] = useState(0);
   const [showCue, setShowCue] = useState(true);
 
   useEffect(() => {
@@ -60,6 +61,14 @@ export function Hero() {
     return () => window.clearInterval(id);
   }, [reduced]);
 
+  useEffect(() => {
+    if (reduced) return;
+    const id = window.setInterval(() => {
+      setStageIndex((index) => (index + 1) % lineStages.length);
+    }, 1700);
+    return () => window.clearInterval(id);
+  }, [reduced]);
+
   return (
     <section className="hero" id="top">
       <div className="hero-media" aria-hidden="true">
@@ -105,6 +114,17 @@ export function Hero() {
             </h1>
           </div>
         </div>
+
+        <aside className="hero-aside" aria-hidden="true">
+          <span>The line · end to end</span>
+          <ol className="hero-spine">
+            {lineStages.map((stage, index) => (
+              <li key={stage} className={reduced || index === stageIndex ? "is-on" : ""}>
+                {stage}
+              </li>
+            ))}
+          </ol>
+        </aside>
 
         <div className="hero-footer">
           <p>

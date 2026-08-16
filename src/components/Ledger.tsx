@@ -70,13 +70,24 @@ export function Ledger() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
+  const [stack, setStack] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 899px)");
+    const sync = () => setStack(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  const stacked = reduced || stack;
 
   useEffect(() => {
     const update = () => {
       const section = sectionRef.current;
       const track = trackRef.current;
       if (!section || !track) return;
-      if (reduced) {
+      if (stacked) {
         track.style.transform = "";
         setProgress(1);
         setActive(dayCards.length - 1);
@@ -97,10 +108,10 @@ export function Ledger() {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [reduced]);
+  }, [stacked]);
 
   return (
-    <section className={`ledger${reduced ? " is-static" : ""}`} id="ledger" ref={sectionRef} aria-label="A day on the floor">
+    <section className={`ledger${stacked ? " is-static" : ""}`} id="ledger" ref={sectionRef} aria-label="A typical day, before and after">
       <div className="ledger-stage">
         <span className="ledger-ghost" aria-hidden="true">
           {dayCards[active].time}
@@ -110,9 +121,13 @@ export function Ledger() {
             <i />
             01 · A day on the floor
           </div>
-          <span>Scroll ⟶</span>
+          <span>Keep scrolling</span>
         </div>
-        <h2>The same day, run twice.</h2>
+        <h2>A typical day — before and after.</h2>
+        <p className="ledger-lead">
+          Each card is a moment on the floor. The first line is how the day runs now. The second is how it
+          runs once the work lives in one place.
+        </p>
 
         <div className="ledger-track" ref={trackRef}>
           {dayCards.map((card, index) => (
