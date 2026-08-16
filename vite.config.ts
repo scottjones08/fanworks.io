@@ -7,7 +7,22 @@ function contactApi(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const path = req.url?.split("?")[0];
-        if (path !== "/api/contact" || req.method !== "POST") {
+        if (path !== "/api/contact") {
+          next();
+          return;
+        }
+        if (req.method === "GET") {
+          import("./server/contact.js")
+            .then(({ contactStatus }) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.setHeader("Cache-Control", "no-store");
+              res.end(JSON.stringify(contactStatus()));
+            })
+            .catch(next);
+          return;
+        }
+        if (req.method !== "POST") {
           next();
           return;
         }
