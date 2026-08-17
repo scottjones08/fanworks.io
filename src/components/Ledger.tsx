@@ -78,13 +78,13 @@ export function Ledger() {
       const fillZoom = Math.min(W / ((rw + pad) * fit), H / ((rh + pad) * fit));
       const zoom = mobile
         ? seeingAll
-          ? 1.18
-          : Math.min(2.35, Math.max(1.35, fillZoom * 0.9))
-        : 1.14 + eased * 0.08;
-      const lookT = mobile ? (seeingAll ? 0.08 : 1) : 0.08 + eased * 0.18;
+          ? 1.12
+          : Math.min(2.2, Math.max(1.3, fillZoom * 0.88))
+        : 1.08 + eased * 0.05;
+      const lookT = mobile ? (seeingAll ? 0.06 : 0.92) : 0.04 + eased * 0.1;
       const ox = (x - VIEW_CX) * fit * lookT;
       const oy = (y - VIEW_CY) * fit * lookT;
-      const lift = mobile ? (seeingAll ? H * 0.08 : H * 0.12) : 0;
+      const lift = mobile ? (seeingAll ? H * 0.06 : H * 0.1) : 0;
       camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(12deg) rotateZ(-8deg) scale(${zoom})`;
       if (stage) stage.style.setProperty("--day", String(Math.max(intro * 0.2, eased)));
       if (path) {

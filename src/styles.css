@@ -780,7 +780,7 @@ h2 {
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(23, 25, 22, 0.45);
+  color: rgba(23, 25, 22, 0.58);
   padding-bottom: 6px;
 }
 
@@ -1006,9 +1006,9 @@ h2 {
 
 .floor-mark {
   font-family: var(--display);
-  font-size: 72px;
+  font-size: 52px;
   letter-spacing: -0.04em;
-  fill: rgba(23, 25, 22, 0.1);
+  fill: rgba(23, 25, 22, 0.07);
   pointer-events: none;
   transition: fill 0.5s ease;
 }
@@ -1021,27 +1021,39 @@ h2 {
   fill: rgba(213, 161, 59, 0.18);
 }
 
+.floor-chip {
+  fill: rgba(242, 238, 228, 0.94);
+  stroke: rgba(23, 25, 22, 0.22);
+  stroke-width: 1;
+}
+
 .floor-spine {
   font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.22em;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  fill: rgba(23, 25, 22, 0.42);
+  fill: var(--ink-soft);
 }
 
 .floor-endcap {
   font-size: 12px;
-  fill: rgba(23, 25, 22, 0.55);
+  font-weight: 500;
+  fill: var(--ink-soft);
 }
 
 .floor-endcap.is-out {
   fill: var(--brick);
 }
 
+.floor-sign {
+  filter: drop-shadow(0 8px 12px rgba(18, 17, 16, 0.18));
+}
+
 .floor-sign-board {
-  fill: rgba(242, 238, 228, 0.96);
-  stroke: rgba(23, 25, 22, 0.28);
-  stroke-width: 1.2;
+  fill: #fbf8f1;
+  stroke: rgba(23, 25, 22, 0.45);
+  stroke-width: 1.6;
   transition: fill 0.4s ease, stroke 0.4s ease;
 }
 
@@ -1050,19 +1062,22 @@ h2 {
 }
 
 .floor-sign-index {
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 500;
   fill: var(--brick);
 }
 
 .floor-sign-name {
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  fill: var(--ink-soft);
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  fill: var(--ink);
 }
 
 .floor-sign-time {
-  font-size: 9px;
-  fill: rgba(23, 25, 22, 0.45);
+  font-size: 11px;
+  fill: rgba(23, 25, 22, 0.5);
 }
 
 .floor-sign.is-live .floor-sign-board {
@@ -1303,7 +1318,7 @@ h2 {
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(23, 25, 22, 0.42);
+  color: rgba(23, 25, 22, 0.58);
 }
 
 .ledger-stops li.is-live b {
@@ -1311,8 +1326,8 @@ h2 {
 }
 
 .ledger-stops span {
-  font-size: 11px;
-  color: rgba(23, 25, 22, 0.55);
+  font-size: 12px;
+  color: rgba(23, 25, 22, 0.72);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2461,11 +2476,13 @@ h2 {
   }
 
   .ledger-stops span {
-    display: none;
+    display: block;
+    font-size: 8px;
+    letter-spacing: 0;
   }
 
   .ledger-stops b {
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 0.08em;
   }
 
@@ -2503,15 +2520,19 @@ h2 {
   }
 
   .floor-sign-index {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .floor-sign-name {
-    font-size: 13px;
+    font-size: 20px;
   }
 
   .floor-sign-time {
-    font-size: 11px;
+    font-size: 13px;
+  }
+
+  .floor-spine {
+    font-size: 16px;
   }
 
   .floor-endcap {
@@ -2519,7 +2540,7 @@ h2 {
   }
 
   .floor-mark {
-    font-size: 62px;
+    font-size: 48px;
   }
 
   .adopt-art {

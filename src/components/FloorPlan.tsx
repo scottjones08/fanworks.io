@@ -14,8 +14,8 @@ const AISLE_Y = 200;
 const AISLE_D = 92;
 
 export const FLOOR = {
-  width: 1180,
-  height: 720,
+  width: 1220,
+  height: 730,
 } as const;
 
 export function iso(x: number, y: number, z = 0) {
@@ -217,15 +217,15 @@ function BayLabel({
   time: string;
   live: boolean;
 }) {
-  const towardAisle = room.y < AISLE_Y;
-  const p = iso(room.x + room.w / 2, towardAisle ? room.y + room.h - 22 : room.y + 22, 6);
+  const north = room.y < AISLE_Y;
+  const p = iso(room.x + room.w / 2, north ? room.y + 30 : room.y + room.h + 8, north ? 58 : 38);
   return (
     <g className={`floor-sign${live ? " is-live" : ""}`} transform={`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`}>
-      <rect className="floor-sign-board" x="-72" y="-28" width="144" height="48" rx="2" />
-      <text className="floor-sign-index" x="0" y="-8">
+      <rect className="floor-sign-board" x="-90" y="-30" width="180" height="58" rx="3" />
+      <text className="floor-sign-index" x="0" y="-6">
         {`${String(index + 1).padStart(2, "0")}  ·  ${time}`}
       </text>
-      <text className="floor-sign-name" x="0" y="14">
+      <text className="floor-sign-name" x="0" y="18">
         {room.label}
       </text>
     </g>
@@ -262,14 +262,14 @@ export function FloorPlan({
   ];
   const pathD = `M ${pathPts.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" L ")}`;
   const spine = iso(BUILDING.w / 2, AISLE_Y + AISLE_D / 2, 8);
-  const morning = iso(24, AISLE_Y + 28, 8);
-  const evening = iso(24, AISLE_Y + AISLE_D - 18, 8);
+  const morning = iso(86, 210, 12);
+  const evening = iso(86, 282, 12);
   const drawRooms = [...floorRooms].sort((a, b) => a.x + a.y - (b.x + b.y));
 
   return (
     <svg
       className="floor-svg"
-      viewBox="190 20 1180 720"
+      viewBox="150 15 1220 730"
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label="Cutaway of a shop floor. Six stations sit on one U-shaped line of work, from 7 AM to 6 PM."
@@ -284,7 +284,7 @@ export function FloorPlan({
         </filter>
       </defs>
 
-      <rect x="190" y="20" width="1180" height="720" fill="url(#iso-sky)" />
+      <rect x="150" y="15" width="1220" height="730" fill="url(#iso-sky)" />
 
       <g className="iso-ground" filter="url(#iso-drop)" aria-hidden="true">
         <IsoFloor className="iso-lot" x={-24} y={-20} w={BUILDING.w + 80} d={BUILDING.d + 56} />
@@ -321,30 +321,29 @@ export function FloorPlan({
       })}
 
       <IsoFloor className="iso-aisle" x={0} y={AISLE_Y} w={BUILDING.w} d={AISLE_D} z={1} />
-      <text className="floor-spine" x={spine.x} y={spine.y} textAnchor="middle">
-        The line of work
-      </text>
-      <text className="floor-endcap" x={morning.x} y={morning.y}>
-        7 AM · in
-      </text>
-      <text className="floor-endcap is-out" x={evening.x} y={evening.y}>
-        out · 6 PM
-      </text>
+      <g transform={`translate(${spine.x.toFixed(1)} ${spine.y.toFixed(1)})`}>
+        <rect className="floor-chip" x="-118" y="-16" width="236" height="30" rx="2" />
+        <text className="floor-spine" x="0" y="6" textAnchor="middle">
+          The line of work
+        </text>
+      </g>
+      <g transform={`translate(${morning.x.toFixed(1)} ${morning.y.toFixed(1)})`}>
+        <rect className="floor-chip" x="-44" y="-14" width="88" height="24" rx="2" />
+        <text className="floor-endcap" x="0" y="5" textAnchor="middle">
+          7 AM · in
+        </text>
+      </g>
+      <g transform={`translate(${evening.x.toFixed(1)} ${evening.y.toFixed(1)})`}>
+        <rect className="floor-chip" x="-48" y="-14" width="96" height="24" rx="2" />
+        <text className="floor-endcap is-out" x="0" y="5" textAnchor="middle">
+          out · 6 PM
+        </text>
+      </g>
 
       <path className="floor-path-ghost" d={pathD} />
       <path className="floor-path-shadow" d={pathD} />
       <path data-line="true" pathLength={1} className="floor-path" d={pathD} />
       <circle data-traveler="true" className="floor-traveler" r="8" cx={pathPts[0].x} cy={pathPts[0].y} />
-
-      {floorRooms.map((room, index) => (
-        <BayLabel
-          key={`sign-${room.zone}`}
-          room={room}
-          index={index}
-          time={dayCards[index].time}
-          live={allLit || (!overview && index === active)}
-        />
-      ))}
 
       {overview || allLit ? null : (
         <g
@@ -357,6 +356,16 @@ export function FloorPlan({
           <circle r="5" />
         </g>
       )}
+
+      {floorRooms.map((room, index) => (
+        <BayLabel
+          key={`sign-${room.zone}`}
+          room={room}
+          index={index}
+          time={dayCards[index].time}
+          live={allLit || (!overview && index === active)}
+        />
+      ))}
     </svg>
   );
 }
