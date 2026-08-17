@@ -7,6 +7,9 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
+const VIEW_CX = 780;
+const VIEW_CY = 410;
+
 export function Ledger() {
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,6 +18,7 @@ export function Ledger() {
   const stageRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
+  const [overview, setOverview] = useState(true);
   const [narrow, setNarrow] = useState(false);
 
   const stacked = reduced;
@@ -44,12 +48,15 @@ export function Ledger() {
         if (path) path.style.strokeDashoffset = "0";
         setProgress(1);
         setActive(dayCards.length - 1);
+        setOverview(false);
         return;
       }
 
       const distance = Math.max(1, section.offsetHeight - window.innerHeight);
       const raw = Math.min(1, Math.max(0, (window.scrollY - section.offsetTop) / distance));
-      const eased = raw < 0.5 ? 2 * raw * raw : 1 - (-2 * raw + 2) ** 2 / 2;
+      const intro = Math.min(1, raw / 0.08);
+      const walk = Math.max(0, (raw - 0.08) / 0.92);
+      const eased = walk < 0.5 ? 2 * walk * walk : 1 - (-2 * walk + 2) ** 2 / 2;
       const last = dayCards.length - 1;
       const span = eased * last;
       const index = Math.min(last, Math.floor(span + 0.001));
@@ -66,24 +73,26 @@ export function Ledger() {
       const H = Math.max(1, wrap.clientHeight);
       const fit = Math.min(W / FLOOR.width, H / FLOOR.height);
       const mobile = window.innerWidth < 900;
-      const pad = mobile ? 90 : 420;
+      const seeingAll = raw < 0.08;
+      const pad = mobile ? 70 : 280;
       const fillZoom = Math.min(W / ((rw + pad) * fit), H / ((rh + pad) * fit));
       const zoom = mobile
-        ? Math.min(3.4, Math.max(1.55, fillZoom * 0.85))
-        : Math.min(1.28, Math.max(1.04, 1.06 + eased * 0.12));
-      const ox = (x - 950) * fit;
-      const oy = (y - 460) * fit;
-      const lift = mobile ? H * 0.14 : 0;
-      const tilt = mobile ? 10 : 14;
-      const spin = -8 + eased * 12;
-      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(${tilt}deg) rotateZ(${spin}deg) scale(${zoom})`;
-      if (stage) stage.style.setProperty("--day", String(eased));
+        ? seeingAll
+          ? 1.08
+          : Math.min(2.55, Math.max(1.4, fillZoom * 0.9))
+        : 1.02 + eased * 0.05;
+      const lookT = mobile ? (seeingAll ? 0.12 : 1) : 0.12 + eased * 0.22;
+      const ox = (x - VIEW_CX) * fit * lookT;
+      const oy = (y - VIEW_CY) * fit * lookT;
+      const lift = mobile && !seeingAll ? H * 0.1 : 0;
+      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(11deg) rotateZ(-10deg) scale(${zoom})`;
+      if (stage) stage.style.setProperty("--day", String(Math.max(intro * 0.2, eased)));
       if (path) {
-        path.style.strokeDashoffset = String(1 - Math.max(0.06, eased));
+        path.style.strokeDashoffset = String(1 - Math.max(0.12, seeingAll ? 0.12 : eased));
         if (traveler) {
           try {
             const len = path.getTotalLength();
-            const pt = path.getPointAtLength(Math.max(0.02, eased) * len);
+            const pt = path.getPointAtLength(Math.max(0.04, seeingAll ? 0.04 : eased) * len);
             traveler.setAttribute("cx", String(pt.x));
             traveler.setAttribute("cy", String(pt.y));
           } catch {
@@ -92,7 +101,8 @@ export function Ledger() {
         }
       }
       setProgress(raw);
-      setActive(index);
+      setActive(seeingAll ? 0 : index);
+      setOverview(seeingAll);
     };
 
     update();
@@ -106,7 +116,7 @@ export function Ledger() {
 
   return (
     <section
-      className={`ledger${stacked ? " is-static" : ""}${narrow ? " is-narrow" : ""}`}
+      className={`ledger${stacked ? " is-static" : ""}${narrow ? " is-narrow" : ""}${overview && !stacked ? " is-overview" : ""}`}
       id="ledger"
       ref={sectionRef}
       aria-labelledby="ledger-title"
@@ -118,68 +128,93 @@ export function Ledger() {
               <i />
               01 · A day on the floor
             </div>
-            <h2 id="ledger-title">A typical day — before and after.</h2>
+            <h2 id="ledger-title">One line through the building.</h2>
           </div>
-          <span>Keep scrolling · walk the building</span>
+          <span>Six stations · 7 AM to 6 PM</span>
         </div>
 
         <div className="ledger-main">
           <article
-            className={`ledger-story${"finale" in card && card.finale ? " is-finale" : ""}`}
-            key={card.zone}
+            className={`ledger-story${overview ? " is-overview" : ""}${"finale" in card && card.finale && !overview ? " is-finale" : ""}`}
+            key={overview ? "overview" : card.zone}
             aria-live="polite"
           >
-            <div className="ledger-story-meta">
-              <span>{card.stamp}</span>
-              <span>{card.room}</span>
-              <span>{card.index}</span>
-            </div>
-            <p>{card.before}</p>
-            <div className="ledger-rule" aria-hidden="true">
-              <b />
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 12h14M13 6l6 6-6 6" />
-              </svg>
-            </div>
-            <p className="ledger-after">{card.after}</p>
+            {overview ? (
+              <>
+                <div className="ledger-story-meta">
+                  <span>The line of work</span>
+                  <span>01 / 06</span>
+                </div>
+                <p>A job should move through the building in one direction — not bounce between rooms and inboxes.</p>
+                <p className="ledger-after">Scroll to walk it.</p>
+              </>
+            ) : (
+              <>
+                <div className="ledger-story-meta">
+                  <span>{card.stamp}</span>
+                  <span>{card.room}</span>
+                  <span>{card.index}</span>
+                </div>
+                <p>{card.before}</p>
+                <div className="ledger-rule" aria-hidden="true">
+                  <b />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </div>
+                <p className="ledger-after">{card.after}</p>
+              </>
+            )}
           </article>
 
           <div className="ledger-plan-wrap" ref={wrapRef}>
             <div className="ledger-plan-camera" ref={cameraRef}>
-              <FloorPlan active={stacked ? dayCards.length - 1 : active} allLit={stacked} />
+              <FloorPlan
+                active={stacked ? dayCards.length - 1 : active}
+                allLit={stacked}
+                overview={overview && !stacked}
+              />
             </div>
             {narrow && !stacked ? (
-              <svg className="ledger-minimap" viewBox="0 0 920 560" aria-hidden="true">
+              <svg className="ledger-minimap" viewBox="0 0 1296 348" aria-hidden="true">
                 {floorRooms.map((room, index) => (
                   <rect
                     key={room.zone}
                     x={room.x}
-                    y={room.y}
+                    y={0}
                     width={room.w}
-                    height={room.h}
-                    className={index === active ? "is-live" : index < active ? "is-visited" : ""}
+                    height={250}
+                    className={!overview && index === active ? "is-live" : !overview && index < active ? "is-visited" : ""}
                   />
                 ))}
+                <rect className="ledger-minimap-aisle" x="0" y="250" width="1296" height="98" />
               </svg>
             ) : null}
           </div>
         </div>
 
         <div className="ledger-rail" aria-hidden="true">
-          <div>
-            <i style={{ width: `${progress * 100}%` }} />
+          <ol className="ledger-stops">
             {dayCards.map((item, index) => (
-              <span
+              <li
                 key={item.time}
-                className={index <= active && (progress > 0.01 || index === 0) ? "is-on" : ""}
-                style={{ left: `${(index / (dayCards.length - 1)) * 100}%` }}
-              />
+                className={
+                  overview
+                    ? ""
+                    : index === active
+                      ? "is-on is-live"
+                      : index < active
+                        ? "is-on"
+                        : ""
+                }
+              >
+                <b>{item.time}</b>
+                <span>{item.room}</span>
+              </li>
             ))}
-          </div>
-          <div>
-            <span>7 AM</span>
-            <span>{card.room}</span>
-            <span>6 PM</span>
+          </ol>
+          <div className="ledger-meter">
+            <i style={{ width: `${progress * 100}%` }} />
           </div>
         </div>
       </div>
