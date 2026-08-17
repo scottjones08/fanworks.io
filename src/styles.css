@@ -833,6 +833,7 @@ h2 {
 }
 
 .floor-endcap,
+.floor-spine,
 .floor-sign-index,
 .floor-sign-name,
 .floor-sign-time {
@@ -854,7 +855,7 @@ h2 {
 }
 
 .iso-aisle {
-  fill: #d7ccb6;
+  fill: #e4d09a;
   stroke: rgba(23, 25, 22, 0.16);
   stroke-width: 1;
 }
@@ -1005,9 +1006,9 @@ h2 {
 
 .floor-mark {
   font-family: var(--display);
-  font-size: 54px;
+  font-size: 72px;
   letter-spacing: -0.04em;
-  fill: rgba(23, 25, 22, 0.08);
+  fill: rgba(23, 25, 22, 0.1);
   pointer-events: none;
   transition: fill 0.5s ease;
 }
@@ -1020,6 +1021,14 @@ h2 {
   fill: rgba(213, 161, 59, 0.18);
 }
 
+.floor-spine {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  fill: rgba(23, 25, 22, 0.42);
+}
+
 .floor-endcap {
   font-size: 12px;
   fill: rgba(23, 25, 22, 0.55);
@@ -1030,7 +1039,7 @@ h2 {
 }
 
 .floor-sign-board {
-  fill: rgba(242, 238, 228, 0.94);
+  fill: rgba(242, 238, 228, 0.96);
   stroke: rgba(23, 25, 22, 0.28);
   stroke-width: 1.2;
   transition: fill 0.4s ease, stroke 0.4s ease;
@@ -1046,7 +1055,7 @@ h2 {
 }
 
 .floor-sign-name {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   fill: var(--ink-soft);
 }
@@ -1353,7 +1362,7 @@ h2 {
 }
 
 .ledger.is-static .ledger-plan-camera {
-  transform: rotateX(11deg) rotateZ(-10deg) !important;
+  transform: rotateX(12deg) rotateZ(-8deg) !important;
 }
 
 .ledger.is-static .ledger-story,
@@ -2466,8 +2475,8 @@ h2 {
     top: 10px;
     right: 10px;
     z-index: 4;
-    width: 132px;
-    height: 38px;
+    width: 96px;
+    height: 58px;
     background: rgba(242, 238, 228, 0.92);
     border: 1px solid rgba(23, 25, 22, 0.2);
     pointer-events: none;

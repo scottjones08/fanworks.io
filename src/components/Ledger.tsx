@@ -7,8 +7,8 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-const VIEW_CX = 780;
-const VIEW_CY = 410;
+const VIEW_CX = 760;
+const VIEW_CY = 390;
 
 export function Ledger() {
   const reduced = useReducedMotion();
@@ -78,14 +78,14 @@ export function Ledger() {
       const fillZoom = Math.min(W / ((rw + pad) * fit), H / ((rh + pad) * fit));
       const zoom = mobile
         ? seeingAll
-          ? 1.08
-          : Math.min(2.55, Math.max(1.4, fillZoom * 0.9))
-        : 1.02 + eased * 0.05;
-      const lookT = mobile ? (seeingAll ? 0.12 : 1) : 0.12 + eased * 0.22;
+          ? 1.18
+          : Math.min(2.35, Math.max(1.35, fillZoom * 0.9))
+        : 1.14 + eased * 0.08;
+      const lookT = mobile ? (seeingAll ? 0.08 : 1) : 0.08 + eased * 0.18;
       const ox = (x - VIEW_CX) * fit * lookT;
       const oy = (y - VIEW_CY) * fit * lookT;
-      const lift = mobile && !seeingAll ? H * 0.1 : 0;
-      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(11deg) rotateZ(-10deg) scale(${zoom})`;
+      const lift = mobile ? (seeingAll ? H * 0.08 : H * 0.12) : 0;
+      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(12deg) rotateZ(-8deg) scale(${zoom})`;
       if (stage) stage.style.setProperty("--day", String(Math.max(intro * 0.2, eased)));
       if (path) {
         path.style.strokeDashoffset = String(1 - Math.max(0.12, seeingAll ? 0.12 : eased));
@@ -143,9 +143,9 @@ export function Ledger() {
               <>
                 <div className="ledger-story-meta">
                   <span>The line of work</span>
-                  <span>01 / 06</span>
+                  <span>Six stations</span>
                 </div>
-                <p>A job should move through the building in one direction — not bounce between rooms and inboxes.</p>
+                <p>Six rooms around one aisle. A job should move through the building in one direction — not bounce between inboxes.</p>
                 <p className="ledger-after">Scroll to walk it.</p>
               </>
             ) : (
@@ -176,18 +176,18 @@ export function Ledger() {
               />
             </div>
             {narrow && !stacked ? (
-              <svg className="ledger-minimap" viewBox="0 0 1296 348" aria-hidden="true">
+              <svg className="ledger-minimap" viewBox="0 0 840 492" aria-hidden="true">
                 {floorRooms.map((room, index) => (
                   <rect
                     key={room.zone}
                     x={room.x}
-                    y={0}
+                    y={room.y}
                     width={room.w}
-                    height={250}
+                    height={room.h}
                     className={!overview && index === active ? "is-live" : !overview && index < active ? "is-visited" : ""}
                   />
                 ))}
-                <rect className="ledger-minimap-aisle" x="0" y="250" width="1296" height="98" />
+                <rect className="ledger-minimap-aisle" x="0" y="200" width="840" height="92" />
               </svg>
             ) : null}
           </div>
