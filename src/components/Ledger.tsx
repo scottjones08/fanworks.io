@@ -63,12 +63,12 @@ export function Ledger() {
       const H = Math.max(1, wrap.clientHeight);
       const fit = Math.min(W / FLOOR.width, H / FLOOR.height);
       const mobile = window.innerWidth < 900;
-      const pad = mobile ? 52 : 280;
+      const pad = mobile ? 24 : 280;
       const fillZoom = Math.min(W / ((rw + pad) * fit), H / ((rh + pad) * fit));
-      const zoom = mobile ? Math.min(4.2, Math.max(1.7, fillZoom * 0.92)) : Math.min(1.14, Math.max(1.02, 1.03 + eased * 0.05));
+      const zoom = mobile ? Math.min(5.4, Math.max(2.4, fillZoom * 1.05)) : Math.min(1.14, Math.max(1.02, 1.03 + eased * 0.05));
       const ox = (x - FLOOR.width / 2) * fit;
       const oy = (y - FLOOR.height / 2) * fit;
-      const lift = mobile ? H * 0.16 : 0;
+      const lift = mobile ? H * 0.2 : 0;
       camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) scale(${zoom})`;
       if (path) path.style.strokeDashoffset = String(1 - Math.max(0.08, eased));
       setProgress(raw);

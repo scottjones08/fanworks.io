@@ -913,6 +913,7 @@ h2 {
   stroke: #171916;
   stroke-width: 5;
   stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
 }
 
 .floor-walls path {
@@ -2465,6 +2466,10 @@ h2 {
 
   .floor-pin-time {
     font-size: 18px;
+  }
+
+  .floor-room:not(.is-live) .floor-label {
+    opacity: 0.25;
   }
 
   .adopt-art {
