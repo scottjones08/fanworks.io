@@ -4,35 +4,54 @@ const points = [
   {
     number: "01",
     title: "Sit with the work",
-    body: "We watch the real day: the handoffs, decisions, and workarounds a process map never shows — and how your people prefer to work.",
+    body: "We watch the real day: the handoffs, decisions, and workarounds a process map never shows.",
   },
   {
     number: "02",
     title: "AI only where it helps",
-    body: "Not everything can be done with AI. Automation earns its place. If it doesn't make the work better, it doesn't go in.",
+    body: "Automation earns its place. If it doesn't make the work better, it doesn't go in.",
   },
   {
     number: "03",
     title: "Train the way they learn",
-    body: "The training style fits the staff, not a generic playbook — so the transition is quick, smooth, and actually used.",
+    body: "The training fits the staff, not a generic playbook — so the new line is used from week one.",
   },
 ] as const;
 
-function SitWithWork() {
+function AroundMark() {
   return (
-    <svg className="adopt-art" viewBox="0 0 420 240" aria-hidden="true">
-      <path d="M40 168 H380" stroke="rgba(242,238,228,0.28)" strokeWidth="2" />
-      <rect x="86" y="118" width="248" height="14" rx="2" fill="rgba(242,238,228,0.12)" />
-      <rect x="108" y="86" width="72" height="46" rx="3" fill="none" stroke="rgba(242,238,228,0.45)" strokeWidth="2" />
-      <rect x="240" y="86" width="72" height="46" rx="3" fill="none" stroke="rgba(242,238,228,0.45)" strokeWidth="2" />
-      <circle cx="144" cy="64" r="16" fill="none" stroke="#d5a13b" strokeWidth="2.4" />
-      <path d="M128 108 C128 86, 160 86, 160 108" fill="none" stroke="#d5a13b" strokeWidth="2.4" />
-      <circle cx="210" cy="58" r="16" fill="none" stroke="rgba(242,238,228,0.7)" strokeWidth="2.4" />
-      <path d="M194 108 C194 80, 226 80, 226 108" fill="none" stroke="rgba(242,238,228,0.7)" strokeWidth="2.4" />
-      <circle cx="276" cy="64" r="16" fill="none" stroke="rgba(242,238,228,0.55)" strokeWidth="2.4" />
-      <path d="M260 108 C260 86, 292 86, 292 108" fill="none" stroke="rgba(242,238,228,0.55)" strokeWidth="2.4" />
-      <path d="M70 168 C 90 148, 70 128, 96 122" fill="none" stroke="rgba(213,161,59,0.7)" strokeWidth="1.6" />
-      <circle cx="96" cy="122" r="3" fill="#d5a13b" />
+    <svg viewBox="0 0 360 200" aria-hidden="true">
+      <rect x="118" y="62" width="124" height="76" fill="none" stroke="rgba(242,238,228,0.55)" strokeWidth="2.2" />
+      <text x="180" y="106" textAnchor="middle">
+        System
+      </text>
+      <path
+        d="M180 36 C 64 36, 36 164, 180 168 C 324 172, 332 40, 180 36"
+        fill="none"
+        stroke="rgba(242,238,228,0.7)"
+        strokeWidth="2.4"
+        strokeDasharray="7 8"
+      />
+    </svg>
+  );
+}
+
+function ThroughMark() {
+  return (
+    <svg viewBox="0 0 360 200" aria-hidden="true">
+      <path d="M36 100 H324" stroke="#d5a13b" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="88" cy="100" r="8" fill="#173c2e" stroke="#d5a13b" strokeWidth="2.4" />
+      <circle cx="180" cy="100" r="8" fill="#173c2e" stroke="#d5a13b" strokeWidth="2.4" />
+      <circle cx="272" cy="100" r="8" fill="#d5a13b" />
+      <text x="88" y="148" textAnchor="middle">
+        Watch
+      </text>
+      <text x="180" y="148" textAnchor="middle">
+        Build
+      </text>
+      <text x="272" y="148" textAnchor="middle">
+        Train
+      </text>
     </svg>
   );
 }
@@ -43,34 +62,32 @@ export function Adopt() {
 
   return (
     <section className="adopt" id="adopt" aria-labelledby="adopt-title">
-      <div className="adopt-quote reveal" ref={headRef}>
-        <div className="adopt-quote-copy">
-          <div className="section-kicker">
-            <i />
-            05 · The real question
-          </div>
-          <h2 id="adopt-title">How will they adopt this?</h2>
-          <blockquote className="adopt-creed">
-            <span aria-hidden="true">“</span>
-            <p>Your systems should support how your people actually work, not make them work around the systems.</p>
-          </blockquote>
+      <div className="adopt-head reveal" ref={headRef}>
+        <div className="section-kicker">
+          <i />
+          05 · The real question
         </div>
-        <SitWithWork />
+        <h2 id="adopt-title">How will they adopt this?</h2>
+        <p className="adopt-creed">
+          Your systems should support how people actually work, not make them work around the systems.
+        </p>
+
+        <div className="adopt-compare">
+          <figure>
+            <figcaption>Work around it</figcaption>
+            <AroundMark />
+          </figure>
+          <span className="adopt-arrow" aria-hidden="true">
+            →
+          </span>
+          <figure className="is-on">
+            <figcaption>Work through it</figcaption>
+            <ThroughMark />
+          </figure>
+        </div>
       </div>
 
       <div className="adopt-method reveal" ref={methodRef}>
-        <div className="adopt-body">
-          <p>
-            We sit with the teams doing the work to understand how it really happens: the handoffs, decisions,
-            workarounds, and friction that don't show up on a process map. Then we redesign and connect the
-            systems underneath it, using automation and AI where they genuinely make the work better.
-          </p>
-          <p>
-            A new platform asks people to rethink the day. We learn how the workforce thinks, then train in a
-            style that fits the staff — so they can use the new line from the first week, not the first quarter.
-          </p>
-        </div>
-
         <ol className="adopt-points">
           {points.map((point) => (
             <li key={point.number}>
@@ -82,7 +99,8 @@ export function Adopt() {
         </ol>
 
         <p className="adopt-result">
-          The result? Less work between the work. Better visibility. And systems that help your teams move.
+          <span>The result</span>
+          Less work between the work. Better visibility. Systems that help your teams move.
         </p>
       </div>
     </section>
