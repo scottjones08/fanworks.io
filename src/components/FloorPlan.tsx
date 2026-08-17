@@ -66,6 +66,7 @@ export function FloorPlan({ active, allLit }: { active: number; allLit?: boolean
     <svg
       className="floor-svg"
       viewBox="0 0 1520 860"
+      preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label="Architectural floor plan of a working building. Rooms light up through the day: front office, order desk, bullpen, shop floor, warehouse and dock, then close-out."
     >
@@ -117,6 +118,15 @@ export function FloorPlan({ active, allLit }: { active: number; allLit?: boolean
             data-zone={room.zone}
           >
             <rect className="floor-fill" x={room.x} y={room.y} width={room.w} height={room.h} />
+            <rect
+              className="floor-bloom"
+              x={room.x + 10}
+              y={room.y + 10}
+              width={room.w - 20}
+              height={room.h - 20}
+              rx="4"
+              filter="url(#floor-glow)"
+            />
             {isFinale ? <rect className="floor-dusk" x={room.x} y={room.y} width={room.w} height={room.h} fill="url(#floor-dusk)" /> : null}
             <text className="floor-label" x={room.x + 18} y={room.y + 28}>
               {String(index + 1).padStart(2, "0")} · {room.label}

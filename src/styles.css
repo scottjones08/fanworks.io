@@ -804,7 +804,7 @@ h2 {
 .ledger-plan-camera {
   width: 100%;
   height: 100%;
-  transform-origin: 50% 42%;
+  transform-origin: 50% 50%;
   will-change: transform;
 }
 
@@ -842,7 +842,17 @@ h2 {
 }
 
 .floor-room.is-live .floor-fill {
-  fill: rgba(213, 161, 59, 0.2);
+  fill: rgba(213, 161, 59, 0.22);
+}
+
+.floor-bloom {
+  fill: rgba(213, 161, 59, 0);
+  pointer-events: none;
+  transition: fill 0.8s var(--ease);
+}
+
+.floor-room.is-live .floor-bloom {
+  fill: rgba(213, 161, 59, 0.16);
 }
 
 .floor-room.is-finale.is-visited .floor-fill,
@@ -1747,29 +1757,33 @@ h2 {
 
 .adopt-quote {
   position: relative;
-  padding: clamp(72px, 12vh, 140px) var(--pad) clamp(36px, 6vh, 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(200px, 0.85fr);
+  gap: clamp(20px, 4vw, 64px);
+  align-items: end;
+  padding: clamp(72px, 12vh, 140px) var(--pad) clamp(28px, 5vh, 48px);
 }
 
 .adopt-quote h2 {
-  margin-top: 18px;
+  margin-top: 16px;
   max-width: 14ch;
-  font-size: clamp(28px, 4vw, 52px);
+  font-size: clamp(26px, 3.4vw, 44px);
 }
 
 .adopt-creed {
   position: relative;
-  margin: clamp(28px, 5vh, 52px) 0 0;
-  max-width: 18ch;
+  margin: clamp(22px, 4vh, 36px) 0 0;
+  max-width: 22rem;
   border: 0;
   padding: 0;
 }
 
 .adopt-creed > span {
   position: absolute;
-  left: -0.12em;
+  left: -0.18em;
   top: -0.28em;
   font-family: var(--display);
-  font-size: clamp(72px, 10vw, 140px);
+  font-size: clamp(48px, 6vw, 84px);
   line-height: 0.8;
   color: var(--ochre);
   pointer-events: none;
@@ -1778,23 +1792,20 @@ h2 {
 .adopt-creed p {
   position: relative;
   margin: 0;
-  font-family: var(--display);
-  text-transform: uppercase;
-  font-size: clamp(26px, 3.8vw, 52px);
-  line-height: 0.96;
-  letter-spacing: -0.025em;
-  font-weight: 400;
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  font-weight: 500;
   text-wrap: pretty;
 }
 
 .adopt-art {
-  position: absolute;
-  right: clamp(8px, 4vw, 80px);
-  bottom: 8px;
-  width: clamp(180px, 28vw, 380px);
+  width: min(100%, 420px);
   height: auto;
+  justify-self: end;
   pointer-events: none;
-  opacity: 0.92;
+  opacity: 0.95;
+  margin-bottom: 4px;
 }
 
 .adopt-method {
@@ -2277,7 +2288,7 @@ h2 {
 
   .ledger-main {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(52vh, 1fr) auto;
     padding-top: 6px;
   }
 
@@ -2309,9 +2320,14 @@ h2 {
   }
 
   .adopt-art {
-    opacity: 0.28;
-    width: min(58vw, 240px);
-    right: 8px;
+    width: min(70vw, 280px);
+    justify-self: start;
+    opacity: 0.7;
+  }
+
+  .adopt-quote {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 
   .adopt-points {
@@ -2332,10 +2348,6 @@ h2 {
     bottom: 0;
     width: min(120px, 40%);
     height: 1px;
-  }
-
-  .adopt-creed {
-    max-width: 20ch;
   }
 }
 

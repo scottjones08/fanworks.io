@@ -42,10 +42,9 @@ export function Ledger() {
       const x = from.x + (to.x - from.x) * local;
       const y = from.y + (to.y - from.y) * local;
       const mobile = window.innerWidth < 900;
-      const zoom = mobile ? 1.42 + eased * 0.12 : 1.05 + eased * 0.08;
-      const cx = 760;
-      const cy = 430;
-      camera.style.transform = `translate3d(${(cx - x) * zoom * 0.42}px, ${(cy - y) * zoom * 0.28}px, 0) scale(${zoom})`;
+      const zoom = mobile ? 1.82 : 1.05 + eased * 0.05;
+      const unit = mobile ? 0.32 : 0.16;
+      camera.style.transform = `translate3d(${(760 - x) * unit}px, ${(430 - y) * unit}px, 0) scale(${zoom})`;
       if (path) path.style.strokeDashoffset = String(1 - Math.max(0.08, eased));
       setProgress(raw);
       setActive(index);

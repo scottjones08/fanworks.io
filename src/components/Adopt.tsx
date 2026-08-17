@@ -20,7 +20,7 @@ const points = [
 
 function SitWithWork() {
   return (
-    <svg className="adopt-art" viewBox="0 0 420 220" aria-hidden="true">
+    <svg className="adopt-art" viewBox="0 0 420 240" aria-hidden="true">
       <path d="M40 168 H380" stroke="rgba(242,238,228,0.28)" strokeWidth="2" />
       <rect x="86" y="118" width="248" height="14" rx="2" fill="rgba(242,238,228,0.12)" />
       <rect x="108" y="86" width="72" height="46" rx="3" fill="none" stroke="rgba(242,238,228,0.45)" strokeWidth="2" />
@@ -44,15 +44,17 @@ export function Adopt() {
   return (
     <section className="adopt" id="adopt" aria-labelledby="adopt-title">
       <div className="adopt-quote reveal" ref={headRef}>
-        <div className="section-kicker">
-          <i />
-          05 · The real question
+        <div className="adopt-quote-copy">
+          <div className="section-kicker">
+            <i />
+            05 · The real question
+          </div>
+          <h2 id="adopt-title">How will they adopt this?</h2>
+          <blockquote className="adopt-creed">
+            <span aria-hidden="true">“</span>
+            <p>Your systems should support how your people actually work, not make them work around the systems.</p>
+          </blockquote>
         </div>
-        <h2 id="adopt-title">How will they adopt this?</h2>
-        <blockquote className="adopt-creed">
-          <span aria-hidden="true">“</span>
-          <p>Your systems should support how your people actually work, not make them work around the systems.</p>
-        </blockquote>
         <SitWithWork />
       </div>
 
