@@ -737,7 +737,7 @@ h2 {
 
 .ledger {
   position: relative;
-  height: 480vh;
+  height: 560vh;
   background: var(--paper);
 }
 
@@ -749,6 +749,7 @@ h2 {
   display: flex;
   flex-direction: column;
   padding: clamp(68px, 9vh, 92px) 0 0;
+  --day: 0;
   background:
     radial-gradient(900px 420px at 72% 38%, rgba(213, 161, 59, 0.1), transparent 62%),
     radial-gradient(700px 280px at 12% 88%, rgba(146, 43, 33, 0.05), transparent 70%),
@@ -790,7 +791,12 @@ h2 {
   min-height: 0;
   overflow: hidden;
   border: 1px solid rgba(23, 25, 22, 0.16);
-  background: #efeae0;
+  perspective: 1800px;
+  perspective-origin: 50% 40%;
+  background:
+    radial-gradient(ellipse at 50% 8%, rgba(231, 215, 168, calc(0.28 + var(--day, 0) * 0.35)), transparent 52%),
+    radial-gradient(ellipse at 80% 90%, rgba(146, 43, 33, calc(0.04 + var(--day, 0) * 0.12)), transparent 50%),
+    #d4c8b2;
 }
 
 .ledger-plan-wrap::after {
@@ -815,7 +821,8 @@ h2 {
 .ledger-plan-camera {
   width: 100%;
   height: 100%;
-  transform-origin: 50% 50%;
+  transform-origin: 50% 48%;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 
@@ -825,47 +832,45 @@ h2 {
   display: block;
 }
 
-.floor-north text,
 .floor-label,
 .floor-note,
-.floor-titleblock text {
+.floor-pin-time {
   font-family: var(--mono);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.floor-north text {
-  font-size: 11px;
-  fill: rgba(23, 25, 22, 0.5);
+.iso-lot {
+  fill: #cfc3ab;
+  stroke: rgba(23, 25, 22, 0.12);
+  stroke-width: 1;
 }
 
-.floor-shadow {
-  fill: rgba(23, 25, 22, 0.05);
+.iso-slab {
+  fill: #ebe3d2;
+  stroke: rgba(23, 25, 22, 0.2);
+  stroke-width: 1.1;
+  transition: fill 0.7s var(--ease);
 }
 
-.floor-room .floor-fill {
-  fill: rgba(23, 25, 22, 0.025);
-  transition: fill 0.8s var(--ease);
+.floor-room.is-visited .iso-slab {
+  fill: #f4e4bc;
 }
 
-.floor-room.is-visited .floor-fill {
-  fill: rgba(213, 161, 59, 0.09);
+.floor-room.is-live .iso-slab {
+  fill: #f7df9a;
 }
 
-.floor-room.is-live .floor-fill {
-  fill: rgba(213, 161, 59, 0.26);
+.floor-room[data-zone="shop"].is-live .iso-slab {
+  fill: #d7e2d4;
 }
 
-.floor-room[data-zone="ops"].is-live .floor-fill {
-  fill: rgba(213, 161, 59, 0.2);
+.floor-room[data-zone="dock"].is-live .iso-slab {
+  fill: #edd3c8;
 }
 
-.floor-room[data-zone="shop"].is-live .floor-fill {
-  fill: rgba(23, 60, 46, 0.1);
-}
-
-.floor-room[data-zone="dock"].is-live .floor-fill {
-  fill: rgba(146, 43, 33, 0.1);
+.floor-room.is-finale.is-visited .iso-slab {
+  fill: #2c2a27;
 }
 
 .floor-bloom {
@@ -875,27 +880,99 @@ h2 {
 }
 
 .floor-room.is-live .floor-bloom {
-  fill: rgba(213, 161, 59, 0.16);
+  fill: rgba(213, 161, 59, 0.28);
 }
 
-.floor-room.is-finale.is-visited .floor-fill,
-.floor-room.is-finale.is-live .floor-fill {
-  fill: rgba(23, 25, 22, 0.82);
+.floor-room.is-finale.is-visited .floor-bloom {
+  fill: rgba(213, 161, 59, 0.14);
 }
 
-.floor-dusk {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s ease;
+.iso-west,
+.iso-north,
+.iso-east,
+.iso-south,
+.iso-top {
+  stroke: rgba(23, 25, 22, 0.22);
+  stroke-width: 0.9;
 }
 
-.floor-room.is-finale.is-visited .floor-dusk {
+.floor-room .iso-west {
+  fill: #7a3f32;
+  opacity: 0.28;
+  transition: opacity 0.7s var(--ease), fill 0.7s var(--ease);
+}
+
+.floor-room .iso-north {
+  fill: #c4a36a;
+  opacity: 0.28;
+  transition: opacity 0.7s var(--ease), fill 0.7s var(--ease);
+}
+
+.floor-room.is-visited .iso-west,
+.floor-room.is-visited .iso-north {
+  opacity: 0.78;
+}
+
+.floor-room.is-live .iso-west,
+.floor-room.is-live .iso-north {
   opacity: 1;
 }
 
+.floor-room.is-live .iso-west {
+  fill: #922b21;
+}
+
+.floor-room.is-live .iso-north {
+  fill: #d5a13b;
+}
+
+.floor-room.is-finale.is-visited .iso-west {
+  fill: #1d1c1a;
+}
+
+.floor-room.is-finale.is-visited .iso-north {
+  fill: #3a3428;
+}
+
+.iso-box .iso-west { fill: #8d5b38; }
+.iso-box .iso-north { fill: #c49a62; }
+.iso-box .iso-east { fill: #a67a48; }
+.iso-box .iso-south { fill: #6d4528; }
+.iso-box .iso-top { fill: #e8d4b0; }
+
+.iso-box.is-ink .iso-west { fill: #2a2926; }
+.iso-box.is-ink .iso-north { fill: #4a4844; }
+.iso-box.is-ink .iso-east { fill: #3a3936; }
+.iso-box.is-ink .iso-south { fill: #171916; }
+.iso-box.is-ink .iso-top { fill: #5c5a55; }
+
+.iso-box.is-ochre .iso-west { fill: #9a7428; }
+.iso-box.is-ochre .iso-north { fill: #d5a13b; }
+.iso-box.is-ochre .iso-east { fill: #c08e30; }
+.iso-box.is-ochre .iso-south { fill: #7a5a18; }
+.iso-box.is-ochre .iso-top { fill: #efc56a; }
+
+.iso-box.is-brick .iso-west { fill: #6b2018; }
+.iso-box.is-brick .iso-north { fill: #922b21; }
+.iso-box.is-brick .iso-east { fill: #7d241c; }
+.iso-box.is-brick .iso-south { fill: #4e1612; }
+.iso-box.is-brick .iso-top { fill: #c45c4e; }
+
+.iso-box.is-green .iso-west { fill: #12281e; }
+.iso-box.is-green .iso-north { fill: #173c2e; }
+.iso-box.is-green .iso-east { fill: #1a3328; }
+.iso-box.is-green .iso-south { fill: #0d1c15; }
+.iso-box.is-green .iso-top { fill: #3d6b55; }
+
+.iso-box.is-alert .iso-west { fill: #7a241c; }
+.iso-box.is-alert .iso-north { fill: #c44b3a; }
+.iso-box.is-alert .iso-east { fill: #a33a2c; }
+.iso-box.is-alert .iso-south { fill: #5a1612; }
+.iso-box.is-alert .iso-top { fill: #e07a68; }
+
 .floor-label {
-  font-size: 12px;
-  fill: rgba(23, 25, 22, 0.32);
+  font-size: 11px;
+  fill: rgba(23, 25, 22, 0.4);
   transition: fill 0.5s ease;
 }
 
@@ -907,210 +984,73 @@ h2 {
   fill: var(--ochre);
 }
 
-.floor-walls rect,
-.floor-walls path {
-  fill: none;
-  stroke: #171916;
-  stroke-width: 5;
-  stroke-linejoin: miter;
-  vector-effect: non-scaling-stroke;
-}
-
-.floor-walls path {
-  stroke-width: 3;
-}
-
-.floor-openings {
-  fill: none;
-  stroke: #171916;
-}
-
-.floor-door {
-  stroke-width: 1.5;
-}
-
-.floor-window {
-  stroke-width: 3.5;
-  stroke-linecap: square;
-}
-
-.floor-dockdoor {
-  stroke: var(--brick);
-  stroke-width: 7;
-  stroke-linecap: square;
-}
-
-.floor-column {
-  fill: #171916;
-}
-
-.floor-shadow-sm {
-  fill: rgba(23, 25, 22, 0.08);
-  stroke: none;
-}
-
-.floor-rug {
-  fill: rgba(146, 43, 33, 0.06);
-  stroke: rgba(146, 43, 33, 0.12);
-  stroke-width: 1;
-}
-
-.floor-tag {
-  fill: var(--brick);
-  stroke: none;
-}
-
-.floor-ticket.is-paper {
-  fill: var(--paper);
-  stroke: rgba(23, 25, 22, 0.35);
-  stroke-width: 1;
-}
-
-.floor-cell-no {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  fill: rgba(23, 25, 22, 0.38);
-}
-
-.floor-lamp {
-  fill: var(--ochre);
-  stroke: none;
-}
-
-.floor-pin-ring {
-  stroke: var(--brick);
-  stroke-width: 1.6;
-}
-
-.floor-furnish {
-  fill: rgba(242, 238, 228, 0.5);
-  stroke: rgba(23, 25, 22, 0.5);
-  stroke-width: 1.5;
-}
-
-.floor-racks path {
-  fill: none;
-  stroke: rgba(23, 25, 22, 0.35);
-  stroke-width: 1.2;
-}
-
-.floor-screen {
-  fill: rgba(23, 25, 22, 0.22);
-  stroke: none;
-}
-
-.floor-ticket {
-  fill: var(--ochre);
-  stroke: none;
-}
-
-.floor-inbox {
-  fill: none;
-  stroke: var(--brick);
-  stroke-width: 1.4;
-}
-
-.floor-check {
-  fill: none;
-  stroke: var(--green);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.floor-pallet {
-  fill: none;
-  stroke: rgba(23, 25, 22, 0.4);
-  stroke-width: 1.4;
-}
-
-.floor-pallet.is-alert {
-  stroke: var(--brick);
-  fill: rgba(146, 43, 33, 0.12);
-}
-
-.floor-truck {
-  fill: rgba(23, 25, 22, 0.08);
-  stroke: #171916;
-  stroke-width: 1.6;
-}
-
-.floor-chart {
-  fill: none;
-  stroke: var(--ochre);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
 .floor-note {
   font-size: 10px;
-  letter-spacing: 0.12em;
-  fill: rgba(23, 25, 22, 0.42);
+  letter-spacing: 0.1em;
+  fill: rgba(23, 25, 22, 0.5);
+}
+
+.iso-shadow {
+  fill: rgba(23, 25, 22, 0.18);
+  stroke: none;
 }
 
 .floor-person {
   color: var(--ink-soft);
-  fill: rgba(23, 25, 22, 0.08);
-  stroke: currentColor;
-  stroke-width: 1.6;
+  fill: currentColor;
+  stroke: rgba(23, 25, 22, 0.35);
+  stroke-width: 0.8;
 }
 
-.floor-person.is-brick { color: var(--brick); fill: rgba(146, 43, 33, 0.12); }
-.floor-person.is-green { color: var(--green); fill: rgba(23, 60, 46, 0.12); }
-.floor-person.is-ochre { color: var(--ochre); fill: rgba(213, 161, 59, 0.18); }
-
-.floor-life {
-  opacity: 0;
-  transition: opacity 0.7s var(--ease);
+.floor-person .iso-body {
+  fill: currentColor;
 }
 
-.floor-note {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+.floor-person.is-brick { color: var(--brick); }
+.floor-person.is-green { color: var(--green); }
+.floor-person.is-ochre { color: var(--ochre); }
+
+.floor-room-detail {
+  opacity: 0.2;
+  transition: opacity 0.75s var(--ease);
 }
 
-.floor-room-detail.is-on .floor-life {
+.floor-room-detail.is-on {
   opacity: 1;
 }
 
-.floor-room-detail.is-on .floor-note {
-  opacity: 1;
-  transform: none;
-}
-
-.floor-room-detail[data-detail="intake"].is-on .floor-life { transition-delay: 0.08s; }
-.floor-room-detail[data-detail="bullpen"].is-on .floor-life { transition-delay: 0.1s; }
-.floor-room-detail[data-detail="shop"].is-on .floor-life { transition-delay: 0.12s; }
-.floor-room-detail[data-detail="dock"].is-on .floor-life { transition-delay: 0.12s; }
-.floor-room-detail[data-detail="close"].is-on .floor-life,
-.floor-room-detail[data-detail="close"].is-on .floor-note {
-  transition-delay: 0.1s;
-}
-
-.floor-room-detail[data-detail="close"].is-on .floor-furnish {
-  stroke: rgba(242, 238, 228, 0.55);
-  fill: rgba(242, 238, 228, 0.06);
+.floor-room-detail.is-on .iso-box {
+  filter: drop-shadow(2px 4px 0 rgba(23, 25, 22, 0.08));
 }
 
 .floor-room-detail[data-detail="close"].is-on .floor-note {
-  fill: rgba(242, 238, 228, 0.55);
+  fill: rgba(242, 238, 228, 0.62);
+}
+
+.floor-path-shadow {
+  fill: none;
+  stroke: rgba(23, 25, 22, 0.16);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .floor-path {
   fill: none;
   stroke: var(--ochre);
-  stroke-width: 3.2;
+  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  filter: drop-shadow(0 0 6px rgba(213, 161, 59, 0.55));
+  filter: drop-shadow(0 0 8px rgba(213, 161, 59, 0.7));
 }
 
-.floor-path-end {
-  fill: var(--ochre);
+.floor-traveler {
+  fill: var(--brick);
+  stroke: #f2eee4;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 0 10px rgba(213, 161, 59, 0.9));
 }
 
 .floor-pin {
@@ -1124,31 +1064,25 @@ h2 {
   animation: fwPulse 2.4s ease-in-out infinite;
 }
 
+.floor-pin-ring {
+  stroke: var(--brick);
+  stroke-width: 1.6;
+}
+
 .floor-pin.is-finale,
 .floor-pin.is-finale .floor-pin-time {
   fill: var(--ochre);
 }
 
-.floor-pin.is-finale .floor-pin-pulse {
+.floor-pin.is-finale .floor-pin-pulse,
+.floor-pin.is-finale .floor-pin-ring {
   fill: var(--ochre);
+  stroke: var(--ochre);
 }
 
 .floor-pin-time {
-  font-family: var(--mono);
   font-size: 13px;
-  letter-spacing: 0.12em;
   fill: var(--brick);
-}
-
-.floor-titleblock rect {
-  fill: rgba(242, 238, 228, 0.92);
-  stroke: rgba(23, 25, 22, 0.2);
-  stroke-width: 1;
-}
-
-.floor-titleblock text {
-  font-size: 10px;
-  fill: rgba(23, 25, 22, 0.55);
 }
 
 .ledger-story {
@@ -1328,7 +1262,7 @@ h2 {
 }
 
 .ledger.is-static .ledger-plan-camera {
-  transform: none !important;
+  transform: rotateX(12deg) rotateZ(-6deg) !important;
 }
 
 .ledger.is-static .ledger-story,
@@ -2450,14 +2384,8 @@ h2 {
     stroke: var(--brick);
   }
 
-  .floor-site,
-  .floor-titleblock,
-  .floor-north {
-    display: none;
-  }
-
   .floor-label {
-    font-size: 18px;
+    font-size: 13px;
   }
 
   .floor-note {
@@ -2596,6 +2524,7 @@ h2 {
     stroke-dashoffset: 0;
   }
 
+  .floor-room-detail,
   .floor-life,
   .floor-note {
     opacity: 1;

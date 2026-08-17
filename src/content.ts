@@ -36,7 +36,7 @@ export const dayCards = [
     icon: "screens",
     room: "Front office",
     zone: "ops",
-    focus: { x: 300, y: 220 },
+    focus: { x: 120, y: 100 },
   },
   {
     time: "9:20",
@@ -47,7 +47,7 @@ export const dayCards = [
     icon: "copy",
     room: "Order desk",
     zone: "intake",
-    focus: { x: 740, y: 220 },
+    focus: { x: 400, y: 100 },
   },
   {
     time: "11:45",
@@ -58,7 +58,7 @@ export const dayCards = [
     icon: "inbox",
     room: "Bullpen",
     zone: "bullpen",
-    focus: { x: 300, y: 490 },
+    focus: { x: 120, y: 300 },
   },
   {
     time: "1:30",
@@ -69,7 +69,7 @@ export const dayCards = [
     icon: "list",
     room: "Shop floor",
     zone: "shop",
-    focus: { x: 740, y: 490 },
+    focus: { x: 400, y: 300 },
   },
   {
     time: "3:15",
@@ -80,7 +80,7 @@ export const dayCards = [
     icon: "dock",
     room: "Warehouse & dock",
     zone: "dock",
-    focus: { x: 1200, y: 350 },
+    focus: { x: 740, y: 200 },
   },
   {
     time: "6:00",
@@ -91,7 +91,7 @@ export const dayCards = [
     icon: "chart",
     room: "Close-out",
     zone: "close",
-    focus: { x: 760, y: 700 },
+    focus: { x: 460, y: 480 },
     finale: true,
   },
 ] as const;

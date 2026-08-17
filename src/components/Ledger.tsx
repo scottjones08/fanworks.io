@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { dayCards } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
-import { FLOOR, FloorPlan, floorRooms } from "./FloorPlan";
+import { FLOOR, FloorPlan, floorRooms, roomCenter } from "./FloorPlan";
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
@@ -12,6 +12,7 @@ export function Ledger() {
   const sectionRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
   const [narrow, setNarrow] = useState(false);
@@ -31,9 +32,11 @@ export function Ledger() {
     const section = sectionRef.current;
     const camera = cameraRef.current;
     const wrap = wrapRef.current;
+    const stage = stageRef.current;
     if (!section || !camera || !wrap) return;
 
     const path = camera.querySelector<SVGPathElement>("[data-line]");
+    const traveler = camera.querySelector<SVGCircleElement>("[data-traveler]");
 
     const update = () => {
       if (stacked) {
@@ -52,25 +55,42 @@ export function Ledger() {
       const index = Math.min(last, Math.floor(span + 0.001));
       const next = Math.min(last, index + 1);
       const local = span - index;
-      const from = floorRooms[index];
-      const to = floorRooms[next];
-      const x = lerp(from.x + from.w / 2, to.x + to.w / 2, local);
-      const y = lerp(from.y + from.h / 2, to.y + to.h / 2, local);
-      const rw = lerp(from.w, to.w, local);
-      const rh = lerp(from.h, to.h, local);
+      const from = roomCenter(floorRooms[index]);
+      const to = roomCenter(floorRooms[next]);
+      const x = lerp(from.x, to.x, local);
+      const y = lerp(from.y, to.y, local);
+      const rw = lerp(floorRooms[index].w, floorRooms[next].w, local);
+      const rh = lerp(floorRooms[index].h, floorRooms[next].h, local);
 
       const W = Math.max(1, wrap.clientWidth);
       const H = Math.max(1, wrap.clientHeight);
       const fit = Math.min(W / FLOOR.width, H / FLOOR.height);
       const mobile = window.innerWidth < 900;
-      const pad = mobile ? 24 : 280;
+      const pad = mobile ? 90 : 420;
       const fillZoom = Math.min(W / ((rw + pad) * fit), H / ((rh + pad) * fit));
-      const zoom = mobile ? Math.min(5.4, Math.max(2.4, fillZoom * 1.05)) : Math.min(1.14, Math.max(1.02, 1.03 + eased * 0.05));
-      const ox = (x - FLOOR.width / 2) * fit;
-      const oy = (y - FLOOR.height / 2) * fit;
-      const lift = mobile ? H * 0.2 : 0;
-      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) scale(${zoom})`;
-      if (path) path.style.strokeDashoffset = String(1 - Math.max(0.08, eased));
+      const zoom = mobile
+        ? Math.min(3.4, Math.max(1.55, fillZoom * 0.85))
+        : Math.min(1.28, Math.max(1.04, 1.06 + eased * 0.12));
+      const ox = (x - 950) * fit;
+      const oy = (y - 460) * fit;
+      const lift = mobile ? H * 0.14 : 0;
+      const tilt = mobile ? 10 : 14;
+      const spin = -8 + eased * 12;
+      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(${tilt}deg) rotateZ(${spin}deg) scale(${zoom})`;
+      if (stage) stage.style.setProperty("--day", String(eased));
+      if (path) {
+        path.style.strokeDashoffset = String(1 - Math.max(0.06, eased));
+        if (traveler) {
+          try {
+            const len = path.getTotalLength();
+            const pt = path.getPointAtLength(Math.max(0.02, eased) * len);
+            traveler.setAttribute("cx", String(pt.x));
+            traveler.setAttribute("cy", String(pt.y));
+          } catch {
+            /* path not ready */
+          }
+        }
+      }
       setProgress(raw);
       setActive(index);
     };
@@ -91,7 +111,7 @@ export function Ledger() {
       ref={sectionRef}
       aria-labelledby="ledger-title"
     >
-      <div className="ledger-stage">
+      <div className="ledger-stage" ref={stageRef}>
         <div className="ledger-top">
           <div>
             <div className="section-kicker kicker-dark">
@@ -100,7 +120,7 @@ export function Ledger() {
             </div>
             <h2 id="ledger-title">A typical day — before and after.</h2>
           </div>
-          <span>Keep scrolling · rooms come to life</span>
+          <span>Keep scrolling · walk the building</span>
         </div>
 
         <div className="ledger-main">
@@ -129,7 +149,7 @@ export function Ledger() {
               <FloorPlan active={stacked ? dayCards.length - 1 : active} allLit={stacked} />
             </div>
             {narrow && !stacked ? (
-              <svg className="ledger-minimap" viewBox="0 0 1520 860" aria-hidden="true">
+              <svg className="ledger-minimap" viewBox="0 0 920 560" aria-hidden="true">
                 {floorRooms.map((room, index) => (
                   <rect
                     key={room.zone}
