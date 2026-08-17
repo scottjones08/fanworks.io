@@ -750,7 +750,8 @@ h2 {
   flex-direction: column;
   padding: clamp(68px, 9vh, 92px) 0 0;
   background:
-    radial-gradient(1200px 480px at 70% 40%, rgba(213, 161, 59, 0.08), transparent 60%),
+    radial-gradient(900px 420px at 72% 38%, rgba(213, 161, 59, 0.1), transparent 62%),
+    radial-gradient(700px 280px at 12% 88%, rgba(146, 43, 33, 0.05), transparent 70%),
     var(--paper);
   color: var(--ink-soft);
 }
@@ -788,6 +789,16 @@ h2 {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  border: 1px solid rgba(23, 25, 22, 0.16);
+  background: #efeae0;
+}
+
+.ledger-plan-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 90px rgba(18, 17, 16, 0.07);
 }
 
 .ledger-main {
@@ -842,7 +853,19 @@ h2 {
 }
 
 .floor-room.is-live .floor-fill {
-  fill: rgba(213, 161, 59, 0.22);
+  fill: rgba(213, 161, 59, 0.26);
+}
+
+.floor-room[data-zone="ops"].is-live .floor-fill {
+  fill: rgba(213, 161, 59, 0.2);
+}
+
+.floor-room[data-zone="shop"].is-live .floor-fill {
+  fill: rgba(23, 60, 46, 0.1);
+}
+
+.floor-room[data-zone="dock"].is-live .floor-fill {
+  fill: rgba(146, 43, 33, 0.1);
 }
 
 .floor-bloom {
@@ -916,10 +939,59 @@ h2 {
   stroke-linecap: square;
 }
 
+.floor-column {
+  fill: #171916;
+}
+
+.floor-shadow-sm {
+  fill: rgba(23, 25, 22, 0.08);
+  stroke: none;
+}
+
+.floor-rug {
+  fill: rgba(146, 43, 33, 0.06);
+  stroke: rgba(146, 43, 33, 0.12);
+  stroke-width: 1;
+}
+
+.floor-tag {
+  fill: var(--brick);
+  stroke: none;
+}
+
+.floor-ticket.is-paper {
+  fill: var(--paper);
+  stroke: rgba(23, 25, 22, 0.35);
+  stroke-width: 1;
+}
+
+.floor-cell-no {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  fill: rgba(23, 25, 22, 0.38);
+}
+
+.floor-lamp {
+  fill: var(--ochre);
+  stroke: none;
+}
+
+.floor-pin-ring {
+  stroke: var(--brick);
+  stroke-width: 1.6;
+}
+
 .floor-furnish {
-  fill: rgba(242, 238, 228, 0.35);
-  stroke: rgba(23, 25, 22, 0.48);
+  fill: rgba(242, 238, 228, 0.5);
+  stroke: rgba(23, 25, 22, 0.5);
   stroke-width: 1.5;
+}
+
+.floor-racks path {
+  fill: none;
+  stroke: rgba(23, 25, 22, 0.35);
+  stroke-width: 1.2;
 }
 
 .floor-screen {
@@ -1086,10 +1158,9 @@ h2 {
   gap: 12px;
   padding: clamp(16px, 2vw, 24px);
   margin-bottom: 8px;
-  background: rgba(242, 238, 228, 0.72);
-  border: 1px solid rgba(23, 25, 22, 0.18);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(242, 238, 228, 0.88);
+  border: 1px solid rgba(23, 25, 22, 0.2);
+  box-shadow: 0 12px 40px rgba(18, 17, 16, 0.08);
   animation: fwFade 0.55s ease both, ledgerStoryIn 0.7s var(--ease);
 }
 
@@ -1230,6 +1301,10 @@ h2 {
   color: rgba(23, 25, 22, 0.45);
 }
 
+.ledger-minimap {
+  display: none;
+}
+
 .ledger-static-list {
   display: none;
 }
@@ -1246,6 +1321,8 @@ h2 {
 }
 
 .ledger.is-static .ledger-plan-wrap {
+  position: relative;
+  inset: auto;
   height: min(72vh, 720px);
 }
 
@@ -2286,21 +2363,50 @@ h2 {
     max-width: 100%;
   }
 
+  .ledger-stage {
+    padding-top: 58px;
+  }
+
+  .ledger-top {
+    padding: 0 16px;
+  }
+
+  .ledger-top h2 {
+    font-size: clamp(16px, 4.6vw, 20px);
+    max-width: none;
+    margin-top: 6px;
+  }
+
+  .ledger-top span {
+    display: none;
+  }
+
   .ledger-main {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(52vh, 1fr) auto;
-    padding-top: 6px;
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 8px 12px 0;
   }
 
   .ledger-plan-wrap {
-    order: -1;
+    position: absolute;
+    inset: 0 12px 132px;
+    order: 0;
   }
 
   .ledger-story {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 46px;
+    z-index: 5;
     width: auto;
-    margin-bottom: 0;
+    margin: 0;
     padding: 14px 16px;
     gap: 8px;
+    align-self: auto;
+    background: rgba(242, 238, 228, 0.96);
   }
 
   .ledger-story p {
@@ -2311,12 +2417,54 @@ h2 {
     font-size: clamp(16px, 4.4vw, 20px);
   }
 
-  .ledger-top span {
+  .ledger-rail {
+    padding: 8px 16px 12px;
+  }
+
+  .ledger-minimap {
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 4;
+    width: 92px;
+    height: 52px;
+    background: rgba(242, 238, 228, 0.92);
+    border: 1px solid rgba(23, 25, 22, 0.2);
+    pointer-events: none;
+  }
+
+  .ledger-minimap rect {
+    fill: rgba(23, 25, 22, 0.08);
+    stroke: rgba(23, 25, 22, 0.28);
+    stroke-width: 8;
+  }
+
+  .ledger-minimap rect.is-visited {
+    fill: rgba(213, 161, 59, 0.28);
+  }
+
+  .ledger-minimap rect.is-live {
+    fill: var(--brick);
+    stroke: var(--brick);
+  }
+
+  .floor-site,
+  .floor-titleblock,
+  .floor-north {
     display: none;
   }
 
-  .ledger-top h2 {
-    font-size: clamp(20px, 6vw, 28px);
+  .floor-label {
+    font-size: 18px;
+  }
+
+  .floor-note {
+    font-size: 14px;
+  }
+
+  .floor-pin-time {
+    font-size: 18px;
   }
 
   .adopt-art {
@@ -2353,17 +2501,21 @@ h2 {
 
 @media (max-height: 740px) {
   .ledger-top h2 {
-    font-size: clamp(18px, 2.2vw, 26px);
-    margin-top: 6px;
+    font-size: clamp(16px, 2.2vw, 22px);
+    margin-top: 4px;
   }
 
   .ledger-stage {
-    padding-top: 64px;
+    padding-top: 58px;
   }
 
   .ledger-story {
-    padding: 14px 16px;
-    gap: 8px;
+    padding: 12px 14px;
+    gap: 7px;
+  }
+
+  .ledger.is-narrow .ledger-plan-wrap {
+    bottom: 118px;
   }
 }
 
