@@ -56,8 +56,8 @@ export const dayCards = [
     before: "“Who owns this?” travels four inboxes before lunch.",
     after: "Every job carries one name.",
     icon: "inbox",
-    room: "Bullpen",
-    zone: "bullpen",
+    room: "Planning",
+    zone: "plan",
     focus: { x: 700, y: 100 },
   },
   {

@@ -749,7 +749,6 @@ h2 {
   display: flex;
   flex-direction: column;
   padding: clamp(68px, 9vh, 92px) 0 0;
-  --day: 0;
   background:
     radial-gradient(900px 420px at 72% 38%, rgba(213, 161, 59, 0.1), transparent 62%),
     radial-gradient(700px 280px at 12% 88%, rgba(146, 43, 33, 0.05), transparent 70%),
@@ -791,12 +790,7 @@ h2 {
   min-height: 0;
   overflow: hidden;
   border: 1px solid rgba(23, 25, 22, 0.16);
-  perspective: 1800px;
-  perspective-origin: 50% 40%;
-  background:
-    radial-gradient(ellipse at 50% 8%, rgba(231, 215, 168, calc(0.28 + var(--day, 0) * 0.35)), transparent 52%),
-    radial-gradient(ellipse at 80% 90%, rgba(146, 43, 33, calc(0.04 + var(--day, 0) * 0.12)), transparent 50%),
-    #d4c8b2;
+  background: #f3ead8;
 }
 
 .ledger-plan-wrap::after {
@@ -819,356 +813,16 @@ h2 {
 }
 
 .ledger-plan-camera {
-  width: 100%;
   height: 100%;
-  transform-origin: 50% 48%;
-  transform-style: preserve-3d;
+  width: max-content;
   will-change: transform;
 }
 
-.floor-svg {
-  width: 100%;
+.ledger-line-img {
   height: 100%;
+  width: auto;
+  max-width: none;
   display: block;
-}
-
-.floor-endcap,
-.floor-spine,
-.floor-sign-index,
-.floor-sign-name,
-.floor-sign-time {
-  font-family: var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.iso-lot {
-  fill: #cfc3ab;
-  stroke: rgba(23, 25, 22, 0.12);
-  stroke-width: 1;
-}
-
-.iso-hall {
-  fill: #e4d9c4;
-  stroke: rgba(23, 25, 22, 0.18);
-  stroke-width: 1.2;
-}
-
-.iso-aisle {
-  fill: #e4d09a;
-  stroke: rgba(23, 25, 22, 0.16);
-  stroke-width: 1;
-}
-
-.iso-slab {
-  fill: #efe6d4;
-  stroke: rgba(23, 25, 22, 0.2);
-  stroke-width: 1.1;
-  transition: fill 0.7s var(--ease);
-}
-
-.floor-room.is-visited .iso-slab {
-  fill: #f4e4bc;
-}
-
-.floor-room.is-live .iso-slab {
-  fill: #f7df9a;
-}
-
-.floor-room[data-zone="shop"].is-live .iso-slab {
-  fill: #d7e2d4;
-}
-
-.floor-room[data-zone="dock"].is-live .iso-slab {
-  fill: #edd3c8;
-}
-
-.floor-room.is-finale.is-visited .iso-slab {
-  fill: #2c2a27;
-}
-
-.floor-bloom {
-  fill: rgba(213, 161, 59, 0);
-  pointer-events: none;
-  transition: fill 0.8s var(--ease);
-}
-
-.floor-room.is-live .floor-bloom {
-  fill: rgba(213, 161, 59, 0.28);
-}
-
-.floor-room.is-finale.is-visited .floor-bloom {
-  fill: rgba(213, 161, 59, 0.14);
-}
-
-.iso-west,
-.iso-north,
-.iso-east,
-.iso-south,
-.iso-top {
-  stroke: rgba(23, 25, 22, 0.22);
-  stroke-width: 0.9;
-}
-
-.floor-svg > .iso-west {
-  fill: #6b3228;
-  opacity: 0.94;
-}
-
-.floor-svg > .iso-north {
-  fill: #c4a36a;
-  opacity: 0.94;
-}
-
-.floor-room .iso-west,
-.iso-partition {
-  fill: #8a5344;
-  opacity: 0.55;
-  transition: opacity 0.7s var(--ease), fill 0.7s var(--ease);
-}
-
-.floor-room .iso-north {
-  fill: #c4a36a;
-  opacity: 0.7;
-  transition: opacity 0.7s var(--ease), fill 0.7s var(--ease);
-}
-
-.iso-window {
-  fill: rgba(242, 238, 228, 0.38);
-  stroke: rgba(23, 25, 22, 0.18);
-  stroke-width: 0.8;
-}
-
-.floor-room.is-visited .iso-west,
-.floor-room.is-visited .iso-north,
-.floor-room.is-visited .iso-partition {
-  opacity: 0.88;
-}
-
-.floor-room.is-live .iso-west,
-.floor-room.is-live .iso-north,
-.floor-room.is-live .iso-partition {
-  opacity: 1;
-}
-
-.floor-room.is-live .iso-west,
-.floor-room.is-live .iso-partition {
-  fill: #922b21;
-}
-
-.floor-room.is-live .iso-north {
-  fill: #d5a13b;
-}
-
-.floor-room.is-finale.is-visited .iso-west {
-  fill: #1d1c1a;
-}
-
-.floor-room.is-finale.is-visited .iso-north {
-  fill: #3a3428;
-}
-
-.iso-box .iso-west { fill: #8d5b38; }
-.iso-box .iso-north { fill: #c49a62; }
-.iso-box .iso-east { fill: #a67a48; }
-.iso-box .iso-south { fill: #6d4528; }
-.iso-box .iso-top { fill: #e8d4b0; }
-
-.iso-box.is-ink .iso-west { fill: #2a2926; }
-.iso-box.is-ink .iso-north { fill: #4a4844; }
-.iso-box.is-ink .iso-east { fill: #3a3936; }
-.iso-box.is-ink .iso-south { fill: #171916; }
-.iso-box.is-ink .iso-top { fill: #5c5a55; }
-
-.iso-box.is-ochre .iso-west { fill: #9a7428; }
-.iso-box.is-ochre .iso-north { fill: #d5a13b; }
-.iso-box.is-ochre .iso-east { fill: #c08e30; }
-.iso-box.is-ochre .iso-south { fill: #7a5a18; }
-.iso-box.is-ochre .iso-top { fill: #efc56a; }
-
-.iso-box.is-brick .iso-west { fill: #6b2018; }
-.iso-box.is-brick .iso-north { fill: #922b21; }
-.iso-box.is-brick .iso-east { fill: #7d241c; }
-.iso-box.is-brick .iso-south { fill: #4e1612; }
-.iso-box.is-brick .iso-top { fill: #c45c4e; }
-
-.iso-box.is-green .iso-west { fill: #12281e; }
-.iso-box.is-green .iso-north { fill: #173c2e; }
-.iso-box.is-green .iso-east { fill: #1a3328; }
-.iso-box.is-green .iso-south { fill: #0d1c15; }
-.iso-box.is-green .iso-top { fill: #3d6b55; }
-
-.iso-box.is-alert .iso-west { fill: #7a241c; }
-.iso-box.is-alert .iso-north { fill: #c44b3a; }
-.iso-box.is-alert .iso-east { fill: #a33a2c; }
-.iso-box.is-alert .iso-south { fill: #5a1612; }
-.iso-box.is-alert .iso-top { fill: #e07a68; }
-
-.floor-mark {
-  font-family: var(--display);
-  font-size: 52px;
-  letter-spacing: -0.04em;
-  fill: rgba(23, 25, 22, 0.07);
-  pointer-events: none;
-  transition: fill 0.5s ease;
-}
-
-.floor-room.is-live .floor-mark {
-  fill: rgba(146, 43, 33, 0.16);
-}
-
-.floor-room.is-finale.is-visited .floor-mark {
-  fill: rgba(213, 161, 59, 0.18);
-}
-
-.floor-chip {
-  fill: rgba(242, 238, 228, 0.94);
-  stroke: rgba(23, 25, 22, 0.22);
-  stroke-width: 1;
-}
-
-.floor-spine {
-  font-family: var(--mono);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  fill: var(--ink-soft);
-}
-
-.floor-endcap {
-  font-size: 12px;
-  font-weight: 500;
-  fill: var(--ink-soft);
-}
-
-.floor-endcap.is-out {
-  fill: var(--brick);
-}
-
-.floor-sign {
-  filter: drop-shadow(0 8px 12px rgba(18, 17, 16, 0.18));
-}
-
-.floor-sign-board {
-  fill: #fbf8f1;
-  stroke: rgba(23, 25, 22, 0.45);
-  stroke-width: 1.6;
-  transition: fill 0.4s ease, stroke 0.4s ease;
-}
-
-.floor-sign text {
-  text-anchor: middle;
-}
-
-.floor-sign-index {
-  font-size: 13px;
-  font-weight: 500;
-  fill: var(--brick);
-}
-
-.floor-sign-name {
-  font-family: var(--sans);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  fill: var(--ink);
-}
-
-.floor-sign-time {
-  font-size: 11px;
-  fill: rgba(23, 25, 22, 0.5);
-}
-
-.floor-sign.is-live .floor-sign-board {
-  fill: var(--ink-soft);
-  stroke: var(--ochre);
-}
-
-.floor-sign.is-live .floor-sign-index,
-.floor-sign.is-live .floor-sign-time {
-  fill: var(--ochre);
-}
-
-.floor-sign.is-live .floor-sign-name {
-  fill: var(--paper);
-}
-
-.floor-arrow {
-  fill: var(--ochre);
-  stroke: var(--ochre);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  opacity: 0.85;
-}
-
-.floor-room-detail {
-  opacity: 0.92;
-}
-
-.floor-room-detail .iso-box {
-  filter: drop-shadow(2px 4px 0 rgba(23, 25, 22, 0.08));
-}
-
-.floor-path-ghost {
-  fill: none;
-  stroke: rgba(23, 25, 22, 0.12);
-  stroke-width: 10;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.floor-path-shadow {
-  fill: none;
-  stroke: rgba(23, 25, 22, 0.14);
-  stroke-width: 8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.floor-path {
-  fill: none;
-  stroke: var(--ochre);
-  stroke-width: 6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  filter: drop-shadow(0 0 8px rgba(213, 161, 59, 0.7));
-}
-
-.floor-traveler {
-  fill: var(--brick);
-  stroke: #f2eee4;
-  stroke-width: 2.4;
-  filter: drop-shadow(0 0 10px rgba(213, 161, 59, 0.9));
-}
-
-.floor-pin {
-  fill: var(--brick);
-  transition: transform 0.75s var(--ease);
-}
-
-.floor-pin-pulse {
-  fill: var(--brick);
-  opacity: 0.22;
-  animation: fwPulse 2.4s ease-in-out infinite;
-}
-
-.floor-pin-ring {
-  stroke: var(--brick);
-  stroke-width: 1.6;
-}
-
-.floor-pin.is-finale,
-.floor-pin.is-finale .floor-pin-time {
-  fill: var(--ochre);
-}
-
-.floor-pin.is-finale .floor-pin-pulse,
-.floor-pin.is-finale .floor-pin-ring {
-  fill: var(--ochre);
-  stroke: var(--ochre);
 }
 
 .ledger-story {
@@ -1373,11 +1027,18 @@ h2 {
 .ledger.is-static .ledger-plan-wrap {
   position: relative;
   inset: auto;
-  height: min(72vh, 720px);
+  height: auto;
 }
 
 .ledger.is-static .ledger-plan-camera {
-  transform: rotateX(12deg) rotateZ(-8deg) !important;
+  width: 100%;
+  height: auto;
+  transform: none !important;
+}
+
+.ledger.is-static .ledger-line-img {
+  width: 100%;
+  height: auto;
 }
 
 .ledger.is-static .ledger-story,
@@ -2487,60 +2148,33 @@ h2 {
   }
 
   .ledger-minimap {
-    display: block;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 3px;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
     position: absolute;
     top: 10px;
     right: 10px;
     z-index: 4;
     width: 96px;
-    height: 58px;
+    height: 22px;
     background: rgba(242, 238, 228, 0.92);
     border: 1px solid rgba(23, 25, 22, 0.2);
     pointer-events: none;
   }
 
-  .ledger-minimap rect {
-    fill: rgba(23, 25, 22, 0.08);
-    stroke: rgba(23, 25, 22, 0.28);
-    stroke-width: 8;
+  .ledger-minimap li {
+    background: rgba(23, 25, 22, 0.1);
   }
 
-  .ledger-minimap rect.is-visited {
-    fill: rgba(213, 161, 59, 0.28);
+  .ledger-minimap li.is-visited {
+    background: rgba(213, 161, 59, 0.45);
   }
 
-  .ledger-minimap rect.is-live {
-    fill: var(--brick);
-    stroke: var(--brick);
-  }
-
-  .ledger-minimap-aisle {
-    fill: rgba(213, 161, 59, 0.22) !important;
-    stroke: none !important;
-  }
-
-  .floor-sign-index {
-    font-size: 15px;
-  }
-
-  .floor-sign-name {
-    font-size: 20px;
-  }
-
-  .floor-sign-time {
-    font-size: 13px;
-  }
-
-  .floor-spine {
-    font-size: 16px;
-  }
-
-  .floor-endcap {
-    font-size: 14px;
-  }
-
-  .floor-mark {
-    font-size: 48px;
+  .ledger-minimap li.is-live {
+    background: var(--brick);
   }
 
   .adopt-art {
@@ -2656,20 +2290,18 @@ h2 {
   }
 
   .ledger-plan-wrap {
-    height: min(72vh, 720px);
+    height: auto;
   }
 
   .ledger-plan-camera {
+    width: 100%;
+    height: auto;
     transform: none !important;
   }
 
-  .floor-path {
-    stroke-dashoffset: 0;
-  }
-
-  .floor-room-detail {
-    opacity: 1;
-    transform: none;
+  .ledger-line-img {
+    width: 100%;
+    height: auto;
   }
 
   .approach-panel {
