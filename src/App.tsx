@@ -43,6 +43,19 @@ const principles = [
   ["Make it stick", "Leave clear ownership behind."],
 ];
 
+const dataSources = [
+  "CRM",
+  "ERP",
+  "Sheets",
+  "Email",
+  "Drive",
+  "Paper",
+  "Texts",
+  "Whiteboard",
+  "Accounting",
+  "Scheduler",
+];
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -147,9 +160,61 @@ export default function App() {
         </div>
       </section>
 
+      <section className="data-layer-section" id="data-layer" aria-labelledby="data-layer-title">
+        <div className="data-layer-intro">
+          <div>
+            <div className="section-mark section-mark-light data-layer-mark">
+              <span>02</span>
+              <span>The data layer</span>
+            </div>
+            <h2 id="data-layer-title">One data layer.</h2>
+          </div>
+
+          <p>
+            CRM, shared drives, whiteboards, inboxes, the spreadsheet only one person understands — even the
+            paper tickets. All of it has to come with you. We don&apos;t add another tool. We build one data layer
+            the work actually follows, and migrate every workspace into it.
+          </p>
+        </div>
+
+        <div
+          className="data-layer-visual"
+          role="img"
+          aria-label="Disconnected workspaces converging into one operating layer"
+        >
+          <div className="data-source-group">
+            <p className="data-state-label data-state-before">Before</p>
+            <ul className="data-source-list">
+              {dataSources.map((source) => (
+                <li key={source}>
+                  <span>{source}</span>
+                  <i aria-hidden="true" />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="data-convergence" aria-hidden="true">
+            <span />
+          </div>
+
+          <div className="data-layer-result">
+            <p className="data-state-label data-state-after">After</p>
+            <div className="data-layer-card">
+              <span>One operating layer</span>
+            </div>
+            <ul className="data-layer-outcomes" aria-label="Benefits of the operating layer">
+              <li>Searchable</li>
+              <li>Connected</li>
+              <li>Owned</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <section className="ethos-section" id="ethos" aria-labelledby="ethos-title">
         <div className="section-mark section-mark-light">
-          <span>02</span>
+          <span>03</span>
           <span>How we work</span>
         </div>
         <h2 id="ethos-title">Start with the work.</h2>
@@ -174,7 +239,7 @@ export default function App() {
         </div>
         <div className="story-copy">
           <div className="section-mark">
-            <span>03</span>
+            <span>04</span>
             <span>Why FanWorks</span>
           </div>
           <h2 id="story-title">From Richmond. Built for operators.</h2>
@@ -186,7 +251,7 @@ export default function App() {
       <section className="engage-section" id="engage" aria-labelledby="engage-title">
         <div className="engage-copy">
           <div className="section-mark section-mark-light">
-            <span>04</span>
+            <span>05</span>
             <span>Contact</span>
           </div>
           <h2 id="engage-title">What is slowing you down?</h2>

@@ -1,47 +1,57 @@
-# FanWorks Design QA
+# FanWorks Data Layer Design QA
 
 ## Evidence
 
-- Source visual truth: `/Users/scottjones/.codex/generated_images/019f0af1-5c89-73c3-bda8-7d7441add8cb/exec-52161042-42c6-46f5-bdcf-f3fba3a5a2b7.png`
-- Final desktop implementation: `/tmp/fanworks-desktop-top-final.png`
-- Final mobile implementation: `/tmp/fanworks-mobile-top-final-2.png`
-- Mobile contact state: `/tmp/fanworks-mobile-contact-final.png`
-- Full-view comparison: `/tmp/fanworks-design-qa-final.png`
-- Focused hero comparison: `/tmp/fanworks-design-qa-focus.png`
-- Viewport: 1536 x 1024 desktop and 390 x 844 mobile target. The in-app browser reports scaled CSS viewports of 1920 x 1280 and 487 x 1055; CDP captures are saved at the requested output dimensions.
-- State: loaded hero after entrance motion, default service state, selected Automation service state, mobile menu open, and mobile contact section.
+- Source visual truth: `/Users/scottjones/.codex/generated_images/01a014d3-5d84-7451-94ea-549f0179d8bf/exec-ef863d33-c649-4343-b3a7-55a6fad9dc57.png`
+- Final desktop implementation: `/tmp/fanworks-data-layer-desktop-final.png`
+- Final mobile implementation, intro and sources: `/tmp/fanworks-data-layer-mobile-final.png`
+- Final mobile implementation, convergence and result: `/tmp/fanworks-data-layer-mobile-result-final.png`
+- Full-view normalized comparison: `/tmp/data-layer-comparison-full.png`
+- Focused diagram comparison: `/tmp/data-layer-comparison-focused.png`
+- Source pixels: 1586 x 992.
+- Desktop output pixels: 1440 x 1024, with the section compared using a 1440 x 900 crop at device scale 1.
+- Desktop CSS viewport reported by the in-app browser: 1800 x 1280. The exact CDP capture was saved at 1440 x 1024, matching the browser's 0.8 display scale.
+- Mobile output and CSS viewport: 390 x 844 at device scale 1.
+- State: data-layer section at its default state; mobile intro/source and outcome regions captured separately because the responsive section is taller than one phone viewport.
 
 ## Findings
 
 - No actionable P0, P1, or P2 differences remain.
-- Fonts and typography: Cormorant Garamond and Manrope preserve the reference's editorial serif and restrained sans-serif hierarchy. The headline, logo subtitle, body copy, and utility labels wrap without clipping on desktop and mobile.
-- Spacing and layout rhythm: the final hero balances the text and alley image at the reference's intended density. Section spacing is generous without hiding the next content band, and there is no horizontal overflow at either tested viewport.
-- Colors and visual tokens: warm paper, brick red, porch green, ochre, and charcoal closely match the selected direction with accessible contrast.
-- Image quality and asset fidelity: the supplied alley image remains sharp and correctly cropped. The implementation intentionally omits the generated house-number plaque rather than fabricating an asset that was not present in the supplied source photograph.
-- Copy and content: the logo subtitle is exactly `Human-centered consulting`. Service language is specific to assessments, concierge support, integration, and practical automation, with no generic AI marketing language.
-- Interaction and accessibility: desktop service tabs update their selected state and detail content; mobile navigation opens, closes, and reaches the contact section; focus states, reduced motion support, semantic headings, tab roles, labels, and form controls are present. Browser console check returned no warnings or errors.
+- Fonts and typography: the section uses a condensed Impact/Haettenschweiler display stack for the one-line desktop headline, the site's existing monospace utility type, and the existing sans-serif body stack. Headline scale, body measure, wrapping, contrast, and optical weight track the selected visual. Mobile typography remains readable without clipping.
+- Spacing and layout rhythm: the editorial intro, divider, source stack, convergence axis, destination module, and proof row preserve the selected hierarchy. Desktop margins are balanced, while the mobile layout becomes a two-column source grid followed by a vertical convergence path and full-width result.
+- Colors and visual tokens: the implementation reuses FanWorks paper, ink, ochre, brick, and green tokens. Borders and shadows remain restrained and contrast is sufficient in both viewport captures.
+- Image quality and asset fidelity: the selected design contains no raster imagery, logos, or custom pictorial icons. Its UI-native labels, rules, and system diagram are rendered crisply at both tested sizes.
+- Copy and content: the section marker, headline, explanatory paragraph, ten workspace labels, before/after states, destination label, and three outcomes are present and correctly ordered. Existing downstream section numbers were advanced to keep the page sequence coherent.
+- Responsiveness and accessibility: the 390 px viewport has no horizontal overflow. The diagram exposes an accessible image role and description; the mobile menu still opens and closes correctly.
+- Browser console: no warnings or errors were reported during desktop and mobile checks.
 
 ## Comparison History
 
 ### Iteration 1
 
-- Finding: P2, the first implementation gave the paper side too much empty width, pushed the image too far right, and allowed the hero headline to wrap across three uneven lines.
-- Fix: widened the image plane, tightened the paper/content boundary, reduced the display scale slightly, and set the desktop headline to two controlled lines.
-- Post-fix evidence: `/tmp/fanworks-desktop-top-final.png` and `/tmp/fanworks-design-qa-final.png` show the corrected image balance, line wrap, CTA grouping, and first hint of the green service section.
+- Finding: P1, the desktop headline wrapped to two lines and pushed the diagram substantially lower than the selected mock.
+- Fix: introduced a condensed display stack, widened the title track, reduced top spacing, and kept the headline on one line at desktop sizes while retaining wrapping at narrower breakpoints.
+- Post-fix evidence: `/tmp/fanworks-data-layer-desktop-final.png` and `/tmp/data-layer-comparison-full.png`.
 
 ### Iteration 2
 
-- Result: no P0, P1, or P2 differences found in the full-view or focused comparison.
+- Finding: P2, the operating-layer module was too wide and the source labels were undersized relative to the selected visual.
+- Fix: constrained the result module, increased source-label and proof-row type, and expanded the source-list rhythm to match the reference density.
+- Post-fix evidence: `/tmp/data-layer-comparison-full.png` and `/tmp/data-layer-comparison-focused.png`.
+
+### Final Pass
+
+- Result: no actionable P0, P1, or P2 differences found in the normalized full-view, focused diagram, desktop, or mobile comparisons.
 
 ## Primary Interactions Tested
 
-- Switched the desktop service explorer from Assess to Automate and verified `aria-selected="true"` plus updated panel content.
-- Opened the mobile menu and verified its expanded state.
-- Used the mobile `Talk to us` navigation action and verified the contact section and all four form fields fit without horizontal overflow.
-- Checked browser console warnings and errors after desktop and mobile interactions; none were present.
+- Opened and closed the mobile navigation at the 390 x 844 viewport.
+- Verified all ten source labels and the three outcome labels are rendered.
+- Verified desktop and mobile layouts have no visible clipped content; the mobile viewport reports equal client and scroll widths.
+- Checked browser console warnings and errors; none were present.
 
 ## Follow-up Polish
 
-- P3: a future photography pass could add real Richmond small-business portraits or interiors, provided they are commissioned or sourced rather than generated as generic stock imagery.
+- P3: the implementation uses a restrained convergence wedge before the ochre rail instead of reproducing every generated connector bend literally. This keeps the responsive implementation stable while preserving the selected concept and reading order.
 
 final result: passed
