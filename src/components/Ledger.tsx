@@ -1,21 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import { dayCards } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
-import { FLOOR, FloorPlan, floorRooms, roomCenter } from "./FloorPlan";
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-const VIEW_CX = 760;
-const VIEW_CY = 390;
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function easeInOut(t: number) {
+  return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+}
+
+const LINE_SRC = "/one-line-through.webp";
+
+/** Room center X as a fraction of the stitched panorama width. */
+const ROOM_CENTERS = [0.0923, 0.2514, 0.4201, 0.5934, 0.7518, 0.9075];
 
 export function Ledger() {
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
   const [overview, setOverview] = useState(true);
@@ -36,16 +45,12 @@ export function Ledger() {
     const section = sectionRef.current;
     const camera = cameraRef.current;
     const wrap = wrapRef.current;
-    const stage = stageRef.current;
-    if (!section || !camera || !wrap) return;
-
-    const path = camera.querySelector<SVGPathElement>("[data-line]");
-    const traveler = camera.querySelector<SVGCircleElement>("[data-traveler]");
+    const img = imgRef.current;
+    if (!section || !camera || !wrap || !img) return;
 
     const update = () => {
       if (stacked) {
         camera.style.transform = "";
-        if (path) path.style.strokeDashoffset = "0";
         setProgress(1);
         setActive(dayCards.length - 1);
         setOverview(false);
@@ -53,62 +58,38 @@ export function Ledger() {
       }
 
       const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-      const raw = Math.min(1, Math.max(0, (window.scrollY - section.offsetTop) / distance));
-      const intro = Math.min(1, raw / 0.08);
+      const raw = clamp((window.scrollY - section.offsetTop) / distance, 0, 1);
       const walk = Math.max(0, (raw - 0.08) / 0.92);
-      const eased = walk < 0.5 ? 2 * walk * walk : 1 - (-2 * walk + 2) ** 2 / 2;
+      const eased = easeInOut(walk);
+      const seeingAll = raw < 0.08;
       const last = dayCards.length - 1;
       const span = eased * last;
       const index = Math.min(last, Math.floor(span + 0.001));
       const next = Math.min(last, index + 1);
       const local = span - index;
-      const from = roomCenter(floorRooms[index]);
-      const to = roomCenter(floorRooms[next]);
-      const x = lerp(from.x, to.x, local);
-      const y = lerp(from.y, to.y, local);
-      const rw = lerp(floorRooms[index].w, floorRooms[next].w, local);
-      const rh = lerp(floorRooms[index].h, floorRooms[next].h, local);
 
-      const W = Math.max(1, wrap.clientWidth);
-      const H = Math.max(1, wrap.clientHeight);
-      const fit = Math.min(W / FLOOR.width, H / FLOOR.height);
-      const mobile = window.innerWidth < 900;
-      const seeingAll = raw < 0.08;
-      const pad = mobile ? 70 : 280;
-      const fillZoom = Math.min(W / ((rw + pad) * fit), H / ((rh + pad) * fit));
-      const zoom = mobile
-        ? seeingAll
-          ? 1.12
-          : Math.min(2.2, Math.max(1.3, fillZoom * 0.88))
-        : 1.08 + eased * 0.05;
-      const lookT = mobile ? (seeingAll ? 0.06 : 0.92) : 0.04 + eased * 0.1;
-      const ox = (x - VIEW_CX) * fit * lookT;
-      const oy = (y - VIEW_CY) * fit * lookT;
-      const lift = mobile ? (seeingAll ? H * 0.06 : H * 0.1) : 0;
-      camera.style.transform = `translate3d(${-ox * zoom}px, ${-oy * zoom - lift}px, 0) rotateX(12deg) rotateZ(-8deg) scale(${zoom})`;
-      if (stage) stage.style.setProperty("--day", String(Math.max(intro * 0.2, eased)));
-      if (path) {
-        path.style.strokeDashoffset = String(1 - Math.max(0.12, seeingAll ? 0.12 : eased));
-        if (traveler) {
-          try {
-            const len = path.getTotalLength();
-            const pt = path.getPointAtLength(Math.max(0.04, seeingAll ? 0.04 : eased) * len);
-            traveler.setAttribute("cx", String(pt.x));
-            traveler.setAttribute("cy", String(pt.y));
-          } catch {
-            /* path not ready */
-          }
-        }
-      }
+      const wrapW = Math.max(1, wrap.clientWidth);
+      const wrapH = Math.max(1, wrap.clientHeight);
+      const naturalW = img.naturalWidth || 5259;
+      const naturalH = img.naturalHeight || 966;
+      const drawnW = naturalW * (wrapH / naturalH);
+      const maxX = Math.max(0, drawnW - wrapW);
+      const stops = ROOM_CENTERS.map((center) => clamp(center * drawnW - wrapW / 2, 0, maxX));
+      const x = seeingAll ? 0 : lerp(stops[index], stops[next], local);
+
+      camera.style.transform = `translate3d(${-x}px, 0, 0)`;
       setProgress(raw);
       setActive(seeingAll ? 0 : index);
       setOverview(seeingAll);
     };
 
-    update();
+    const onLoad = () => update();
+    if (img.complete) update();
+    img.addEventListener("load", onLoad);
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
+      img.removeEventListener("load", onLoad);
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
@@ -121,16 +102,16 @@ export function Ledger() {
       ref={sectionRef}
       aria-labelledby="ledger-title"
     >
-      <div className="ledger-stage" ref={stageRef}>
+      <div className="ledger-stage">
         <div className="ledger-top">
           <div>
             <div className="section-kicker kicker-dark">
               <i />
               01 · A day on the floor
             </div>
-            <h2 id="ledger-title">One line through the building.</h2>
+            <h2 id="ledger-title">One line through the business.</h2>
           </div>
-          <span>Six stations · 7 AM to 6 PM</span>
+          <span>Six handoffs · one operating picture</span>
         </div>
 
         <div className="ledger-main">
@@ -145,7 +126,7 @@ export function Ledger() {
                   <span>The line of work</span>
                   <span>Six stations</span>
                 </div>
-                <p>Six rooms around one aisle. A job should move through the building in one direction — not bounce between inboxes.</p>
+                <p>Six rooms on one line. A job should move through the business in one direction — not bounce between inboxes.</p>
                 <p className="ledger-after">Scroll to walk it.</p>
               </>
             ) : (
@@ -169,26 +150,26 @@ export function Ledger() {
 
           <div className="ledger-plan-wrap" ref={wrapRef}>
             <div className="ledger-plan-camera" ref={cameraRef}>
-              <FloorPlan
-                active={stacked ? dayCards.length - 1 : active}
-                allLit={stacked}
-                overview={overview && !stacked}
+              <img
+                ref={imgRef}
+                className="ledger-line-img"
+                src={LINE_SRC}
+                width={5259}
+                height={966}
+                alt="Six isometric rooms on one line: front office, order desk, planning, shop floor, warehouse, and close-out."
               />
             </div>
             {narrow && !stacked ? (
-              <svg className="ledger-minimap" viewBox="0 0 840 492" aria-hidden="true">
-                {floorRooms.map((room, index) => (
-                  <rect
-                    key={room.zone}
-                    x={room.x}
-                    y={room.y}
-                    width={room.w}
-                    height={room.h}
-                    className={!overview && index === active ? "is-live" : !overview && index < active ? "is-visited" : ""}
+              <ol className="ledger-minimap" aria-hidden="true">
+                {dayCards.map((item, index) => (
+                  <li
+                    key={item.zone}
+                    className={
+                      !overview && index === active ? "is-live" : !overview && index < active ? "is-visited" : ""
+                    }
                   />
                 ))}
-                <rect className="ledger-minimap-aisle" x="0" y="200" width="840" height="92" />
-              </svg>
+              </ol>
             ) : null}
           </div>
         </div>
