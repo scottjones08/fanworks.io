@@ -105,4 +105,31 @@
 
 - P3: pointer-position parallax could add subtle depth on desktop, but it is not necessary for the scroll story and should remain restrained.
 
+## Data Layer Redesign — Option 1
+
+### Evidence
+
+- Selected ImageGen reference: `/Users/scottjones/.codex/generated_images/01a014d3-5d84-7451-94ea-549f0179d8bf/exec-ef863d33-c649-4343-b3a7-55a6fad9dc57.png`
+- Final desktop implementation: `/tmp/fanworks-data-layer-desktop-final.png`
+- Final mobile implementation: `/tmp/fanworks-data-layer-mobile-final.png`
+- Side-by-side reference comparison: `/tmp/fanworks-data-layer-comparison.png`
+- Reviewed viewports: 1280 × 900 desktop and 390 × 844 mobile.
+
+### Findings
+
+- No actionable P0, P1, or P2 findings remain.
+- The desktop layout preserves the selected concept's split editorial heading, converging source systems, ochre directional line, and green operating-layer result.
+- Connector angles now resolve ten source systems into one central handoff before the result card, making the before-to-after logic explicit.
+- The mobile breakpoint replaces the desktop convergence field with a readable two-column source grid, vertical handoff arrow, and full-width result card without horizontal overflow.
+- The existing FanWorks header, condensed display typography, monochrome utility type, dark palette, ochre accent, and section-corner details remain consistent with the rest of the site.
+- Mobile navigation opens and closes correctly, restores page scrolling, and exposes the expected navigation options.
+- Browser console review showed no errors or warnings; only normal Vite and React development messages were present.
+
+### Iteration 8
+
+- User selection: implemented Data Layer Option 1 as the production section instead of embedding the generated image.
+- P2 finding: the first pass used a left-pointing convergence wedge and shallow connector angles, which weakened the source-to-layer reading.
+- Fix: reversed and aligned the convergence wedge, increased the connector angles so all ten inputs meet at one handoff, and retained the clear rightward ochre arrow.
+- Result: desktop and mobile comparisons match the selected hierarchy and operating logic with no actionable P0, P1, or P2 findings.
+
 final result: passed
