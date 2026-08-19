@@ -2,7 +2,7 @@ export const navItems = [
   { id: "system", label: "The layer" },
   { id: "frictions", label: "Frictions" },
   { id: "approach", label: "Approach" },
-  { id: "adopt", label: "People" },
+  { id: "practices", label: "People & practice" },
 ] as const;
 
 export const frictionWords = [
@@ -108,13 +108,6 @@ export const practices = [
     tags: "Firms · In-house teams",
     icon: "legal",
   },
-] as const;
-
-export const kpis = [
-  { name: "Cycle time", delta: "↓ 38%", width: 74 },
-  { name: "Throughput", delta: "↑ 24%", width: 88 },
-  { name: "Gross margin", delta: "↑ 6 pts", width: 66 },
-  { name: "On-time delivery", delta: "↑ 98%", width: 92 },
 ] as const;
 
 export function scrollToId(id: string) {

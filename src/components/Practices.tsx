@@ -1,6 +1,12 @@
 import { practices } from "../content";
 import { useReveal } from "../hooks/useReveal";
 
+const proof = [
+  { lead: "20+", label: "Years improving operations" },
+  { lead: "Operator-led", label: "Executives & entrepreneurs — startup to Fortune 500" },
+  { lead: "People first", label: "AI and automation only where they make the work better" },
+] as const;
+
 function PracticeIcon({ name }: { name: string }) {
   const common = {
     viewBox: "0 0 48 48",
@@ -52,18 +58,39 @@ function PracticeIcon({ name }: { name: string }) {
 
 export function Practices() {
   const headRef = useReveal<HTMLDivElement>();
+  const proofRef = useReveal<HTMLUListElement>();
+  const gridRef = useReveal<HTMLDivElement>();
 
   return (
     <section className="practices" id="practices" aria-labelledby="practices-title">
       <div className="reveal" ref={headRef}>
         <div className="section-kicker kicker-dark">
           <i />
-          05 · Practice areas
+          04 · People & practice areas
         </div>
         <div className="split-head">
-          <h2 id="practices-title">Where we've run it.</h2>
-          <p>Different industries, same frictions. The tools change; the line of work — intake to invoice — doesn't.</p>
+          <h2 id="practices-title">Built around your people.</h2>
+          <p>
+            Your systems should support how your people actually work — not make them work around
+            the systems. We sit with the teams doing the work, rebuild what runs underneath them,
+            and train in the style that fits the staff, so the new line is used from the first
+            week, not the first quarter.
+          </p>
         </div>
+      </div>
+
+      <ul className="practice-proof reveal" ref={proofRef} aria-label="Who runs the work">
+        {proof.map((item) => (
+          <li key={item.lead}>
+            <strong>{item.lead}</strong>
+            <span>{item.label}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="practice-grid-head reveal" ref={gridRef}>
+        <h3>Where we've run it</h3>
+        <p>Different industries, same frictions. The tools change; the line of work — intake to invoice — doesn't.</p>
       </div>
 
       <div className="practice-grid">
