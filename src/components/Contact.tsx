@@ -56,7 +56,7 @@ export function Contact() {
         <div className="reveal" ref={copyRef}>
           <div className="section-kicker kicker-ink">
             <i />
-            07 · Contact
+            05 · Contact
           </div>
           <h2 id="engage-title">What is slowing you down?</h2>
           <p>
