@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useReveal } from "../hooks/useReveal";
+import { Lockup } from "./Logo";
 
 type FormState = "idle" | "sending" | "sent" | "error";
 
@@ -110,8 +111,7 @@ export function Contact() {
       </div>
 
       <footer className="site-footer">
-        <span className="wordmark">FANWORKS</span>
-        <span>Business systems consulting</span>
+        <Lockup />
         <span>Richmond, Virginia</span>
         <span>Est. 2025</span>
       </footer>

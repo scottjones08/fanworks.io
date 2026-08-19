@@ -28,7 +28,7 @@ export function System() {
       <div className="reveal" ref={revealRef}>
         <div className="section-kicker">
           <i />
-          02 · The data layer
+          01 · The data layer
         </div>
         <div className="split-head system-convergence-head">
           <h2 id="system-title">One data layer.</h2>

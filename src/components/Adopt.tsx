@@ -47,7 +47,7 @@ export function Adopt() {
         <div className="adopt-quote-copy">
           <div className="section-kicker">
             <i />
-            05 · The real question
+            04 · The real question
           </div>
           <h2 id="adopt-title">How will they adopt this?</h2>
           <blockquote className="adopt-creed">

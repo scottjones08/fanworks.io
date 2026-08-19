@@ -1,13 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { frictionWords, lineStages, scrollToId, tickerCopy } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
-
-const HERO_VIDEO =
-  "https://videos.pexels.com/video-files/2386581/2386581-uhd_2732_1440_24fps.mp4";
+import { FanMark } from "./Logo";
 
 export function Hero() {
   const reduced = useReducedMotion();
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [clock, setClock] = useState("RVA · --:--");
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
@@ -27,27 +24,13 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.playbackRate = 0.65;
-    video.muted = true;
-    if (reduced) {
-      video.pause();
-      return;
-    }
-    video.play().catch(() => undefined);
-
     const onScroll = () => {
-      const progress = Math.min(1, window.scrollY / window.innerHeight);
-      video.style.transform = `translateY(${progress * window.innerHeight * 0.18}px) scale(1.06)`;
       setShowCue(window.innerHeight >= 620 && window.scrollY <= 60);
-      if (progress >= 1 && !video.paused) video.pause();
-      else if (progress < 1 && video.paused && !reduced) video.play().catch(() => undefined);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [reduced]);
+  }, []);
 
   useEffect(() => {
     if (reduced) return;
@@ -72,17 +55,7 @@ export function Hero() {
   return (
     <section className="hero" id="top">
       <div className="hero-media" aria-hidden="true">
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/fan-works-hero.webp"
-          src={HERO_VIDEO}
-        />
-        <div className="hero-shade" />
+        <FanMark className="hero-mark" />
         <div className="hero-grain" />
       </div>
 
@@ -95,7 +68,7 @@ export function Hero() {
       <div className="hero-copy">
         <p className="hero-kicker">
           <i />
-          Business systems consulting for established operators
+          HCD business consulting for established operators
         </p>
         <div className="hero-lines">
           <div className="hero-mask">

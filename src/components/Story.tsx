@@ -68,7 +68,7 @@ export function Story() {
         <div className="reveal" ref={copyRef}>
           <div className="section-kicker">
             <i />
-            07 · Why FanWorks
+            06 · Why fanworks
           </div>
           <h2 id="story-title">We have run the work.</h2>
           <p>
