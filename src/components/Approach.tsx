@@ -6,7 +6,7 @@ export function Approach() {
       <article className="approach-panel approach-see">
         <div className="section-kicker kicker-dark">
           <i />
-          04 · How we work · 1 of 3
+          03 · How we work · 1 of 3
         </div>
         <span className="approach-num">01</span>
         <h2>{principles[0].title}</h2>
@@ -21,7 +21,7 @@ export function Approach() {
       <article className="approach-panel approach-fix">
         <div className="section-kicker">
           <i />
-          04 · How we work · 2 of 3
+          03 · How we work · 2 of 3
         </div>
         <span className="approach-num">02</span>
         <h2>{principles[1].title}</h2>
@@ -39,7 +39,7 @@ export function Approach() {
       <article className="approach-panel approach-leave">
         <div className="section-kicker">
           <i />
-          04 · How we work · 3 of 3
+          03 · How we work · 3 of 3
         </div>
         <span className="approach-num">03</span>
         <h2>{principles[2].title}</h2>

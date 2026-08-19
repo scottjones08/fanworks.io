@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { navItems, scrollToId } from "../content";
+import { Lockup } from "./Logo";
 
 type HeaderProps = {
   menuOpen: boolean;
@@ -78,11 +79,8 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   return (
     <div className="site-chrome" ref={chromeRef}>
       <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
-        <button className="brand-lockup" type="button" onClick={() => go("top")} aria-label="FanWorks home">
-          <span className="wordmark">FANWORKS</span>
-          {!narrow && !scrolled ? (
-            <span className="brand-subtitle">Business systems consulting</span>
-          ) : null}
+        <button className="brand-lockup" type="button" onClick={() => go("top")} aria-label="fanworks home">
+          <Lockup compact={narrow || scrolled} />
         </button>
 
         <nav className="desktop-nav" aria-label="Primary navigation">

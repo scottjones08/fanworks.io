@@ -1,8 +1,8 @@
 export const navItems = [
-  { id: "ledger", label: "The day" },
   { id: "system", label: "The layer" },
-  { id: "adopt", label: "People" },
+  { id: "frictions", label: "Frictions" },
   { id: "approach", label: "Approach" },
+  { id: "adopt", label: "People" },
 ] as const;
 
 export const frictionWords = [
@@ -25,76 +25,6 @@ export const lineStages = [
 
 export const tickerCopy =
   "Intake ⟶ Quote ⟶ Order ⟶ Schedule ⟶ Production ⟶ Delivery ⟶ Invoice ⟶ Feedback  ·  One line, end to end  ·  ";
-
-export const dayCards = [
-  {
-    time: "7:04",
-    stamp: "7:04 AM",
-    index: "01 / 06",
-    before: "The day starts in three systems and a spreadsheet that only one person understands.",
-    after: "One screen shows the whole floor.",
-    icon: "screens",
-    room: "Front office",
-    zone: "ops",
-    focus: { x: 140, y: 100 },
-  },
-  {
-    time: "9:20",
-    stamp: "9:20 AM",
-    index: "02 / 06",
-    before: "An order is retyped for the third time — quote, job ticket, invoice.",
-    after: "Entered once. Everywhere at once.",
-    icon: "copy",
-    room: "Order desk",
-    zone: "intake",
-    focus: { x: 420, y: 100 },
-  },
-  {
-    time: "11:45",
-    stamp: "11:45 AM",
-    index: "03 / 06",
-    before: "“Who owns this?” travels four inboxes before lunch.",
-    after: "Every job carries one name.",
-    icon: "inbox",
-    room: "Planning",
-    zone: "plan",
-    focus: { x: 700, y: 100 },
-  },
-  {
-    time: "1:30",
-    stamp: "1:30 PM",
-    index: "04 / 06",
-    before: "The same job gets done five different ways, depending on who's in.",
-    after: "One way. Written down. Followed.",
-    icon: "list",
-    room: "Shop floor",
-    zone: "shop",
-    focus: { x: 700, y: 392 },
-  },
-  {
-    time: "3:15",
-    stamp: "3:15 PM",
-    index: "05 / 06",
-    before: "A stockout is discovered at the dock, with the truck already waiting.",
-    after: "The system flagged it Tuesday.",
-    icon: "dock",
-    room: "Warehouse",
-    zone: "dock",
-    focus: { x: 420, y: 392 },
-  },
-  {
-    time: "6:00",
-    stamp: "6:00 PM",
-    index: "06 / 06",
-    before: "You used to leave with questions.",
-    after: "Now you leave with numbers.",
-    icon: "chart",
-    room: "Close-out",
-    zone: "close",
-    focus: { x: 140, y: 392 },
-    finale: true,
-  },
-] as const;
 
 export const frictions = [
   {

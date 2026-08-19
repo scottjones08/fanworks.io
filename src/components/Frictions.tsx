@@ -91,7 +91,7 @@ export function Frictions() {
       <div className="reveal" ref={headRef}>
         <div className="section-kicker">
           <i />
-          03 · What we remove
+          02 · What we remove
         </div>
         <div className="split-head">
           <h2 id="frictions-title">Five frictions.</h2>
