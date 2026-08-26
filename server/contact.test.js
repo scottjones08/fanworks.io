@@ -166,7 +166,7 @@ test("posts a Resend email when the API key is set", async () => {
     assert.match(body.subject, /Scott Jones/);
     assert.match(body.text, /paper tickets/);
     assert.match(body.html, /paper tickets/);
-    assert.doesNotMatch(body.html, /<script>/);
+    assert.equal(body.html.includes("<script>"), false);
     assert.match(body.html, /&lt;script&gt;/);
   } finally {
     globalThis.fetch = originalFetch;
