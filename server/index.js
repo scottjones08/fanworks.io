@@ -2,11 +2,14 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { contactStatus, respondContact } from "./contact.js";
+import { applySecurityHeaders } from "./securityHeaders.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
+
+applySecurityHeaders(app, { production: process.env.NODE_ENV === "production" });
 
 const OPENAI_REALTIME_CLIENT_SECRETS_URL = "https://api.openai.com/v1/realtime/client_secrets";
 
@@ -154,4 +157,3 @@ app.get("*", (_req, res) => {
 app.listen(port, () => {
   console.log(`Fan Works listening on ${port}`);
 });
-
