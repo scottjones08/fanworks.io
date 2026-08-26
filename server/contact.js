@@ -2,6 +2,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RATE_WINDOW_MS = 60 * 60 * 1000;
 const RATE_MAX = 6;
 const hits = new Map();
+const DISALLOWED_CONTROL_RE = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
 
 export const DEFAULT_CONTACT_TO = [
   "scottjones08@gmail.com",
@@ -74,23 +75,38 @@ export function allowRequest(ip) {
   return true;
 }
 
+function normalizeText(value, { multiline = false } = {}) {
+  if (typeof value !== "string") return null;
+
+  const normalized = value.normalize("NFKC");
+  if (DISALLOWED_CONTROL_RE.test(normalized)) return null;
+
+  if (multiline) {
+    return normalized.replace(/\r\n?/g, "\n").trim();
+  }
+  return normalized.replace(/\s+/g, " ").trim();
+}
+
 export function validateContact(input = {}) {
-  const honeypot = String(input.company ?? "").trim();
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return { ok: false, error: "Invalid request." };
+  }
+
+  const honeypot = normalizeText(input.company ?? "");
+  if (honeypot === null) return { ok: false, error: "Invalid request." };
   if (honeypot) return { ok: true, spam: true };
 
-  const name = String(input.name ?? "")
-    .replace(/\s+/g, " ")
-    .trim();
-  const email = String(input.email ?? "").trim();
-  const message = String(input.message ?? "").trim();
+  const name = normalizeText(input.name);
+  const email = normalizeText(input.email);
+  const message = normalizeText(input.message, { multiline: true });
 
-  if (name.length < 2 || name.length > 120) {
+  if (name === null || name.length < 2 || name.length > 120) {
     return { ok: false, error: "Please add your name." };
   }
-  if (!EMAIL_RE.test(email) || email.length > 160) {
+  if (email === null || !EMAIL_RE.test(email) || email.length > 160) {
     return { ok: false, error: "Please add a valid email." };
   }
-  if (message.length < 8 || message.length > 4000) {
+  if (message === null || message.length < 8 || message.length > 4000) {
     return { ok: false, error: "Please tell us a bit more about the work." };
   }
 

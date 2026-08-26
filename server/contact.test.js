@@ -60,6 +60,37 @@ test("accepts a real inquiry", () => {
   assert.equal(result.payload.name, "Scott Jones");
 });
 
+test("rejects non-string and control-character input", () => {
+  assert.equal(
+    validateContact({
+      name: { display: "Scott" },
+      email: "scott@example.com",
+      message: "Orders are retyped three times.",
+    }).ok,
+    false,
+  );
+  assert.equal(
+    validateContact({
+      name: "Scott",
+      email: "scott@example.com",
+      message: "Orders contain a hidden\u0000 control.",
+    }).ok,
+    false,
+  );
+});
+
+test("normalizes single-line fields and message newlines", () => {
+  const result = validateContact({
+    name: "  Scott\n Jones  ",
+    email: "  scott@example.com  ",
+    message: "First line\r\nSecond line",
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.name, "Scott Jones");
+  assert.equal(result.payload.email, "scott@example.com");
+  assert.equal(result.payload.message, "First line\nSecond line");
+});
+
 test("uses the Resend onboarding sender until a domain from-address is set", () => {
   const previous = process.env.RESEND_FROM;
   delete process.env.RESEND_FROM;
@@ -123,7 +154,7 @@ test("posts a Resend email when the API key is set", async () => {
     await deliverContact({
       name: "Scott Jones",
       email: "visitor@example.com",
-      message: "The floor is still running on paper tickets.",
+      message: "<script>alert(1)</script> The floor is still running on paper tickets.",
     });
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, "https://api.resend.com/emails");
@@ -135,6 +166,8 @@ test("posts a Resend email when the API key is set", async () => {
     assert.match(body.subject, /Scott Jones/);
     assert.match(body.text, /paper tickets/);
     assert.match(body.html, /paper tickets/);
+    assert.doesNotMatch(body.html, /<script>/);
+    assert.match(body.html, /&lt;script&gt;/);
   } finally {
     globalThis.fetch = originalFetch;
     if (previousKey === undefined) delete process.env.RESEND_API_KEY;
