@@ -16,6 +16,8 @@ Execution date: 2026-08-25
 - Included application changes are limited to dependency lockfile remediation, security-header middleware/tests, CI, CODEOWNERS, and the pull-request template.
 - Raw cloud evidence, tenant identifiers, access-review principals, and internal gap details are retained locally and are not intended for the public repository branch.
 - Unrelated website-design changes already present in the worktree are excluded.
+- Pull request #29 was opened without merging or deploying it. Its `Test, build, and audit` workflow passed the locked install, automated tests, production build, and production dependency audit.
+- After that successful workflow, Dependabot vulnerability alerts were enabled and the automated-security-fixes endpoint reported `enabled: true` and `paused: false`.
 - The pull request must remain unmerged and undeployed until separately approved.
 
 ## Proposed protections — not applied
