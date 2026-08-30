@@ -1,3 +1,5 @@
+import { List, X } from "@phosphor-icons/react";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { navItems, scrollToId } from "../content";
 import { Lockup } from "./Logo";
@@ -9,16 +11,13 @@ type HeaderProps = {
 
 export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [narrow, setNarrow] = useState(false);
-  const chromeRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const sync = () => {
-      setScrolled(window.scrollY > 40);
-      const isNarrow = window.innerWidth < 720;
-      setNarrow(isNarrow);
-      if (!isNarrow) setMenuOpen(false);
+      setScrolled(window.scrollY > 28);
+      if (window.innerWidth >= 800) setMenuOpen(false);
     };
     sync();
     window.addEventListener("scroll", sync, { passive: true });
@@ -31,23 +30,26 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
 
   useEffect(() => {
     if (!menuOpen) return;
-    const root = chromeRef.current;
     const previous = document.activeElement as HTMLElement | null;
+    const root = rootRef.current;
     document.body.style.overflow = "hidden";
 
-    const focusables = () =>
-      root ? Array.from(root.querySelectorAll<HTMLElement>("button:not([disabled]), a[href]")) : [];
+    const focusables = () => {
+      if (!root) return [];
+      const menuItems = Array.from(root.querySelectorAll<HTMLElement>(".mobile-nav button:not([disabled])"));
+      return toggleRef.current ? [...menuItems, toggleRef.current] : menuItems;
+    };
 
-    const onKey = (event: KeyboardEvent) => {
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMenuOpen(false);
         return;
       }
       if (event.key !== "Tab") return;
       const items = focusables();
-      if (!items.length) return;
       const first = items[0];
-      const last = items[items.length - 1];
+      const last = items.at(-1);
+      if (!first || !last) return;
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
@@ -57,15 +59,10 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
       }
     };
 
-    document.addEventListener("keydown", onKey);
-    requestAnimationFrame(() => {
-      focusables()
-        .find((item) => item !== toggleRef.current)
-        ?.focus();
-    });
-
+    document.addEventListener("keydown", onKeyDown);
+    requestAnimationFrame(() => focusables()[0]?.focus());
     return () => {
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
       previous?.focus();
     };
@@ -77,10 +74,15 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   };
 
   return (
-    <div className="site-chrome" ref={chromeRef}>
-      <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
+    <div className="site-chrome" ref={rootRef}>
+      <motion.header
+        className={`site-header${scrolled ? " is-scrolled" : ""}`}
+        initial={{ y: -32, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+      >
         <button className="brand-lockup" type="button" onClick={() => go("top")} aria-label="fanworks home">
-          <Lockup compact={narrow || scrolled} />
+          <Lockup />
         </button>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
@@ -89,8 +91,8 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
               {item.label}
             </button>
           ))}
-          <button className="nav-cta" type="button" onClick={() => go("engage")}>
-            Contact
+          <button className="nav-contact" type="button" onClick={() => go("engage")}>
+            Start a conversation
           </button>
         </nav>
 
@@ -103,21 +105,30 @@ export function Header({ menuOpen, setMenuOpen }: HeaderProps) {
           aria-controls="mobile-navigation"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? "×" : "≡"}
+          {menuOpen ? <X size={20} weight="bold" /> : <List size={22} weight="bold" />}
         </button>
-      </header>
+      </motion.header>
 
       {menuOpen ? (
-        <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">
-          {navItems.map((item) => (
+        <motion.nav
+          id="mobile-navigation"
+          className="mobile-nav"
+          aria-label="Mobile navigation"
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+        >
+          <span className="mobile-nav-label">Navigate the work</span>
+          {navItems.map((item, index) => (
             <button type="button" key={item.id} onClick={() => go(item.id)}>
+              <span>0{index + 1}</span>
               {item.label}
             </button>
           ))}
           <button type="button" className="mobile-nav-cta" onClick={() => go("engage")}>
-            Contact
+            Start a conversation
           </button>
-        </nav>
+        </motion.nav>
       ) : null}
     </div>
   );

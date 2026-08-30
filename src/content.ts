@@ -1,114 +1,174 @@
 export const navItems = [
-  { id: "system", label: "The layer" },
-  { id: "frictions", label: "Frictions" },
-  { id: "approach", label: "Approach" },
-  { id: "practices", label: "People & practice" },
+  { id: "diagnostic", label: "Map the day" },
+  { id: "method", label: "How we work" },
+  { id: "industries", label: "Industries" },
+  { id: "proof", label: "Why FanWorks" },
 ] as const;
 
-export const frictionWords = [
-  "disconnected systems",
-  "manual work",
-  "unclear ownership",
-  "inconsistent processes",
-  "lack of visibility",
-];
-
-export const lineStages = [
-  "Intake",
-  "Quote",
-  "Order",
-  "Schedule",
-  "Production",
-  "Delivery",
-  "Invoice",
+export const stages = [
+  {
+    id: "intake",
+    label: "Intake",
+    before: "A request lands in an inbox, a voicemail, and somebody's notebook.",
+    after: "One intake. One owner. Everyone sees what arrived.",
+  },
+  {
+    id: "quote",
+    label: "Quote",
+    before: "The same details are hunted down again before anyone can price the work.",
+    after: "The right context follows the request into the quote.",
+  },
+  {
+    id: "order",
+    label: "Order",
+    before: "The order is retyped into the system that the next team happens to use.",
+    after: "Entered once. Ready everywhere it needs to go.",
+  },
+  {
+    id: "schedule",
+    label: "Schedule",
+    before: "People reconcile calendars, capacity, and promises by hand.",
+    after: "Capacity and commitments share the same operating picture.",
+  },
+  {
+    id: "production",
+    label: "Production",
+    before: "Questions travel back upstream while the work waits on the floor.",
+    after: "The job arrives with the decisions, materials, and owner attached.",
+  },
+  {
+    id: "delivery",
+    label: "Delivery",
+    before: "A missing handoff is discovered when the customer is already waiting.",
+    after: "Exceptions surface early enough for the team to act.",
+  },
+  {
+    id: "invoice",
+    label: "Invoice",
+    before: "The final numbers are reconstructed from three versions of what happened.",
+    after: "The completed work closes the loop without another round of translation.",
+  },
 ] as const;
 
-export const tickerCopy =
-  "Intake ⟶ Quote ⟶ Order ⟶ Schedule ⟶ Production ⟶ Delivery ⟶ Invoice ⟶ Feedback  ·  One line, end to end  ·  ";
+export const tools = [
+  "Email",
+  "Sheets",
+  "ERP",
+  "CRM",
+  "Paper",
+  "Texts",
+  "Drive",
+  "Scheduler",
+  "Accounting",
+  "Whiteboard",
+] as const;
 
 export const frictions = [
   {
+    id: "disconnected",
     number: "01",
-    name: "Disconnected systems",
-    line: "Your tools do not talk to each other, so your people translate.",
-    icon: "unlink",
+    label: "Disconnected systems",
+    short: "People translate between tools that never meet.",
+  },
+  {
+    id: "manual",
+    number: "02",
+    label: "Manual work",
+    short: "Copying, chasing, and checking consume the day.",
+  },
+  {
+    id: "ownership",
+    number: "03",
+    label: "Unclear ownership",
+    short: "Good work stalls because no one holds the next move.",
+  },
+  {
+    id: "inconsistent",
+    number: "04",
+    label: "Inconsistent process",
+    short: "The same job takes a different path depending on who is in.",
+  },
+  {
+    id: "visibility",
+    number: "05",
+    label: "Lack of visibility",
+    short: "The problem appears only after it has become expensive.",
+  },
+] as const;
+
+export const methods = [
+  {
+    number: "01",
+    verb: "Observe",
+    title: "See the real work.",
+    body: "We sit beside the people doing it and watch the handoffs, workarounds, and decisions a process map misses.",
   },
   {
     number: "02",
-    name: "Manual work",
-    line: "Copying, chasing, checking — hours a day, invisible on any report.",
-    icon: "manual",
+    verb: "Map",
+    title: "Name the drag.",
+    body: "Together, we trace the work end to end and rank the friction by what it costs the team and the customer.",
   },
   {
     number: "03",
-    name: "Unclear ownership",
-    line: "Good work stalls between people because no one holds the ball.",
-    icon: "tag",
+    verb: "Rebuild",
+    title: "Connect what matters.",
+    body: "We simplify the operating layer underneath the day—using automation and AI only where they earn a place.",
   },
   {
     number: "04",
-    name: "Inconsistent process",
-    line: "The same job, five ways — quality rides on who showed up.",
-    icon: "fork",
-  },
-  {
-    number: "05",
-    name: "Lack of visibility",
-    line: "You find out what went wrong after it already cost you.",
-    icon: "blind",
+    verb: "Hand off",
+    title: "Leave it owned.",
+    body: "Your people train in the new way, understand why it works, and keep improving it without depending on us.",
   },
 ] as const;
 
-export const principles = [
+export const industries = [
   {
-    number: "01",
-    title: "See the real work.",
-    body: "Not the org chart. Not the process doc. We sit with your team and watch how the day actually runs — where it flows, and where it grinds.",
+    id: "manufacturing",
+    label: "Manufacturing",
+    eyebrow: "Plants · Job shops",
+    headline: "From quote to dock, without the scavenger hunt.",
+    body: "Connect estimating, job tickets, materials, scheduling, production, and delivery so the floor sees what the office promised.",
+    flow: ["Quote", "Job ticket", "Schedule", "Build", "Quality", "Dock"],
   },
   {
-    number: "02",
-    title: "Fix what matters.",
-    body: "Not everything at once. We rank the frictions by what they cost you, and start with the one creating the most drag on the business.",
+    id: "health",
+    label: "Health",
+    eyebrow: "Clinics · Practices",
+    headline: "Let the visit lead. Let the systems follow.",
+    body: "Bring intake, scheduling, records, follow-up, and billing into one patient-aware line without asking the team to become data clerks.",
+    flow: ["Inquiry", "Intake", "Visit", "Records", "Follow-up", "Billing"],
   },
   {
-    number: "03",
-    title: "Leave it simpler.",
-    body: "No black boxes, no dependency on us. We build a better way your team can understand, run, and own after we're gone.",
+    id: "wealth",
+    label: "Wealth",
+    eyebrow: "Advisories · Family offices",
+    headline: "A client experience with a memory.",
+    body: "Connect onboarding, service requests, compliance trails, review preparation, and reporting so nothing important lives in one inbox.",
+    flow: ["Prospect", "Onboard", "Plan", "Serve", "Review", "Report"],
+  },
+  {
+    id: "retail",
+    label: "Retail",
+    eyebrow: "Stores · E-commerce",
+    headline: "Know what happened before the customer asks.",
+    body: "Reconcile demand, inventory, orders, fulfillment, exceptions, and service around the same customer promise.",
+    flow: ["Demand", "Order", "Inventory", "Pick", "Deliver", "Support"],
+  },
+  {
+    id: "legal",
+    label: "Legal",
+    eyebrow: "Firms · In-house teams",
+    headline: "Keep the matter moving between the moments that matter.",
+    body: "Connect intake, engagement, deadlines, documents, client updates, and closeout while preserving clear ownership and judgment.",
+    flow: ["Intake", "Engage", "Plan", "Work", "Update", "Close"],
   },
 ] as const;
 
-export const practices = [
-  {
-    name: "Health",
-    line: "Patient intake, scheduling, and records that follow the visit — not the other way around.",
-    tags: "Clinics · Practices",
-    icon: "health",
-  },
-  {
-    name: "Wealth",
-    line: "Client onboarding, compliance trails, and reporting that runs itself between reviews.",
-    tags: "Advisories · Family offices",
-    icon: "wealth",
-  },
-  {
-    name: "Manufacturing",
-    line: "Quote to job ticket to dock — one line the floor can see and the office can trust.",
-    tags: "Plants · Job shops",
-    icon: "plant",
-  },
-  {
-    name: "Retail",
-    line: "Inventory, orders, and fulfillment reconciled in one place — before the customer asks.",
-    tags: "Stores · E-commerce",
-    icon: "bag",
-  },
-  {
-    name: "Legal",
-    line: "Matter intake, deadlines, and documents tracked from engagement letter to close.",
-    tags: "Firms · In-house teams",
-    icon: "legal",
-  },
-] as const;
+export type FrictionId = (typeof frictions)[number]["id"];
+export type IndustryId = (typeof industries)[number]["id"];
+export type ToolName = (typeof tools)[number];
 
 export function scrollToId(id: string) {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
