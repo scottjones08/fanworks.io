@@ -1,133 +1,160 @@
-import { useEffect, useState } from "react";
-import { frictionWords, lineStages, scrollToId, tickerCopy } from "../content";
+import { ArrowRight, ArrowsLeftRight, Fingerprint } from "@phosphor-icons/react";
+import { motion } from "motion/react";
+import { type PointerEvent as ReactPointerEvent, useRef, useState } from "react";
+import { scrollToId, stages } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
-import { FanMark } from "./Logo";
 
-export function Hero() {
+type HeroProps = {
+  selectedStage: number;
+  setSelectedStage: (index: number) => void;
+};
+
+export function Hero({ selectedStage, setSelectedStage }: HeroProps) {
   const reduced = useReducedMotion();
-  const [clock, setClock] = useState("RVA · --:--");
-  const [wordIndex, setWordIndex] = useState(0);
-  const [wordVisible, setWordVisible] = useState(true);
-  const [stageIndex, setStageIndex] = useState(0);
-  const [showCue, setShowCue] = useState(true);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const stage = stages[selectedStage];
 
-  useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setClock(
-        `RVA · ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
-      );
-    };
-    tick();
-    const id = window.setInterval(tick, 15000);
-    return () => window.clearInterval(id);
-  }, []);
+  const moveKnot = (clientX: number) => {
+    const rect = trackRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const progress = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    setSelectedStage(Math.round(progress * (stages.length - 1)));
+  };
 
-  useEffect(() => {
-    const onScroll = () => {
-      setShowCue(window.innerHeight >= 620 && window.scrollY <= 60);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const startDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    moveKnot(event.clientX);
+  };
 
-  useEffect(() => {
-    if (reduced) return;
-    const id = window.setInterval(() => {
-      setWordVisible(false);
-      window.setTimeout(() => {
-        setWordIndex((index) => (index + 1) % frictionWords.length);
-        setWordVisible(true);
-      }, 420);
-    }, 2600);
-    return () => window.clearInterval(id);
-  }, [reduced]);
+  const continueDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (dragging) moveKnot(event.clientX);
+  };
 
-  useEffect(() => {
-    if (reduced) return;
-    const id = window.setInterval(() => {
-      setStageIndex((index) => (index + 1) % lineStages.length);
-    }, 1700);
-    return () => window.clearInterval(id);
-  }, [reduced]);
+  const stopDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const keyMove = (key: string) => {
+    if (key === "ArrowLeft") setSelectedStage(Math.max(0, selectedStage - 1));
+    if (key === "ArrowRight") setSelectedStage(Math.min(stages.length - 1, selectedStage + 1));
+  };
 
   return (
-    <section className="hero" id="top">
-      <div className="hero-media" aria-hidden="true">
-        <FanMark className="hero-mark" />
-        <div className="hero-grain" />
+    <section className="hero" id="top" aria-labelledby="hero-title">
+      <div className="hero-photo" aria-hidden="true">
+        <motion.img
+          src="/media/mri/workday-table-hero.webp"
+          alt=""
+          width={2048}
+          height={1152}
+          initial={reduced ? false : { scale: 1.08, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, ease: [0.2, 0.8, 0.2, 1] }}
+        />
       </div>
-
-      <div className="hero-meta">
-        <span>Richmond, Virginia</span>
-        <span>{clock}</span>
-        <span>Est. 2025</span>
-      </div>
+      <div className="hero-vignette" aria-hidden="true" />
 
       <div className="hero-copy">
-        <p className="hero-kicker">
-          <i />
-          HCD business consulting for established operators
-        </p>
-        <div className="hero-lines">
-          <div className="hero-mask">
-            <h1>Make the</h1>
-          </div>
-          <div className="hero-mask">
-            <h1>
-              work{" "}
-              <span className="hero-flow">
-                flow.
-                <svg viewBox="0 0 340 44" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M6 20 C 70 6, 150 30, 218 16 C 262 7, 306 10, 334 15" />
-                  <path d="M26 36 C 110 26, 210 40, 316 28" className="hero-flow-soft" />
-                </svg>
-              </span>
-            </h1>
-          </div>
+        <motion.p
+          className="eyebrow"
+          initial={reduced ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, delay: 0.25 }}
+        >
+          Your operating line · Step 1 of 3
+        </motion.p>
+        <h1 id="hero-title">
+          <motion.span
+            initial={reduced ? false : { y: "105%" }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.75, delay: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            Where does the
+          </motion.span>
+          <motion.span
+            initial={reduced ? false : { y: "105%" }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            day <em>double back?</em>
+          </motion.span>
+        </h1>
+        <motion.p
+          className="hero-intro"
+          initial={reduced ? false : { opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.48 }}
+        >
+          Drag the knot to the handoff that costs your team the most. We&apos;ll start with the work,
+          not the software.
+        </motion.p>
+        <motion.div
+          className="hero-actions"
+          initial={reduced ? false : { opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
+        >
+          <button className="primary-action" type="button" onClick={() => scrollToId("diagnostic")}>
+            Map my day <ArrowRight size={19} weight="bold" />
+          </button>
+          <button className="text-action" type="button" onClick={() => scrollToId("engage")}>
+            I&apos;d rather talk it through
+          </button>
+        </motion.div>
+      </div>
+
+      <motion.div
+        className="hero-operating-line"
+        initial={reduced ? false : { opacity: 0, y: 42 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.85, delay: 0.72, ease: [0.2, 0.8, 0.2, 1] }}
+      >
+        <div className="line-instruction">
+          <span>Drag the knot</span>
+          <ArrowsLeftRight size={17} weight="bold" />
+          <strong>{stage.before}</strong>
         </div>
-
-        <aside className="hero-aside" aria-hidden="true">
-          <span>The line · end to end</span>
-          <ol className="hero-spine">
-            {lineStages.map((stage, index) => (
-              <li key={stage} className={reduced || index === stageIndex ? "is-on" : ""}>
-                {stage}
-              </li>
-            ))}
-          </ol>
-        </aside>
-
-        <div className="hero-footer">
-          <p>
-            Your tools don't talk. People carry the work between them by hand. We sit with the teams
-            who run the day and rebuild the systems underneath it — so the work moves on its own.
-          </p>
-          <div className="hero-actions">
-            <button className="cta cta-ochre" type="button" onClick={() => scrollToId("engage")}>
-              Start a conversation →
+        <div className="stage-track" ref={trackRef}>
+          <span className="stage-rule" aria-hidden="true" />
+          {stages.map((item, index) => (
+            <button
+              type="button"
+              key={item.id}
+              className={`stage-tab${index === selectedStage ? " is-active" : ""}`}
+              onClick={() => setSelectedStage(index)}
+              aria-pressed={index === selectedStage}
+            >
+              {item.label}
             </button>
-            <span className="hero-rotate">
-              Currently fixing →{" "}
-              <b className={wordVisible ? "is-in" : ""}>{frictionWords[wordIndex]}</b>{" "}
-              <em>0{wordIndex + 1}/05</em>
-            </span>
-          </div>
+          ))}
+          <motion.button
+            type="button"
+            className={`friction-knot${dragging ? " is-dragging" : ""}`}
+            style={{ left: `${(selectedStage / (stages.length - 1)) * 100}%` }}
+            animate={{ scale: dragging ? 1.12 : 1 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            onPointerDown={startDrag}
+            onPointerMove={continueDrag}
+            onPointerUp={stopDrag}
+            onPointerCancel={stopDrag}
+            onKeyDown={(event) => keyMove(event.key)}
+            aria-label={`Friction at ${stage.label}. Use left and right arrow keys to move.`}
+          >
+            <Fingerprint size={22} weight="bold" />
+            <span>Drag</span>
+          </motion.button>
         </div>
-      </div>
-
-      <p className={`scroll-cue${showCue ? "" : " is-hidden"}`} aria-hidden="true">
-        Scroll
-        <i />
-      </p>
-
-      <div className="ticker" aria-hidden="true">
-        <div className="ticker-track">
-          <span>{tickerCopy}</span>
-          <span>{tickerCopy}</span>
+        <div className="hero-line-meta">
+          <span>Selected handoff</span>
+          <strong>{stage.label}</strong>
+          <span>{String(selectedStage + 1).padStart(2, "0")} / 07</span>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
