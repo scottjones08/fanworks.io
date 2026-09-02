@@ -8,7 +8,7 @@ import { useDocumentTheme } from "../shared/useDocumentTheme";
 import { useReducedMotion } from "../shared/useReducedMotion";
 import { Flowchart } from "./Flowchart";
 import { InkBurst } from "./InkBurst";
-import { Thread } from "./Thread";
+import { Sketched } from "./Thread";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -17,21 +17,14 @@ function Reveal({ children, delay = 0, className }: { children: React.ReactNode;
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : { opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduced ? false : { opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.35 }}
       transition={{ duration: 0.9, delay, ease }}
     >
       {children}
     </motion.div>
   );
-}
-
-const TYPES = ["bodoni", "instrument", "fraunces", "cormorant", "newsreader"] as const;
-type TypeOption = (typeof TYPES)[number];
-function typeFromUrl(): TypeOption {
-  const t = new URLSearchParams(window.location.search).get("type");
-  return (TYPES as readonly string[]).includes(t || "") ? (t as TypeOption) : "bodoni";
 }
 
 function scrollTo(id: string) {
@@ -43,7 +36,6 @@ export default function Site() {
   useDocumentTheme("#f1f0ec", "#f1f0ec");
   const reduced = useReducedMotion();
   const hostRef = useRef<HTMLDivElement>(null);
-  const [type] = useState<TypeOption>(typeFromUrl);
   const today = useMemo(() => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), []);
 
   const [stage, setStage] = useState(2);
@@ -81,24 +73,23 @@ export default function Site() {
   const heroLines = ["Less work", "between", "the work."];
 
   return (
-    <div className={`one${burst ? " is-signing" : ""}`} ref={hostRef} data-type={type}>
-      <Thread hostRef={hostRef} released={released} />
+    <div className={`one${burst ? " is-signing" : ""}`} ref={hostRef}>
 
-      <header className="one-nav">
-        <a href="/" className="one-brand" aria-label="fanworks home">
-          <FanMark className="one-mark" />
-          <span>
-            fanworks
-            <i className="one-brand-period" data-thread="start fixed" aria-hidden="true" />
-          </span>
-        </a>
-        <button type="button" className="one-link" onClick={() => scrollTo("talk")}>
-          Talk to us
-        </button>
-      </header>
 
       <main>
-        <section className="one-hero" aria-labelledby="one-title">
+        <Sketched className="one-hero" aria-labelledby="one-title">
+          <header className="one-nav">
+            <a href="/" className="one-brand" aria-label="fanworks home">
+              <FanMark className="one-mark" />
+              <span>
+                fanworks
+                <i className="one-brand-period" data-thread="start fixed" aria-hidden="true" />
+              </span>
+            </a>
+            <button type="button" className="one-link" onClick={() => scrollTo("talk")}>
+              Talk to us
+            </button>
+          </header>
           <h1 id="one-title">
             {heroLines.map((line, i) => (
               <span className="one-mask" key={line}>
@@ -136,15 +127,16 @@ export default function Site() {
               Follow the line
             </button>
           </motion.div>
-        </section>
+        </Sketched>
 
-        <section className="one-tangle" id="tangle" aria-labelledby="one-tangle-title">
+        <Sketched className="one-tangle" id="tangle" aria-labelledby="one-tangle-title">
           <Reveal>
             <h2 id="one-tangle-title">
               Your people carry the work <em>between systems that never meet.</em>
             </h2>
           </Reveal>
           <ol className="one-frictions">
+            <span data-thread="start" className="one-anchor one-anchor-above" />
             {frictions.map((f, i) => (
               <Reveal key={f.id} delay={i * 0.05}>
                 <li>
@@ -164,10 +156,11 @@ export default function Site() {
                 </li>
               </Reveal>
             ))}
+            <span data-thread="tail" className="one-anchor one-anchor-below" />
           </ol>
-        </section>
+        </Sketched>
 
-        <section className="one-line" aria-labelledby="one-line-title">
+        <Sketched className="one-line" aria-labelledby="one-line-title">
           <Reveal>
             <h2 id="one-line-title">One line through the business.</h2>
           </Reveal>
@@ -194,9 +187,9 @@ export default function Site() {
             <p className="one-before">{stages[stage].before}</p>
             <p className="one-after">{stages[stage].after}</p>
           </div>
-        </section>
+        </Sketched>
 
-        <section className="one-method" aria-labelledby="one-method-title">
+        <Sketched className="one-method" aria-labelledby="one-method-title">
           <figure className="one-photo">
             <img src="/media/mri/operator-observation.webp" alt="Two operators walking a working shop floor, listening to the person who runs it" width={1800} height={1200} loading="lazy" />
           </figure>
@@ -205,6 +198,7 @@ export default function Site() {
               <h2 id="one-method-title">We sit beside the people who run the day.</h2>
             </Reveal>
             <ol className="one-steps-list">
+              <span data-thread="start" className="one-anchor one-anchor-above" />
               <small className="one-note one-note-steps" data-thread-note>
                 this is where we sit
               </small>
@@ -217,11 +211,12 @@ export default function Site() {
                   </li>
                 </Reveal>
               ))}
+              <span data-thread="tail" className="one-anchor one-anchor-below" />
             </ol>
           </div>
-        </section>
+        </Sketched>
 
-        <section className="one-how" aria-labelledby="one-how-title">
+        <Sketched className="one-how" aria-labelledby="one-how-title">
           <Reveal>
             <h2 id="one-how-title">How it goes.</h2>
           </Reveal>
@@ -229,9 +224,9 @@ export default function Site() {
             <p className="one-how-lede">From your note to a line your people own, drawn in one stroke. Two questions along the way, and an honest no at either.</p>
           </Reveal>
           <Flowchart />
-        </section>
+        </Sketched>
 
-        <section className="one-where" aria-label="Industries and engagements">
+        <Sketched className="one-where" aria-label="Industries and engagements">
           <Reveal>
             <p className="one-industries">
               {industries.map((ind, i) => (
@@ -244,35 +239,34 @@ export default function Site() {
           </Reveal>
           <Reveal delay={0.1}>
             <ol className="one-offers">
-              {offers.map((o) => (
+              {offers.map((o, i) => (
                 <li key={o.id}>
+                  <span data-thread={i === 0 ? "start tick" : "line-end tick"} className="one-anchor one-anchor-corner" />
                   <strong>{o.name}</strong>
                   <span>{o.summary}</span>
                 </li>
               ))}
-              <span data-thread="offers" className="one-anchor" />
+              <span data-thread="line-end" className="one-anchor one-anchor-corner-end" />
             </ol>
           </Reveal>
-        </section>
+        </Sketched>
 
-        <section className="one-quote" aria-label="What we believe">
+        <Sketched className="one-quote" aria-label="What we believe">
           <figure className="one-photo one-photo-wide">
             <img src="/media/mri/team-handoff.webp" alt="A team making a real handoff at an operating counter" width={1800} height={1200} loading="lazy" />
           </figure>
           <Reveal>
             <blockquote>
               <p>
-                The goal is not more technology. <em>It is less work between the work.</em>
+                The goal is not more technology. <span data-thread="start" className="one-anchor" />
+                <em data-thread="circle">It is less work between the work.</em>
               </p>
-              <cite>
-                Operators, not vendors. Twenty years improving operations, founder-led companies to the Fortune 500.
-                <span data-thread="quote" className="one-anchor" />
-              </cite>
+              <cite>Operators, not vendors. Twenty years improving operations, founder-led companies to the Fortune 500.</cite>
             </blockquote>
           </Reveal>
-        </section>
+        </Sketched>
 
-        <section className="one-talk" id="talk" aria-labelledby="one-talk-title">
+        <Sketched className="one-talk" id="talk" aria-labelledby="one-talk-title" released={released}>
           <div className="one-talk-copy">
             <Reveal>
               <h2 id="one-talk-title">Bring us the hard handoff.</h2>
@@ -285,6 +279,7 @@ export default function Site() {
               <a className="one-talk-mail" href={`mailto:${contactEmail}`}>
                 {contactEmail}
               </a>
+              <span data-thread="start" className="one-anchor one-anchor-talk" />
             </Reveal>
           </div>
 
@@ -352,7 +347,7 @@ export default function Site() {
               </small>
             </div>
           </form>
-        </section>
+        </Sketched>
       </main>
 
       {burst ? <InkBurst key={burst.key} origin={burst} reduced={reduced} onDone={endBurst} /> : null}

@@ -18,9 +18,9 @@ const down = (x: number, y0: number, y1: number) => `M${x} ${y0} L${x} ${y1} L${
 
 const WIDE = {
   w: 1000,
-  h: 620,
+  h: 560,
   entry: [40, 40],
-  exit: [695, 620],
+  exit: [701, 430],
   d: [
     box(40, 40, 210, 80),
     right(250, 300, 80),
@@ -42,7 +42,6 @@ const WIDE = {
     right(520, 570, 480),
     box(570, 440, 250, 80),
     `M820 480 L870 480 L870 400 L695 400 L695 440 L689 430 M695 440 L701 430`,
-    `M695 520 L695 620`,
   ].join(" "),
   labels: [
     { x: 145, y: 80, title: "A note arrives", small: "the sentence, your name" },
@@ -65,9 +64,9 @@ const WIDE = {
 
 const NARROW = {
   w: 400,
-  h: 1200,
+  h: 1160,
   entry: [30, 30],
-  exit: [140, 1200],
+  exit: [206, 1050],
   d: [
     box(30, 30, 220, 80),
     down(140, 110, 160),
@@ -89,7 +88,6 @@ const NARROW = {
     down(140, 1010, 1060),
     box(30, 1060, 220, 80),
     `M250 1100 L300 1100 L300 1020 L200 1020 L200 1060 L194 1050 M200 1060 L206 1050`,
-    `M140 1140 L140 1200`,
   ].join(" "),
   labels: [
     { x: 140, y: 70, title: "A note arrives", small: "the sentence, your name" },
