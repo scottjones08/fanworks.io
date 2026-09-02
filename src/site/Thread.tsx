@@ -1,6 +1,6 @@
 import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../shared/useReducedMotion";
-import { PenArt, PenDefs } from "./Pen";
+import { PenArt, PenDefs, type PenTone } from "./Pen";
 
 /**
  * A sketch the ballpoint pen draws inside one section, once the section is
@@ -19,9 +19,11 @@ import { PenArt, PenDefs } from "./Pen";
  *   circle       an ellipse drawn around the anchor element
  *   chart        the element carries its own drawing (data-thread-d in chart
  *                units, data-thread-w, -entry, -exit)
+ *   strike       a handwritten line struck through the anchor element
  *   park         the pen stops here until `released` is true
  * Elements carrying data-thread-note light up once the pen has passed the
- * point of the path nearest them.
+ * point of the path nearest them. A second pen in the same section uses its
+ * own attribute (`attr`, e.g. thread-red -> data-thread-red, data-thread-red-note).
  */
 
 type Note = { el: HTMLElement; x: number; y: number; at: number };
@@ -76,8 +78,23 @@ function marksFor(kinds: string[], x: number, y: number, narrow: boolean, f: (n:
   return out;
 }
 
-export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefObject<HTMLElement | null>; released?: boolean; delay?: number }) {
+export type Pen = { attr: string; tone: PenTone; delay?: number };
+
+export function Thread({
+  hostRef,
+  released = false,
+  delay = 0,
+  attr = "thread",
+  tone = "blue",
+}: {
+  hostRef: RefObject<HTMLElement | null>;
+  released?: boolean;
+  delay?: number;
+  attr?: string;
+  tone?: PenTone;
+}) {
   const reduced = useReducedMotion();
+  const dataKey = attr.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
   const partRefs = useRef<(SVGPathElement | null)[]>([]);
   const wetRef = useRef<SVGPathElement>(null);
   const penRef = useRef<SVGGElement>(null);
@@ -89,6 +106,7 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
   const park = useRef<{ x: number; y: number } | null>(null);
   const rebuild = useRef<() => void>(() => undefined);
   const drawn = useRef(0);
+  const startAt = useRef<number | null>(null);
   const angle = useRef(-52);
   const lift = useRef(0);
 
@@ -99,12 +117,12 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
 
     const build = () => {
       const hr = host.getBoundingClientRect();
-      const anchors = Array.from(host.querySelectorAll<HTMLElement>("[data-thread]"));
+      const anchors = Array.from(host.querySelectorAll<HTMLElement>(`[data-${attr}]`));
       if (anchors.length < 1) return;
       const f = (n: number) => n.toFixed(1);
       const pts = anchors.map((el) => {
         const r = el.getBoundingClientRect();
-        const kinds = (el.dataset.thread || "").split(/\s+/);
+        const kinds = (el.dataset[dataKey] || "").split(/\s+/);
         const top = kinds.includes("fixed") ? r.top - hr.top - window.scrollY : r.top - hr.top;
         const left = r.left - hr.left;
         if (kinds.includes("chart")) {
@@ -123,6 +141,14 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
             return out.toFixed(1);
           });
           return { x: left + ex * k, y: top + ey * k, kinds, shape, exit: { x: left + xx * k, y: top + xy * k } };
+        }
+        if (kinds.includes("strike")) {
+          // One confident stroke through the element, rising a touch, as a hand does.
+          const y = top + r.height / 2 + 2;
+          const x0 = left - 8;
+          const w = r.width + 14;
+          const shape = ` q ${f(w * 0.3)} -2.5 ${f(w * 0.55)} -1.5 t ${f(w * 0.45)} -1.5`;
+          return { x: x0, y, kinds, shape, exit: { x: x0 + w, y: y - 3 } };
         }
         if (kinds.includes("circle")) {
           // A hand-drawn ellipse around the element, entered at its left.
@@ -172,7 +198,7 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
       park.current = parkPt ? { x: parkPt.x, y: parkPt.y } : null;
       setD(path);
       setSize({ w: hr.width, h: hr.height });
-      notes.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-note]")).map((el) => {
+      notes.current = Array.from(host.querySelectorAll<HTMLElement>(`[data-${attr}-note]`)).map((el) => {
         const r = el.getBoundingClientRect();
         return { el, x: r.left - hr.left + r.width / 2, y: r.top - hr.top + r.height / 2, at: Infinity };
       });
@@ -189,7 +215,7 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
       ro?.disconnect();
       window.removeEventListener("resize", build);
     };
-  }, [hostRef]);
+  }, [hostRef, attr, dataKey]);
 
   // Start drawing once the section is in view.
   useEffect(() => {
@@ -313,7 +339,10 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
     const from = Math.min(drawn.current, cap);
     const distance = cap - from;
     const duration = Math.max(900, Math.min(4800, (distance / 620) * 1000));
-    const start = performance.now() + (from === 0 ? delay : 0);
+    // The delay counts from the first time the section is in view, so a late
+    // font load or resize that rebuilds the path does not restart it.
+    if (startAt.current === null) startAt.current = performance.now() + delay;
+    const start = from === 0 ? Math.max(startAt.current, performance.now()) : performance.now();
     let last = from;
     let frame = 0;
     const tick = (now: number) => {
@@ -333,7 +362,7 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
 
   if (!d) return null;
   return (
-    <svg className="thread" width={size.w} height={size.h} viewBox={`0 0 ${size.w} ${size.h}`} aria-hidden="true">
+    <svg className={`thread thread-${tone}`} width={size.w} height={size.h} viewBox={`0 0 ${size.w} ${size.h}`} aria-hidden="true">
       <defs>
         <PenDefs />
       </defs>
@@ -349,7 +378,7 @@ export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefO
       ))}
       <path ref={wetRef} d="" className="thread-wet" />
       <g ref={penRef} className="thread-pen" filter="url(#pen-shadow)">
-        <PenArt />
+        <PenArt tone={tone} />
       </g>
     </svg>
   );
@@ -360,14 +389,18 @@ export function Sketched({
   as: Tag = "section",
   released,
   delay,
+  pens = [],
   children,
   ...rest
-}: { as?: "section" | "div"; released?: boolean; delay?: number; children: ReactNode } & Omit<React.HTMLAttributes<HTMLElement>, "children">) {
+}: { as?: "section" | "div"; released?: boolean; delay?: number; pens?: Pen[]; children: ReactNode } & Omit<React.HTMLAttributes<HTMLElement>, "children">) {
   const ref = useRef<HTMLElement>(null);
   return (
     <Tag ref={ref as RefObject<HTMLDivElement>} {...rest}>
       {children}
       <Thread hostRef={ref} released={released} delay={delay} />
+      {pens.map((pen) => (
+        <Thread key={pen.attr} hostRef={ref} attr={pen.attr} tone={pen.tone} delay={pen.delay} />
+      ))}
     </Tag>
   );
 }

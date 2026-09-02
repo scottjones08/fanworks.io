@@ -4,6 +4,7 @@
   --ink-2: #4c4b47;
   --mute: #8c8a84;
   --thread: #2036c9;
+  --red: #c9302a;
   --rule: rgba(18, 18, 18, 0.14);
   --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
@@ -165,6 +166,15 @@
   transition: opacity 500ms;
 }
 
+.thread-red .thread-path {
+  stroke: var(--red);
+  stroke-width: 2.2;
+}
+
+.thread-red .thread-wet {
+  stroke: #e2564a;
+}
+
 /* nav */
 .one-nav {
   position: fixed;
@@ -269,11 +279,26 @@
   display: grid;
   align-content: end;
   gap: clamp(28px, 5vh, 56px);
-  padding: 120px var(--pad) clamp(48px, 8vh, 96px);
+  padding: 104px var(--pad) clamp(40px, 7vh, 96px);
+}
+
+/* the paragraph and the checklist share a row on wide screens so the whole
+   hero, checks included, fits above the fold */
+.one-hero-row {
+  display: grid;
+  gap: clamp(28px, 5vh, 56px);
+}
+
+@media (min-width: 1000px) {
+  .one-hero-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 48px;
+  }
 }
 
 .one-hero h1 {
-  font-size: calc(clamp(64px, 13.5vw, 232px) * var(--display-scale));
+  font-size: calc(clamp(64px, min(13.5vw, 19vh), 232px) * var(--display-scale));
   line-height: 0.88;
   letter-spacing: calc(var(--display-tracking) - 0.015em);
 }
@@ -332,6 +357,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  width: fit-content;
 }
 
 .one-check-box {
@@ -350,6 +376,18 @@
 
 .one-check-label.is-lit {
   color: var(--ink);
+}
+
+.one-check-label.one-check-no {
+  color: var(--ink);
+}
+
+.one-check-label.one-check-no.is-lit {
+  color: var(--mute);
+}
+
+.one-check-no s {
+  text-decoration: none;
 }
 
 .one-hero {
@@ -1030,6 +1068,108 @@
 .one-note-send {
   position: static;
   max-width: none;
+}
+
+.ink-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ink-mark {
+  fill: none;
+  stroke: var(--thread);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  mix-blend-mode: multiply;
+}
+
+.ink-flourish {
+  fill: none;
+  stroke: var(--thread);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  mix-blend-mode: multiply;
+}
+
+.ink-pen {
+  opacity: 0;
+  transition: opacity 400ms;
+}
+
+/* the stage: page dims to stone while the pen draws the mark and writes */
+.ink-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: var(--stone);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 900ms var(--ease);
+}
+
+.ink-stage.is-on {
+  opacity: 0.94;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ink-stage-art {
+  opacity: 0;
+  transition: opacity 600ms var(--ease);
+}
+
+.ink-stage-art.is-on {
+  opacity: 1;
+}
+
+.ink-logo path {
+  fill: var(--thread);
+  fill-opacity: 0;
+  stroke: var(--thread);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  transition: fill-opacity 1200ms var(--ease);
+}
+
+.ink-logo.is-inked path {
+  fill-opacity: 1;
+}
+
+.ink-words {
+  fill: var(--thread);
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.ink-hint {
+  fill: var(--mute);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 800ms var(--ease);
+}
+
+.ink-hint.is-on {
+  opacity: 1;
+}
+
+.one.is-signing .thread-pen,
+.one.is-signing .thread-wet {
+  opacity: 0 !important;
 }
 
 /* footer */
