@@ -12,6 +12,8 @@ import { PenArt, PenDefs } from "./Pen";
  *   back         the approach overshoots the anchor and doubles back to it
  *   line-start / line-end   a dead-straight run between the two
  *   tick         a short downward tick at the anchor
+ *   dash         a short rightward dash at the anchor
+ *   check        a check mark drawn inside the anchor (a box)
  *   circle       an ellipse drawn around the anchor element
  *   chart        the element carries its own drawing (data-thread-d in chart
  *                units, data-thread-w, -entry, -exit)
@@ -129,6 +131,8 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
         }
         if (b.shape) path += b.shape;
         if (b.kinds.includes("tick")) path += " l 0 14 l 0 -14";
+        if (b.kinds.includes("dash")) path += " l 14 0 l -14 0";
+        if (b.kinds.includes("check")) path += ` M ${f(b.x - 7)} ${f(b.y + 1)} l 5 6 l 11 -14`;
         if (b.kinds.includes("knot")) {
           path += " c 22 -18 40 6 18 22 c -22 16 -46 -10 -26 -26 c 20 -16 40 8 20 22 c -14 10 -30 -2 -12 -18";
         }

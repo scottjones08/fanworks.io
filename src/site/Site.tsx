@@ -37,6 +37,12 @@ export default function Site() {
   const reduced = useReducedMotion();
   const hostRef = useRef<HTMLDivElement>(null);
   const today = useMemo(() => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), []);
+  const [narrow, setNarrow] = useState(() => window.innerWidth <= 900);
+  useEffect(() => {
+    const sync = () => setNarrow(window.innerWidth <= 900);
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, []);
 
   const [stage, setStage] = useState(2);
   const [friction, setFriction] = useState<FrictionId>("manual");
@@ -123,6 +129,16 @@ export default function Site() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.9, delay: 1.1, ease }}
           >
+            <ul className="one-checks" aria-label="What we do">
+              {["Find where the day doubles back", "Rebuild one line through the business", "Leave it owned by the people who run it"].map((item) => (
+                <li key={item}>
+                  <span className="one-check-box" data-thread="check" aria-hidden="true" />
+                  <span className="one-check-label" data-thread-note>
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
             <button type="button" className="one-link one-link-quiet" onClick={() => scrollTo("tangle")}>
               Follow the line
             </button>
@@ -241,7 +257,7 @@ export default function Site() {
             <ol className="one-offers">
               {offers.map((o, i) => (
                 <li key={o.id}>
-                  <span data-thread={i === 0 ? "start tick" : "line-end tick"} className="one-anchor one-anchor-corner" />
+                  <span data-thread={`${i === 0 ? "start" : "line-end"} ${narrow ? "dash" : "tick"}`} className="one-anchor one-anchor-corner" />
                   <strong>{o.name}</strong>
                   <span>{o.summary}</span>
                 </li>
