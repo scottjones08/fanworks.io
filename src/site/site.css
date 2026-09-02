@@ -547,24 +547,10 @@
   margin-bottom: clamp(48px, 6vw, 88px);
 }
 
-.hw {
-  position: relative;
-  padding: 0;
-}
-
-.hw-label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  color: var(--mute);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.hw-svg {
+.sk-svg {
   display: block;
+  width: 100%;
+  height: auto;
   overflow: visible;
   border-radius: 6px;
   box-shadow:
@@ -572,39 +558,15 @@
     0 24px 60px rgba(20, 20, 22, 0.1);
 }
 
-.hw-line {
+.sk-text {
   font-family: "Caveat", "Bradley Hand", "Segoe Print", cursive;
   font-weight: 500;
-  fill: #2f2f33;
+  fill: #2e2e33;
 }
 
-.hw-after {
-  fill: #1b1b1f;
-}
-
-.hw-measure {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.hw-pen,
-.hw-eraser,
-.hw-crumbs {
-  transition: opacity 350ms;
+.sk-tool {
+  transition: opacity 300ms;
   filter: drop-shadow(2px 6px 6px rgba(20, 20, 22, 0.25));
-}
-
-.hw-crumbs {
-  filter: none;
-}
-
-.hw-sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 /* method */
@@ -1642,8 +1604,7 @@
   opacity: 1;
 }
 
-.w.is-signing .hw-pen,
-.w.is-signing .hw-eraser {
+.w.is-signing .sk-tool {
   opacity: 0 !important;
 }
 

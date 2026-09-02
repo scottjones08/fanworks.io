@@ -7,7 +7,7 @@ import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
 import { useReducedMotion } from "../shared/useReducedMotion";
 import { SectorCover, StoryCover } from "./Covers";
-import { Handwriting } from "./Handwriting";
+import { Sketch } from "./Sketch";
 import { InkBurst } from "./InkBurst";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
@@ -261,6 +261,19 @@ export default function Site() {
           </div>
         </section>
 
+        <section className="w-hear" id="how" aria-labelledby="w-hear-title">
+          <div className="w-hear-head">
+            <Reveal>
+              <p className="w-eyebrow">The workflow</p>
+              <h2 id="w-hear-title">Seven handoffs. One line.</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="w-lede">How the work moves today, and how it moves after we rebuild it with your people.</p>
+            </Reveal>
+          </div>
+          <Sketch />
+        </section>
+
         <section className="w-people" id="people" aria-labelledby="w-people-title">
           <div className="w-people-head">
             <Reveal>
@@ -297,15 +310,6 @@ export default function Site() {
           </Reveal>
         </section>
 
-        <section className="w-hear" aria-labelledby="w-hear-title">
-          <div className="w-hear-head">
-            <Reveal>
-              <p className="w-eyebrow">What we hear every week</p>
-              <h2 id="w-hear-title">The same story, in a different building.</h2>
-            </Reveal>
-          </div>
-          <Handwriting items={stages.map((s) => ({ label: s.label, before: s.before, after: s.after }))} />
-        </section>
 
         <section className="w-selected" id="work" aria-labelledby="w-selected-title">
           <div className="w-selected-head">
