@@ -518,7 +518,7 @@ export default function Site() {
               <span>
                 Anything we should know <em>(optional)</em>
               </span>
-              <textarea ref={form.messageRef} name="message" rows={4} value={form.message} onChange={(e) => form.setMessage(e.target.value)} placeholder="Who runs it, what it costs, what you have tried…" disabled={form.busy} />
+              <textarea ref={form.messageRef} name="message" rows={3} value={form.message} onChange={(e) => form.setMessage(e.target.value)} placeholder="Who runs it, what it costs, what you have tried…" disabled={form.busy} />
             </label>
             <div className="w-form-foot">
               <p role="status" aria-live="polite" className={form.state === "error" ? "is-error" : ""}>
