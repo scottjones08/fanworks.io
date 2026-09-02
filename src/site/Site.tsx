@@ -1,7 +1,7 @@
 import "./site.css";
 import { motion } from "motion/react";
 import { type CSSProperties, type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { contactEmail, frictions, industries, methods, offers, stages, tools, type FrictionId, type ToolName } from "../content";
+import { contactEmail, experience, fieldNotes, frictions, industries, methods, offers, stages, tools, trust, work, type FrictionId, type ToolName } from "../content";
 import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
@@ -33,11 +33,39 @@ function scrollTo(id: string) {
 }
 
 /** The hero's moving picture: an aerial of Richmond when the clip is present, a slow photograph otherwise. */
-const HERO_VIDEO = "/media/richmond-aerial.mp4";
+const HERO_VIDEO = "/media/hero-flythrough.mp4";
+const HERO_VIDEO_SMALL = "/media/hero-flythrough-480.mp4";
 const HERO_STILL = "/media/mri/workday-table-hero.webp";
 
-const CARD_PHOTOS = ["/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp", "/fan-works-hero.webp", "/media/mri/operator-observation.webp"];
-const CARD_TINTS = ["#1f3fd6", "#6b4a2b", "#1d4d3e", "#3d2f66", "#7a3b26"];
+const CARD_PHOTOS = ["/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp", "/fan-works-hero.webp", "/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp"];
+const CARD_TINTS = ["#1f3fd6", "#6b4a2b", "#1d4d3e", "#3d2f66", "#7a3b26", "#24466b", "#4a3a1e"];
+
+type SheetRef = { kind: "work" | "sector" | "note"; id: string };
+
+function readHash(): SheetRef | null {
+  const m = /^#(work|sector|note)\/([\w-]+)$/.exec(window.location.hash);
+  return m ? { kind: m[1] as SheetRef["kind"], id: m[2] } : null;
+}
+
+/** A side panel for a story, a sector, or a field note. Deep-linkable by hash. */
+function Sheet({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [onClose]);
+  return (
+    <div className="w-sheet-root">
+      <div className="w-sheet-back" onClick={onClose} />
+      <aside className="w-sheet" role="dialog" aria-modal="true">
+        <button type="button" className="w-sheet-close" onClick={onClose}>
+          Close <span aria-hidden="true">×</span>
+        </button>
+        <div className="w-sheet-body">{children}</div>
+      </aside>
+    </div>
+  );
+}
 
 const facts = [
   { big: "Days, not months", small: "to a map of where the day doubles back" },
@@ -60,18 +88,45 @@ export default function Site() {
     window.addEventListener("scroll", sync, { passive: true });
     return () => window.removeEventListener("scroll", sync);
   }, []);
+  // Stories, sectors, and notes open in a side panel; the hash keeps them linkable.
+  const [sheet, setSheet] = useState<SheetRef | null>(() => readHash());
+  const open = (kind: SheetRef["kind"], id: string) => setSheet({ kind, id });
+  const closeSheet = useCallback(() => setSheet(null), []);
+  useEffect(() => {
+    const want = sheet ? `#${sheet.kind}/${sheet.id}` : "";
+    if (window.location.hash !== want) window.history.replaceState(null, "", want || window.location.pathname);
+    const onHash = () => setSheet(readHash());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [sheet]);
   const [menu, setMenu] = useState(false);
   const go = (id: string) => {
     setMenu(false);
-    scrollTo(id);
+    setSheet(null);
+    window.setTimeout(() => scrollTo(id), 30);
   };
   useEffect(() => {
-    document.body.style.overflow = menu ? "hidden" : "";
+    document.body.style.overflow = menu || sheet ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menu]);
+  }, [menu, sheet]);
   const [videoOk, setVideoOk] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    // With several sources, a failed load reports on the last <source>, not the video.
+    const v = videoRef.current;
+    if (!v) return;
+    const last = v.querySelector("source:last-of-type");
+    const fail = () => setVideoOk(false);
+    last?.addEventListener("error", fail);
+    v.addEventListener("error", fail);
+    return () => {
+      last?.removeEventListener("error", fail);
+      v.removeEventListener("error", fail);
+    };
+  }, [videoOk, reduced]);
+
 
   // The note.
   const [stage, setStage] = useState(2);
@@ -133,11 +188,14 @@ export default function Site() {
           <button type="button" onClick={() => go("work")}>
             Work
           </button>
+          <button type="button" onClick={() => go("sectors")}>
+            Sectors
+          </button>
           <button type="button" onClick={() => go("method")}>
             Method
           </button>
-          <button type="button" onClick={() => go("engagements")}>
-            Engagements
+          <button type="button" onClick={() => go("notes")}>
+            Notes
           </button>
         </nav>
         <div className="w-nav-right">
@@ -155,8 +213,14 @@ export default function Site() {
           <button type="button" onClick={() => go("work")}>
             Work
           </button>
+          <button type="button" onClick={() => go("sectors")}>
+            Sectors
+          </button>
           <button type="button" onClick={() => go("method")}>
             Method
+          </button>
+          <button type="button" onClick={() => go("notes")}>
+            Notes
           </button>
           <button type="button" onClick={() => go("engagements")}>
             Engagements
@@ -172,7 +236,10 @@ export default function Site() {
         <section className="w-hero" aria-labelledby="w-title">
           <div className="w-hero-media" aria-hidden="true">
             {videoOk && !reduced ? (
-              <video className="w-hero-video" src={HERO_VIDEO} poster={HERO_STILL} autoPlay muted loop playsInline onError={() => setVideoOk(false)} />
+              <video ref={videoRef} className="w-hero-video" poster={HERO_STILL} autoPlay muted loop playsInline>
+                <source src={HERO_VIDEO_SMALL} type="video/mp4" media="(max-width: 640px)" />
+                <source src={HERO_VIDEO} type="video/mp4" />
+              </video>
             ) : (
               <img className="w-hero-still" src={HERO_STILL} alt="" width={2000} height={1125} />
             )}
@@ -214,9 +281,11 @@ export default function Site() {
           </Reveal>
           <ul className="w-trust-grid">
             {industries.map((ind, i) => (
-              <Reveal as="li" key={ind.id} delay={i * 0.05} className="w-trust-cell">
-                <span className="w-trust-label">{ind.label}</span>
-                <span className="w-trust-sub">{ind.eyebrow}</span>
+              <Reveal as="li" key={ind.id} delay={i * 0.04} className="w-trust-cell">
+                <button type="button" onClick={() => open("sector", ind.id)}>
+                  <span className="w-trust-label">{ind.label}</span>
+                  <span className="w-trust-sub">{ind.eyebrow}</span>
+                </button>
               </Reveal>
             ))}
             <Reveal as="li" delay={0.25} className="w-trust-cell w-trust-more">
@@ -227,8 +296,35 @@ export default function Site() {
           </ul>
         </section>
 
-        <section className="w-work" id="work" aria-labelledby="w-work-title">
+        <section className="w-selected" id="work" aria-labelledby="w-selected-title">
+          <div className="w-selected-head">
+            <Reveal>
+              <p className="w-eyebrow">Selected work</p>
+              <h2 id="w-selected-title">Encountered, changed, and learned.</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="w-lede">Seven engagements, anonymized on purpose. No client names, and no number that has not been measured and approved.</p>
+            </Reveal>
+          </div>
+          <ol className="w-stories">
+            {work.map((st, i) => (
+              <Reveal as="li" key={st.id} delay={(i % 3) * 0.06} className="w-story-card">
+                <button type="button" onClick={() => open("work", st.id)}>
+                  <span className="w-kicker">{st.sector}</span>
+                  <h3>{st.title}</h3>
+                  <p>{st.deck}</p>
+                  <span className="w-more">
+                    Read the story <span aria-hidden="true">↗</span>
+                  </span>
+                </button>
+              </Reveal>
+            ))}
+          </ol>
+        </section>
+
+        <section className="w-work" id="sectors" aria-labelledby="w-work-title">
           <Reveal>
+            <p className="w-eyebrow w-eyebrow-pad">Sectors</p>
             <h2 id="w-work-title">Solving the problems that move the business.</h2>
           </Reveal>
           <div className="w-cards" role="list">
@@ -246,7 +342,7 @@ export default function Site() {
                   <span>{ind.label}</span>
                   <span>{ind.eyebrow}</span>
                 </div>
-                <button type="button" className="w-card-hit" aria-label={`Talk to us about ${ind.label.toLowerCase()}`} onClick={() => go("talk")} />
+                <button type="button" className="w-card-hit" aria-label={`${ind.label}: where work breaks and what we connect`} onClick={() => open("sector", ind.id)} />
               </article>
             ))}
           </div>
@@ -330,6 +426,54 @@ export default function Site() {
           </ul>
         </section>
 
+        <section className="w-exp" aria-labelledby="w-exp-title">
+          <div className="w-exp-head">
+            <Reveal>
+              <p className="w-eyebrow">Who does the work</p>
+              <h2 id="w-exp-title">{experience.title}</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="w-lede">{experience.lede}</p>
+            </Reveal>
+          </div>
+          <ul className="w-exp-grid">
+            {experience.themes.map((t, i) => (
+              <Reveal as="li" key={t} delay={(i % 4) * 0.05}>
+                <span className="w-exp-n">{String(i + 1).padStart(2, "0")}</span>
+                {t}
+              </Reveal>
+            ))}
+          </ul>
+        </section>
+
+        <section className="w-notes" id="notes" aria-labelledby="w-notes-title">
+          <div className="w-notes-head">
+            <Reveal>
+              <p className="w-eyebrow">Field notes</p>
+              <h2 id="w-notes-title">Short pieces from the floor.</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="w-lede">Written by the people who sat in the room. A few paragraphs each, about the things that actually slow a business down.</p>
+            </Reveal>
+          </div>
+          <ol className="w-note-list">
+            {fieldNotes.map((n, i) => (
+              <li key={n.id}>
+                <button type="button" onClick={() => open("note", n.id)}>
+                  <span className="w-note-n">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="w-note-t">
+                    <strong>{n.title}</strong>
+                    <span>{n.deck}</span>
+                  </span>
+                  <span className="w-note-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <section className="w-offers" id="engagements" aria-labelledby="w-offers-title">
           <Reveal>
             <p className="w-eyebrow">Engagements</p>
@@ -349,6 +493,19 @@ export default function Site() {
               </Reveal>
             ))}
           </ol>
+        </section>
+
+        <section className="w-own" aria-labelledby="w-own-title">
+          <div className="w-os-grain" aria-hidden="true" />
+          <Reveal>
+            <p className="w-eyebrow w-eyebrow-light">Ownership</p>
+            <h2 id="w-own-title">{trust.title}</h2>
+          </Reveal>
+          <Reveal delay={0.1} className="w-own-body">
+            {trust.body.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </Reveal>
         </section>
 
         <section className="w-talk" id="talk" aria-labelledby="w-talk-title">
@@ -429,6 +586,119 @@ export default function Site() {
         </section>
       </main>
 
+      {sheet ? (
+        <Sheet onClose={closeSheet}>
+          {sheet.kind === "work"
+            ? (() => {
+                const st = work.find((x) => x.id === sheet.id);
+                if (!st) return null;
+                return (
+                  <>
+                    <p className="w-kicker">Selected work · {st.sector}</p>
+                    <h2>{st.title}</h2>
+                    <p className="w-lede">{st.deck}</p>
+                    <dl className="w-story">
+                      <div>
+                        <dt>The situation</dt>
+                        <dd>{st.situation}</dd>
+                      </div>
+                      <div>
+                        <dt>What we found</dt>
+                        <dd>{st.found}</dd>
+                      </div>
+                      <div>
+                        <dt>What we changed</dt>
+                        <dd>{st.changed}</dd>
+                      </div>
+                      <div>
+                        <dt>What became possible</dt>
+                        <dd>{st.possible}</dd>
+                      </div>
+                      <div className="w-story-pair">
+                        <div>
+                          <dt>For the team</dt>
+                          <dd>{st.human}</dd>
+                        </div>
+                        <div>
+                          <dt>For leadership</dt>
+                          <dd>{st.management}</dd>
+                        </div>
+                      </div>
+                      <div className="w-story-evidence">
+                        <dt>Evidence</dt>
+                        <dd>{st.evidence}</dd>
+                      </div>
+                    </dl>
+                    <button type="button" className="w-pill w-pill-dark" onClick={() => go("talk")}>
+                      Bring us something like this
+                    </button>
+                  </>
+                );
+              })()
+            : sheet.kind === "sector"
+              ? (() => {
+                  const ind = industries.find((x) => x.id === sheet.id);
+                  if (!ind) return null;
+                  return (
+                    <>
+                      <p className="w-kicker">{ind.label} · {ind.eyebrow}</p>
+                      <h2>{ind.headline}</h2>
+                      <p className="w-lede">{ind.body}</p>
+                      <ul className="w-chips" aria-label="Recognizable moments">
+                        {ind.moments.map((m) => (
+                          <li key={m}>{m}</li>
+                        ))}
+                      </ul>
+                      <dl className="w-story">
+                        <div>
+                          <dt>Where work breaks</dt>
+                          <dd>{ind.breaks}</dd>
+                        </div>
+                        <div>
+                          <dt>What fanworks connects</dt>
+                          <dd>{ind.connects}</dd>
+                        </div>
+                        <div>
+                          <dt>What changes for employees</dt>
+                          <dd>{ind.employees}</dd>
+                        </div>
+                        <div>
+                          <dt>What changes for leadership</dt>
+                          <dd>{ind.leadership}</dd>
+                        </div>
+                        <div className="w-story-evidence">
+                          <dt>A first engagement</dt>
+                          <dd>{ind.first}</dd>
+                        </div>
+                      </dl>
+                      <button type="button" className="w-pill w-pill-dark" onClick={() => go("talk")}>
+                        Talk to us about {ind.label.toLowerCase()}
+                      </button>
+                    </>
+                  );
+                })()
+              : (() => {
+                  const n = fieldNotes.find((x) => x.id === sheet.id);
+                  if (!n) return null;
+                  return (
+                    <>
+                      <p className="w-kicker">Field note</p>
+                      <h2>{n.title}</h2>
+                      <p className="w-lede">{n.deck}</p>
+                      <div className="w-note-body">
+                        {n.body.map((para) => (
+                          <p key={para}>{para}</p>
+                        ))}
+                      </div>
+                      <button type="button" className="w-pill w-pill-dark" onClick={() => go("talk")}>
+                        Talk to us
+                      </button>
+                    </>
+                  );
+                })()}
+        </Sheet>
+      ) : null}
+
       {burst ? <InkBurst key={burst.key} origin={burst} reduced={reduced} onDone={endBurst} /> : null}
 
       <footer className="w-foot">
@@ -441,8 +711,14 @@ export default function Site() {
             <button type="button" onClick={() => go("work")}>
               Work
             </button>
+            <button type="button" onClick={() => go("sectors")}>
+              Sectors
+            </button>
             <button type="button" onClick={() => go("method")}>
               Method
+            </button>
+            <button type="button" onClick={() => go("notes")}>
+              Field notes
             </button>
             <button type="button" onClick={() => go("engagements")}>
               Engagements
