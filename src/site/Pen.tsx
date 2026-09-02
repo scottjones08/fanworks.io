@@ -26,6 +26,16 @@ export function PenDefs() {
         <stop offset="0.5" stopColor="#2036c9" />
         <stop offset="1" stopColor="#182a9e" />
       </linearGradient>
+      <linearGradient id="pen-cap-red" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#e4564a" />
+        <stop offset="0.5" stopColor="#c9302a" />
+        <stop offset="1" stopColor="#861a15" />
+      </linearGradient>
+      <linearGradient id="pen-ink-red" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#e04b3d" />
+        <stop offset="0.5" stopColor="#c9302a" />
+        <stop offset="1" stopColor="#9a221b" />
+      </linearGradient>
       <filter id="pen-shadow" x="-30%" y="-80%" width="160%" height="260%">
         <feDropShadow dx="3" dy="9" stdDeviation="5" floodColor="#121212" floodOpacity="0.22" />
       </filter>
@@ -33,7 +43,11 @@ export function PenDefs() {
   );
 }
 
-export function PenArt() {
+export type PenTone = "blue" | "red";
+
+export function PenArt({ tone = "blue" }: { tone?: PenTone } = {}) {
+  const cap = tone === "red" ? "url(#pen-cap-red)" : "url(#pen-cap)";
+  const ink = tone === "red" ? "url(#pen-ink-red)" : "url(#pen-ink)";
   return (
     <>
       {/* ball and brass cone */}
@@ -45,17 +59,17 @@ export function PenArt() {
       {/* clear barrel */}
       <rect x="34" y="-6.8" width="174" height="13.6" rx="2" fill="url(#pen-barrel)" stroke="rgba(18,18,18,0.32)" strokeWidth="0.9" />
       {/* ink refill inside */}
-      <rect x="36" y="-2.3" width="150" height="4.6" rx="2.3" fill="url(#pen-ink)" opacity="0.92" />
+      <rect x="36" y="-2.3" width="150" height="4.6" rx="2.3" fill={ink} opacity="0.92" />
       <rect x="36" y="-1.9" width="150" height="1.1" rx="0.6" fill="#fff" opacity="0.35" />
       {/* facet highlights */}
       <rect x="34" y="-6.2" width="174" height="2" rx="1" fill="#fff" opacity="0.75" />
       <rect x="34" y="4.2" width="174" height="1.2" rx="0.6" fill="#121212" opacity="0.14" />
       {/* cap and plug */}
-      <rect x="206" y="-7.4" width="24" height="14.8" rx="3.2" fill="url(#pen-cap)" />
-      <rect x="229" y="-3.6" width="8" height="7.2" rx="2.4" fill="url(#pen-cap)" />
+      <rect x="206" y="-7.4" width="24" height="14.8" rx="3.2" fill={cap} />
+      <rect x="229" y="-3.6" width="8" height="7.2" rx="2.4" fill={cap} />
       <rect x="208" y="-6.2" width="20" height="1.6" rx="0.8" fill="#fff" opacity="0.45" />
       {/* clip */}
-      <path d="M212 -7.4 L212 -13.6 C212 -15.6, 213.6 -17, 215.6 -17 L222 -17 C224 -17, 225.4 -15.6, 225.4 -13.6 L225.4 -12.4 L219 -12.4 L219 -9.6 C147 -9.6, 150 -9.6, 150 -9.6 L150 -7.4 Z" fill="url(#pen-cap)" />
+      <path d="M212 -7.4 L212 -13.6 C212 -15.6, 213.6 -17, 215.6 -17 L222 -17 C224 -17, 225.4 -15.6, 225.4 -13.6 L225.4 -12.4 L219 -12.4 L219 -9.6 C147 -9.6, 150 -9.6, 150 -9.6 L150 -7.4 Z" fill={cap} />
       <path d="M150 -9.6 L219 -9.6 L219 -8.4 L150 -8.4 Z" fill="#fff" opacity="0.28" />
     </>
   );

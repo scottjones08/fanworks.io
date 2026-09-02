@@ -56,18 +56,29 @@ export default function Site() {
     [stage, toolPhrase, frictionItem.label],
   );
   const form = useContactForm({ idleStatus: "", prefix: sentence });
-  const submit = (event: FormEvent<HTMLFormElement>) => void form.submit(event);
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    // Close the keyboard on phones so the send-off plays on a settled screen.
+    (document.activeElement as HTMLElement | null)?.blur?.();
+    void form.submit(event);
+  };
 
-  // Pressing Send releases the parked pen; the confetti waits for it to arrive.
+  // Pressing Send lifts the parked pen; the confetti starts at the Send dot.
   const released = form.state === "sending" || form.state === "sent";
   const sendDotRef = useRef<HTMLSpanElement>(null);
   const [burst, setBurst] = useState<{ x: number; y: number; key: number } | null>(null);
   useEffect(() => {
     if (form.state !== "sent") return;
-    const id = window.setTimeout(() => {
-      const r = sendDotRef.current?.getBoundingClientRect();
-      if (r) setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2, key: Date.now() });
-    }, reduced ? 0 : 1100);
+    const dot = sendDotRef.current;
+    const first = dot?.getBoundingClientRect();
+    const off = Boolean(first && (first.top < 72 || first.bottom > window.innerHeight - 72));
+    if (off) dot?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+    const id = window.setTimeout(
+      () => {
+        const r = sendDotRef.current?.getBoundingClientRect();
+        if (r) setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2, key: Date.now() });
+      },
+      reduced ? 0 : off ? 750 : 400,
+    );
     return () => window.clearTimeout(id);
   }, [form.state, reduced]);
   const endBurst = useCallback(() => setBurst(null), []);
@@ -83,7 +94,7 @@ export default function Site() {
 
 
       <main>
-        <Sketched className="one-hero" aria-labelledby="one-title" delay={900}>
+        <Sketched className="one-hero" aria-labelledby="one-title" delay={900} pens={[{ attr: "thread-red", tone: "red", delay: 2400 }]}>
           <header className="one-nav">
             <a href="/" className="one-brand" aria-label="fanworks home">
               <LogoDraw className="one-mark" />
@@ -109,35 +120,43 @@ export default function Site() {
               </span>
             ))}
           </h1>
-          <motion.p
-            className="one-hero-text"
-            initial={reduced ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.7, ease }}
-          >
-            fanworks is an operator-led consultancy in Richmond, Virginia. We find where the day doubles back and rebuild
-            one line through the business, with the people who run it.
-          </motion.p>
-          <motion.div
-            className="one-hero-follow"
-            initial={reduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.9, delay: 1.1, ease }}
-          >
-            <ul className="one-checks" aria-label="What we do">
-              {["Find where the day doubles back", "Rebuild one line through the business", "Leave it owned by the people who run it"].map((item, i) => (
-                <li key={item}>
-                  <span className="one-check-box" data-thread={`${i === 0 ? "" : "lift "}${["check", "check2", "check3"][i]}`} aria-hidden="true" />
-                  <span className="one-check-label" data-thread-note>
-                    {item}
+          <div className="one-hero-row">
+            <motion.p
+              className="one-hero-text"
+              initial={reduced ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.7, ease }}
+            >
+              fanworks is an operator-led consultancy in Richmond, Virginia. We find where the day doubles back and rebuild
+              one line through the business, with the people who run it.
+            </motion.p>
+            <motion.div
+              className="one-hero-follow"
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.9, delay: 1.1, ease }}
+            >
+              <ul className="one-checks" aria-label="What we do">
+                {["Find where the day doubles back", "Rebuild one line through the business", "Leave it owned by the people who run it"].map((item, i) => (
+                  <li key={item}>
+                    <span className="one-check-box" data-thread={`${i === 0 ? "" : "lift "}${["check", "check2", "check3"][i]}`} aria-hidden="true" />
+                    <span className="one-check-label" data-thread-note>
+                      {item}
+                    </span>
+                  </li>
+                ))}
+                <li data-thread-red="strike">
+                  <span className="one-check-box" aria-hidden="true" />
+                  <span className="one-check-label one-check-no" data-thread-red-note>
+                    <s>Add complexity and redundancy</s>
                   </span>
                 </li>
-              ))}
-            </ul>
-            <button type="button" className="one-link one-link-quiet" onClick={() => scrollTo("tangle")}>
-              Follow the line
-            </button>
-          </motion.div>
+              </ul>
+              <button type="button" className="one-link one-link-quiet" onClick={() => scrollTo("tangle")}>
+                Follow the line
+              </button>
+            </motion.div>
+          </div>
         </Sketched>
 
         <Sketched className="one-tangle" id="tangle" aria-labelledby="one-tangle-title">
@@ -351,7 +370,7 @@ export default function Site() {
               </p>
               <button className="one-send" type="submit" disabled={form.busy}>
                 {form.state === "sending" ? "Sending" : form.state === "sent" ? "Sent" : "Send"}
-                <span ref={sendDotRef} data-thread="end" className={`one-send-dot${form.state === "sent" ? " is-sent" : ""}`} aria-hidden="true" />
+                <span ref={sendDotRef} className={`one-send-dot${form.state === "sent" ? " is-sent" : ""}`} aria-hidden="true" />
               </button>
               <small className="one-note one-note-send" data-thread-note>
                 the line ends with you
