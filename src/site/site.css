@@ -542,6 +542,89 @@
   color: var(--ink-2);
 }
 
+/* how it goes: the flowchart the pen draws */
+.one-how {
+  display: grid;
+  gap: 20px;
+  padding: clamp(64px, 10vh, 140px) var(--pad) clamp(48px, 8vh, 100px);
+  border-top: 1px solid var(--rule);
+}
+
+.one-how-lede {
+  max-width: 50ch;
+  margin-bottom: clamp(24px, 4vh, 48px);
+  color: var(--ink-2);
+  font-size: 18px;
+}
+
+.one-chart {
+  position: relative;
+  width: 100%;
+}
+
+.one-chart-label {
+  position: absolute;
+  display: grid;
+  gap: 2px;
+  max-width: 21ch;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  line-height: 1.15;
+  opacity: 0;
+  transition: opacity 600ms var(--ease);
+  pointer-events: none;
+}
+
+.one-chart-label.is-lit {
+  opacity: 1;
+}
+
+.one-chart-label strong {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.5vw, 22px);
+  font-weight: var(--display-weight);
+  letter-spacing: -0.01em;
+}
+
+.one-chart-label small {
+  color: var(--ink-2);
+  font-size: clamp(11px, 0.95vw, 14px);
+}
+
+.one-chart-label.is-decision strong {
+  font-style: italic;
+  font-size: clamp(14px, 1.3vw, 19px);
+  max-width: 14ch;
+}
+
+.one-chart-label.is-end strong {
+  font-size: clamp(13px, 1.2vw, 18px);
+}
+
+.one-chart-label.is-branch strong {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(13px, 1.15vw, 17px);
+  color: var(--thread);
+}
+
+.one-chart.is-narrow .one-chart-label strong {
+  font-size: 17px;
+}
+
+.one-chart.is-narrow .one-chart-label.is-decision strong {
+  font-size: 15px;
+}
+
+.one-chart.is-narrow .one-chart-label.is-end strong,
+.one-chart.is-narrow .one-chart-label.is-branch strong {
+  font-size: 13px;
+}
+
+.one-chart.is-narrow .one-chart-label small {
+  font-size: 12px;
+}
+
 /* industries and offers */
 .one-where {
   display: grid;

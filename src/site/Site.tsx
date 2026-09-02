@@ -6,6 +6,7 @@ import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
 import { useReducedMotion } from "../shared/useReducedMotion";
+import { Flowchart } from "./Flowchart";
 import { InkBurst } from "./InkBurst";
 import { Thread } from "./Thread";
 
@@ -218,6 +219,16 @@ export default function Site() {
               ))}
             </ol>
           </div>
+        </section>
+
+        <section className="one-how" aria-labelledby="one-how-title">
+          <Reveal>
+            <h2 id="one-how-title">How it goes.</h2>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p className="one-how-lede">From your note to a line your people own, drawn in one stroke. Two questions along the way, and an honest no at either.</p>
+          </Reveal>
+          <Flowchart />
         </section>
 
         <section className="one-where" aria-label="Industries and engagements">
