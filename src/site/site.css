@@ -292,8 +292,42 @@
   width: min(42ch, 100%);
 }
 
+.one-hero-follow {
+  display: grid;
+  gap: 22px;
+}
+
 .one-hero-follow .one-link-quiet {
   margin-top: 0;
+  color: var(--ink);
+}
+
+.one-checks {
+  display: grid;
+  gap: 12px;
+}
+
+.one-checks li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.one-check-box {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+}
+
+.one-check-label {
+  color: var(--mute);
+  font-size: 16px;
+  transition: color 500ms var(--ease);
+}
+
+.one-check-label.is-lit {
   color: var(--ink);
 }
 
@@ -1008,6 +1042,20 @@
   .one-offers {
     grid-template-columns: minmax(0, 1fr);
     justify-self: stretch;
+    gap: 36px;
+  }
+  .one-offers li {
+    padding-left: 28px;
+    padding-top: 0;
+  }
+  .one-anchor-corner {
+    top: 12px;
+  }
+  .one-anchor-corner-end {
+    right: auto;
+    left: 0;
+    top: auto;
+    bottom: 0;
   }
   .one-hero-text,
   .one-hero-follow {
