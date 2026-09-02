@@ -161,7 +161,17 @@ export function Sketch() {
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg || !visible) return;
+    let cancelled = false;
+    let frame = 0;
     const q = <T extends Element>(id: string) => svg.querySelector<T>(`[data-id="${id}"]`);
+    const measureText = (el: SVGTextElement) => {
+      const n = el.getComputedTextLength();
+      if (n > 0) return n;
+      const size = Number(el.getAttribute("font-size")) || 20;
+      return (el.textContent?.length ?? 0) * size * 0.45;
+    };
+    const run = () => {
+    if (cancelled) return;
     const pencil = q<SVGGElement>("pencil");
     const eraser = q<SVGGElement>("eraser");
     const clipTangle = q<SVGRectElement>("clip-tangle");
@@ -181,7 +191,7 @@ export function Sketch() {
         const el = q<SVGTextElement>(s.id);
         const clip = q<SVGRectElement>(`clip-${s.id}`);
         if (!el || !clip) return;
-        const len = el.getComputedTextLength();
+        const len = measureText(el);
         clip.setAttribute("width", "0");
         if (el.getAttribute("text-anchor") === "middle") clip.setAttribute("x", `${Number(el.getAttribute("x")) - len / 2 - 4}`);
         texts.set(s.id, { el, clip, len, x: Number(el.getAttribute("x")), y: Number(el.getAttribute("y")) });
@@ -206,7 +216,6 @@ export function Sketch() {
       return;
     }
     const start = performance.now();
-    let frame = 0;
     const tick = (now: number) => {
       const s = (now - start) / 1000;
       const at: { pen: { x: number; y: number } | null; eraser: { x: number; y: number } | null } = { pen: null, eraser: null };
@@ -225,6 +234,11 @@ export function Sketch() {
         } else if (st.kind === "text") {
           const tx = texts.get(st.id);
           if (!tx) return;
+          if (active && p < 0.05) {
+            // Re-measure as the step starts, in case the font arrived late.
+            tx.len = measureText(tx.el);
+            if (tx.el.getAttribute("text-anchor") === "middle") tx.clip.setAttribute("x", `${tx.x - tx.len / 2 - 4}`);
+          }
           tx.clip.setAttribute("width", `${tx.len * p + 6}`);
           if (active) at.pen = { x: (tx.el.getAttribute("text-anchor") === "middle" ? tx.x - tx.len / 2 : tx.x) + tx.len * p, y: tx.y - 2 };
         } else {
@@ -260,7 +274,15 @@ export function Sketch() {
       }
     };
     frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    };
+    const fonts = document.fonts;
+    const ready = fonts ? Promise.all([fonts.load("500 30px Caveat").catch(() => undefined), fonts.ready]) : Promise.resolve();
+    const timeout = new Promise<void>((r) => window.setTimeout(r, 2500));
+    Promise.race([ready, timeout]).then(run, run);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, reduced, narrow, round]);
 
@@ -299,36 +321,42 @@ export function Sketch() {
         ))}
         <line x1={narrow ? 16 : 34} y1="0" x2={narrow ? 16 : 34} y2={L.H} stroke="#f0a6b0" strokeWidth="1.2" />
 
-        <g clipPath="url(#sk-erase-all)" filter="url(#sk-ink)">
+        <g clipPath="url(#sk-erase-all)">
           <g clipPath="url(#sk-erase-tangle)">
+            <g filter="url(#sk-ink)">
+              {L.forward.map((d, i) => (
+                <path key={i} data-id={`fwd-${i}`} d={d} {...soft} />
+              ))}
+              {L.back.map((d, i) => (
+                <path key={i} data-id={`back-${i}`} d={d} {...soft} strokeDasharray="6 5" />
+              ))}
+            </g>
             <Text id="title-before" x={L.title.x} y={L.title.y} size={L.titleSize}>
               How the work moves today
             </Text>
-            {L.forward.map((d, i) => (
-              <path key={i} data-id={`fwd-${i}`} d={d} {...soft} />
-            ))}
-            {L.back.map((d, i) => (
-              <path key={i} data-id={`back-${i}`} d={d} {...soft} strokeDasharray="6 5" />
-            ))}
             {L.notes.map((n, i) => (
               <Text key={i} id={`note-${i}`} x={n.x} y={n.y} size={L.noteSize}>
                 {n.text}
               </Text>
             ))}
           </g>
+          <g filter="url(#sk-ink)">
+            {L.boxes.map((b, i) => (
+              <g key={i}>
+                <path data-id={`box-${i}`} d={boxPath(b)} {...ink} />
+                <path data-id={`owner-${i}`} d={`M ${b.x + b.w - 20} ${b.y - 4} l 5 5 l 10 -12`} {...ink} strokeWidth="2.6" />
+              </g>
+            ))}
+            <path data-id="line" d={L.line} {...ink} strokeWidth="3" />
+          </g>
           {L.boxes.map((b, i) => (
-            <g key={i}>
-              <path data-id={`box-${i}`} d={boxPath(b)} {...ink} />
-              <Text id={`label-${i}`} x={b.cx} y={b.cy + L.labelSize * 0.36} size={L.labelSize} anchor="middle">
-                {stages[i].label}
-              </Text>
-              <path data-id={`owner-${i}`} d={`M ${b.x + b.w - 20} ${b.y - 4} l 5 5 l 10 -12`} {...ink} strokeWidth="2.6" />
-            </g>
+            <Text key={i} id={`label-${i}`} x={b.cx} y={b.cy + L.labelSize * 0.36} size={L.labelSize} anchor="middle">
+              {stages[i].label}
+            </Text>
           ))}
           <Text id="title-after" x={L.title.x} y={L.title.y} size={L.titleSize}>
             How it moves after
           </Text>
-          <path data-id="line" d={L.line} {...ink} strokeWidth="3" />
           {L.captions.map((c, i) => (
             <Text key={i} id={`cap-${i}`} x={c.x} y={c.y} size={L.noteSize}>
               {c.text}
