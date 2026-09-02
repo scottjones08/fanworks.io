@@ -1,7 +1,7 @@
 import "./site.css";
 import { motion } from "motion/react";
 import { type CSSProperties, type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { contactEmail, experience, fieldNotes, frictions, industries, methods, offers, stages, tools, trust, work, type FrictionId, type ToolName } from "../content";
+import { contactEmail, experience, fieldNotes, frictions, industries, methods, offers, people, stages, tools, trust, work, type FrictionId, type ToolName } from "../content";
 import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
@@ -168,7 +168,7 @@ export default function Site() {
   }, [form.state, reduced]);
   const endBurst = useCallback(() => setBurst(null), []);
 
-  const heroWords = ["Applied AI", "for the operator."];
+  const heroWords = ["Make the", "work flow."];
 
   return (
     <div className={`w${burst ? " is-signing" : ""}`}>
@@ -258,7 +258,7 @@ export default function Site() {
               ))}
             </h1>
             <motion.p initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.55, ease }}>
-              fanworks helps the businesses that run on people put AI to work inside the day, with the people who run it.
+              fanworks is a human-centered business consultancy in Richmond, Virginia. We sit beside the people who run the day, find where the work doubles back, and rebuild the line underneath it with them.
             </motion.p>
             <motion.div className="w-hero-actions" initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.7, ease }}>
               <button type="button" className="w-pill w-pill-light" onClick={() => go("talk")}>
@@ -275,27 +275,37 @@ export default function Site() {
           </p>
         </section>
 
-        <section className="w-trust" aria-labelledby="w-trust-title">
-          <Reveal>
-            <h2 id="w-trust-title" className="w-trust-title">
-              Built for the businesses that keep a city running
-            </h2>
-          </Reveal>
-          <ul className="w-trust-grid">
-            {industries.map((ind, i) => (
-              <Reveal as="li" key={ind.id} delay={i * 0.04} className="w-trust-cell">
-                <button type="button" onClick={() => open("sector", ind.id)}>
-                  <span className="w-trust-label">{ind.label}</span>
-                  <span className="w-trust-sub">{ind.eyebrow}</span>
-                </button>
+        <section className="w-people" id="people" aria-labelledby="w-people-title">
+          <div className="w-people-head">
+            <Reveal>
+              <p className="w-eyebrow">Who we design for</p>
+              <h2 id="w-people-title">Built around the people who run the business.</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="w-lede">Every business has a few people holding it together with judgment, memory, and a spreadsheet nobody else can read. We start with them. The systems follow.</p>
+            </Reveal>
+          </div>
+          <ol className="w-people-grid">
+            {people.map((person, i) => (
+              <Reveal as="li" key={person.role} delay={(i % 3) * 0.06} className="w-person">
+                <span className="w-person-n">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{person.role}</h3>
+                <p>{person.carries}</p>
               </Reveal>
             ))}
-            <Reveal as="li" delay={0.25} className="w-trust-cell w-trust-more">
-              <button type="button" onClick={() => go("talk")}>
-                Your industry <span aria-hidden="true">↗</span>
-              </button>
-            </Reveal>
-          </ul>
+          </ol>
+          <Reveal delay={0.1} className="w-people-foot">
+            <p>We do not replace them. We move what they know into the line of work, with their name still on it, so the business owns what they built.</p>
+            <ul className="w-people-sectors" aria-label="Sectors">
+              {industries.map((ind) => (
+                <li key={ind.id}>
+                  <button type="button" onClick={() => open("sector", ind.id)}>
+                    {ind.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </section>
 
         <section className="w-selected" id="work" aria-labelledby="w-selected-title">
@@ -362,7 +372,7 @@ export default function Site() {
             <h2 id="w-os-title">One line through the business, from intake to invoice.</h2>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="w-os-sub">The operating layer under the day. Entered once, seen everywhere, owned by the people who run it.</p>
+            <p className="w-os-sub">The operating layer under the day. Designed with the people who run it, entered once, seen everywhere, and owned by them.</p>
             <button type="button" className="w-pill w-pill-light" onClick={() => go("method")}>
               See the method
             </button>
@@ -400,8 +410,8 @@ export default function Site() {
             <article className="w-photo-card">
               <img src="/media/mri/operator-observation.webp" alt="Two operators walking a working shop floor with the person who runs it" loading="lazy" width={1800} height={1200} />
               <div className="w-photo-copy">
-                <h2 id="w-method-title">Operators on the ground.</h2>
-                <p>We sit beside the people who run the day, build it with them, then hand it over and get out of the way.</p>
+                <h2 id="w-method-title">People first. Then systems.</h2>
+                <p>We sit beside the people who run the day, build it with them, then hand it over and get out of the way. Automation and AI come in only where they earn a place.</p>
                 <button type="button" className="w-pill w-pill-light" onClick={() => go("engagements")}>
                   See the model
                 </button>

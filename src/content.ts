@@ -500,3 +500,31 @@ export const trust = {
     "We do not publish client names, and we do not publish a number until it has been measured and approved.",
   ],
 } as const;
+
+/** The people we design for first. The systems follow them. */
+export const people = [
+  {
+    role: "The front desk",
+    carries: "Knows which customer needs a call before the invoice goes out, and keeps that in a notebook the system has never seen.",
+  },
+  {
+    role: "The shop floor lead",
+    carries: "Learns what the office promised from a phone call, then makes it true with a whiteboard and a memory.",
+  },
+  {
+    role: "The advisor",
+    carries: "Holds the whole client relationship in their head because the record only holds part of it.",
+  },
+  {
+    role: "The paralegal",
+    carries: "Carries every deadline for the firm and finds the file by knowing who touched it last.",
+  },
+  {
+    role: "The practice manager",
+    carries: "Rebuilds the monthly numbers by hand from three systems that do not agree, and is the only one who can.",
+  },
+  {
+    role: "The controller",
+    carries: "Chases receipts, restarts the forecast from a blank sheet, and assembles the board pack the night before.",
+  },
+] as const;
