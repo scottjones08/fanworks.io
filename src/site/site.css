@@ -58,6 +58,71 @@
   height: 1px;
 }
 
+/* notes along the thread */
+.one-note {
+  position: absolute;
+  z-index: 4;
+  max-width: 18ch;
+  color: var(--thread);
+  font-family: var(--serif);
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  pointer-events: none;
+}
+
+.one-note.is-lit {
+  opacity: 1;
+  transform: none;
+}
+
+.one-note-hero {
+  left: 62%;
+  top: 30%;
+  max-width: 14ch;
+}
+
+.one-anchor-scribble {
+  position: absolute;
+  margin-left: 0.08em;
+  margin-top: 0.42em;
+}
+
+.one-frictions .one-note {
+  left: 56px;
+  top: -26px;
+  white-space: nowrap;
+}
+
+.one-note-rule-left {
+  left: 0;
+  top: 108px;
+}
+
+.one-note-rule-right {
+  right: 0;
+  top: 108px;
+  max-width: none;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.one-note-steps {
+  left: 0;
+  top: -34px;
+  white-space: nowrap;
+}
+
+.one-note-send {
+  position: static;
+  max-width: none;
+}
+
 /* the thread */
 .thread {
   position: absolute;
@@ -183,7 +248,31 @@
 .one-hero-text .one-anchor {
   position: absolute;
   left: -40px;
-  bottom: -8px;
+  top: 8px;
+}
+
+.one-hero-follow {
+  justify-self: end;
+  width: min(42ch, 100%);
+}
+
+.one-hero-follow .one-link-quiet {
+  margin-top: 0;
+  color: var(--ink);
+}
+
+.one-hero {
+  position: relative;
+}
+
+.one-anchor-start {
+  position: absolute;
+  top: 48px;
+  left: calc(var(--pad) + 34px);
+}
+
+.one-hero h1 {
+  position: relative;
 }
 
 /* tangle */
@@ -211,6 +300,10 @@
   display: grid;
   gap: 6px;
   padding-left: 56px;
+}
+
+.one-frictions {
+  gap: clamp(64px, 9vh, 104px);
 }
 
 .one-frictions .one-anchor {
@@ -359,6 +452,7 @@
 }
 
 .one-steps ol {
+  position: relative;
   display: grid;
   gap: clamp(28px, 4vh, 44px);
 }
@@ -661,7 +755,8 @@
     grid-template-columns: minmax(0, 1fr);
     justify-self: stretch;
   }
-  .one-hero-text {
+  .one-hero-text,
+  .one-hero-follow {
     justify-self: start;
   }
   .one-hero-text .one-anchor {
@@ -683,6 +778,12 @@
 }
 
 @media (max-width: 560px) {
+  .one-note-hero {
+    display: none;
+  }
+  .one-note {
+    font-size: 15px;
+  }
   .one-hero h1 {
     font-size: clamp(56px, 19vw, 96px);
   }

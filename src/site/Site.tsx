@@ -68,7 +68,7 @@ export default function Site() {
       <header className="one-nav">
         <a href="/" className="one-brand" aria-label="fanworks home">
           <FanMark className="one-mark" />
-          <span data-thread="start">fanworks</span>
+          <span>fanworks</span>
         </a>
         <button type="button" className="one-link" onClick={() => scrollTo("talk")}>
           Talk to us
@@ -77,6 +77,7 @@ export default function Site() {
 
       <main>
         <section className="one-hero" aria-labelledby="one-title">
+          <span data-thread="start" className="one-anchor one-anchor-start" />
           <h1 id="one-title">
             {heroLines.map((line, i) => (
               <span className="one-mask" key={line}>
@@ -86,9 +87,13 @@ export default function Site() {
                   transition={{ duration: 1.1, delay: 0.1 + i * 0.12, ease }}
                 >
                   {line}
+                  {i === 1 ? <span data-thread="scribble" className="one-anchor one-anchor-scribble" /> : null}
                 </motion.span>
               </span>
             ))}
+            <small className="one-note one-note-hero" data-thread-note>
+              your day, as it is actually run
+            </small>
           </h1>
           <motion.p
             className="one-hero-text"
@@ -100,9 +105,19 @@ export default function Site() {
             one line through the business, with the people who run it.
             <span data-thread="hero" className="one-anchor" />
           </motion.p>
+          <motion.div
+            className="one-hero-follow"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.9, delay: 1.1, ease }}
+          >
+            <button type="button" className="one-link one-link-quiet" onClick={() => scrollTo("tangle")}>
+              Follow the line
+            </button>
+          </motion.div>
         </section>
 
-        <section className="one-tangle" aria-labelledby="one-tangle-title">
+        <section className="one-tangle" id="tangle" aria-labelledby="one-tangle-title">
           <Reveal>
             <h2 id="one-tangle-title">
               Your people carry the work <em>between systems that never meet.</em>
@@ -112,7 +127,17 @@ export default function Site() {
             {frictions.map((f, i) => (
               <Reveal key={f.id} delay={i * 0.05}>
                 <li>
-                  <span data-thread="knot" className="one-anchor" />
+                  <span data-thread={i === 1 || i === 3 ? "back knot" : "knot"} className="one-anchor" />
+                  {i === 1 ? (
+                    <small className="one-note" data-thread-note>
+                      it doubles back here
+                    </small>
+                  ) : null}
+                  {i === 3 ? (
+                    <small className="one-note" data-thread-note>
+                      and here
+                    </small>
+                  ) : null}
                   <strong>{f.label}</strong>
                   <span>{f.short}</span>
                 </li>
@@ -128,6 +153,12 @@ export default function Site() {
           <div className="one-rule">
             <span data-thread="line-start" className="one-anchor one-anchor-left" />
             <span data-thread="line-end" className="one-anchor one-anchor-right" />
+            <small className="one-note one-note-rule-left" data-thread-note>
+              then it straightens
+            </small>
+            <small className="one-note one-note-rule-right" data-thread-note>
+              one line, entered once
+            </small>
             <ol className="one-stations" aria-label="Seven handoffs, intake to invoice">
               {stages.map((s, i) => (
                 <li key={s.id}>
@@ -152,7 +183,10 @@ export default function Site() {
             <Reveal>
               <h2 id="one-method-title">We sit beside the people who run the day.</h2>
             </Reveal>
-            <ol>
+            <ol className="one-steps-list">
+              <small className="one-note one-note-steps" data-thread-note>
+                this is where we sit
+              </small>
               {methods.map((m, i) => (
                 <Reveal key={m.number} delay={i * 0.06}>
                   <li>
@@ -263,6 +297,9 @@ export default function Site() {
                 <span data-thread="end" className="one-send-dot" aria-hidden="true" />
                 {form.state === "sending" ? "Sending" : form.state === "sent" ? "Sent" : "Send"}
               </button>
+              <small className="one-note one-note-send" data-thread-note>
+                the line ends with you
+              </small>
               <p role="status" aria-live="polite" className={form.state === "error" ? "is-error" : ""}>
                 {form.status}
               </p>
