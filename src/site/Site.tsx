@@ -285,9 +285,6 @@ export default function Site() {
             </Reveal>
           </div>
           <ol className="w-people-grid">
-            <li className="w-people-photo" aria-hidden="true">
-              <img src="/media/mri/team-handoff.webp" alt="" width={1800} height={1200} loading="lazy" />
-            </li>
             {people.map((person, i) => (
               <Reveal as="li" key={person.role} delay={(i % 3) * 0.06} className="w-person">
                 <span className="w-person-n">{String(i + 1).padStart(2, "0")}</span>
@@ -340,64 +337,49 @@ export default function Site() {
         </section>
 
 
-        <section className="w-os" aria-labelledby="w-os-title">
+
+
+
+
+        <section className="w-how" id="method" aria-labelledby="w-how-title">
           <div className="w-os-grain" aria-hidden="true" />
-          <Reveal>
-            <p className="w-os-brand">
-              <FanMark className="w-mark" />
-              <span>fanworks</span> <em>Operating Line</em>
-            </p>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <h2 id="w-os-title">One line through the business, from intake to invoice.</h2>
-          </Reveal>
-          <Reveal delay={0.16}>
-            <button type="button" className="w-pill w-pill-light" onClick={() => go("method")}>
-              See the method
-            </button>
-          </Reveal>
-          <ol className="w-stages" aria-label="Seven handoffs">
-            {stages.map((s) => (
-              <li key={s.id}>{s.label}</li>
-            ))}
-          </ol>
-        </section>
-
-
-        <section className="w-method" id="method" aria-labelledby="w-method-title">
-          <Reveal className="w-photo-wrap" y={0}>
-            <article className="w-photo-card">
-              <img src="/media/mri/operator-observation.webp" alt="Two operators walking a working shop floor with the person who runs it" loading="lazy" width={1800} height={1200} />
-              <div className="w-photo-copy">
-                <h2 id="w-method-title">People first. Then systems.</h2>
-                <p>We build it beside the people who run the day, then hand it over. Automation and AI only where they earn a place.</p>
-                <button type="button" className="w-pill w-pill-light" onClick={() => go("engagements")}>
-                  See the model
-                </button>
-              </div>
-            </article>
-          </Reveal>
-          <ol className="w-steps">
-            {methods.map((m, i) => (
-              <Reveal as="li" key={m.number} delay={i * 0.06} className="w-step">
-                <span className="w-step-n">{m.number}</span>
-                <h3>{m.verb}</h3>
-                <p>{m.body}</p>
-              </Reveal>
-            ))}
-          </ol>
-        </section>
-
-        <section className="w-exp" aria-labelledby="w-exp-title">
-          <div className="w-exp-head">
+          <div className="w-how-head">
             <Reveal>
-              <p className="w-eyebrow">Who does the work</p>
-              <h2 id="w-exp-title">{experience.title}</h2>
+              <p className="w-eyebrow w-eyebrow-light">How we work</p>
+              <h2 id="w-how-title">People first. Then systems.</h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="w-lede">{experience.lede}</p>
+              <p className="w-lede w-lede-light">{experience.lede}</p>
             </Reveal>
           </div>
+          <div className="w-how-grid">
+            <ol className="w-steps">
+              {methods.map((m, i) => (
+                <Reveal as="li" key={m.number} delay={i * 0.06} className="w-step">
+                  <span className="w-step-n">{m.number}</span>
+                  <h3>{m.verb}</h3>
+                  <p>{m.body}</p>
+                </Reveal>
+              ))}
+            </ol>
+            <Reveal delay={0.15} className="w-ways">
+              <p className="w-kicker w-kicker-light">Three ways in</p>
+              <ol id="engagements">
+                {offers.map((o) => (
+                  <li key={o.id}>
+                    <span className="w-way-k">{o.kicker}</span>
+                    <strong>{o.name}</strong>
+                    <p>{o.summary}</p>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+          </div>
+          <Reveal delay={0.1} className="w-how-own">
+            <p>
+              <strong>{trust.title}</strong> Understandable, inspectable, portable. When we leave, the system, the documentation, and the memory stay with you.
+            </p>
+          </Reveal>
         </section>
 
         <section className="w-notes" id="notes" aria-labelledby="w-notes-title">
@@ -429,32 +411,7 @@ export default function Site() {
           ) : null}
         </section>
 
-        <section className="w-offers" id="engagements" aria-labelledby="w-offers-title">
-          <Reveal>
-            <p className="w-eyebrow">Engagements</p>
-            <h2 id="w-offers-title">Three ways in.</h2>
-          </Reveal>
-          <ol className="w-offer-grid">
-            {offers.map((o, i) => (
-              <Reveal as="li" key={o.id} delay={i * 0.07} className="w-offer">
-                <span className="w-kicker">{o.kicker}</span>
-                <h3>{o.name}</h3>
-                <p>{o.summary}</p>
-              </Reveal>
-            ))}
-          </ol>
-        </section>
 
-        <section className="w-own" aria-labelledby="w-own-title">
-          <div className="w-os-grain" aria-hidden="true" />
-          <Reveal>
-            <p className="w-eyebrow w-eyebrow-light">Ownership</p>
-            <h2 id="w-own-title">{trust.title}</h2>
-          </Reveal>
-          <Reveal delay={0.1} className="w-own-body">
-            <p>Understandable, inspectable, portable. When we leave, the system, the documentation, and the memory stay with you.</p>
-          </Reveal>
-        </section>
 
         <section className="w-talk" id="talk" aria-labelledby="w-talk-title">
           <div className="w-talk-copy">
