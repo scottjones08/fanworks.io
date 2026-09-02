@@ -19,6 +19,26 @@ import { PenArt, PenDefs } from "./Pen";
  * Elements carrying data-thread-note light up once the pen has reached them.
  * Over elements carrying data-thread-quiet the pen fades to a ghost.
  */
+type Note = { el: HTMLElement; x: number; y: number; at: number };
+type Sample = { len: number; x: number; y: number };
+
+/** The path length at which the pen passes nearest each note. */
+function placeNotes(notes: Note[], pts: Sample[]) {
+  if (!pts.length) return;
+  notes.forEach((note) => {
+    let best = 0;
+    let bestD = Infinity;
+    pts.forEach((pt) => {
+      const dd = (pt.x - note.x) ** 2 + (pt.y - note.y) ** 2;
+      if (dd < bestD) {
+        bestD = dd;
+        best = pt.len;
+      }
+    });
+    note.at = best;
+  });
+}
+
 export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLElement | null>; released?: boolean }) {
   const reduced = useReducedMotion();
   const partRefs = useRef<(SVGPathElement | null)[]>([]);
@@ -27,7 +47,8 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
   const [d, setD] = useState("");
   const [size, setSize] = useState({ w: 0, h: 0 });
   const samples = useRef<{ len: number; y: number }[]>([]);
-  const notes = useRef<{ el: HTMLElement; x: number; y: number; at: number }[]>([]);
+  const notes = useRef<Note[]>([]);
+  const ptsRef = useRef<Sample[]>([]);
   const quiet = useRef<{ top: number; bottom: number; left: number; right: number }[]>([]);
   const builtHeight = useRef(0);
   const park = useRef<{ x: number; y: number } | null>(null);
@@ -122,8 +143,9 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
       builtHeight.current = host.scrollHeight;
       notes.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-note]")).map((el) => {
         const r = el.getBoundingClientRect();
-        return { el, x: r.left - hr.left + r.width / 2, y: r.top - hr.top + r.height / 2, at: 0 };
+        return { el, x: r.left - hr.left + r.width / 2, y: r.top - hr.top + r.height / 2, at: Infinity };
       });
+      placeNotes(notes.current, ptsRef.current);
       quiet.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-quiet]")).map((el) => {
         const r = el.getBoundingClientRect();
         return { top: r.top - hr.top - 40, bottom: r.bottom - hr.top + 24, left: r.left - hr.left - 40, right: r.right - hr.left + 40 };
@@ -172,19 +194,9 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
       return { len, x: pt.x, y: pt.y };
     });
     samples.current = pts.map(({ len, y }) => ({ len, y }));
+    ptsRef.current = pts;
     // Each note lights when the pen has passed the point of the path nearest it.
-    notes.current.forEach((note) => {
-      let best = 0;
-      let bestD = Infinity;
-      pts.forEach((pt) => {
-        const dd = (pt.x - note.x) ** 2 + (pt.y - note.y) ** 2;
-        if (dd < bestD) {
-          bestD = dd;
-          best = pt.len;
-        }
-      });
-      note.at = best;
-    });
+    placeNotes(notes.current, pts);
     // Where along the path the park anchor sits: the closest sample, refined.
     parkLen.current = null;
     if (park.current) {
