@@ -2,32 +2,14 @@ import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import "./shared/base.css";
 
-// Each direction is its own chunk so its CSS and fonts load only when viewed.
-const Current = lazy(() => import("./App"));
-const Chooser = lazy(() => import("./concepts/Chooser"));
-const Line = lazy(() => import("./concepts/line/Line"));
-const Signal = lazy(() => import("./concepts/signal/Signal"));
-const Studio = lazy(() => import("./concepts/studio/Studio"));
-const Blueprint = lazy(() => import("./concepts/blueprint/Blueprint"));
-const Counter = lazy(() => import("./concepts/counter/Counter"));
-const Grid = lazy(() => import("./concepts/grid/Grid"));
-const Dividend = lazy(() => import("./concepts/dividend/Dividend"));
+const Site = lazy(() => import("./site/Site"));
+// The previous design stays reachable for comparison during review only.
+const Legacy = lazy(() => import("./App"));
 
-function route() {
-  const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  if (path === "/line") return <Line />;
-  if (path === "/signal") return <Signal />;
-  if (path === "/studio") return <Studio />;
-  if (path === "/blueprint") return <Blueprint />;
-  if (path === "/counter") return <Counter />;
-  if (path === "/grid") return <Grid />;
-  if (path === "/dividend") return <Dividend />;
-  if (path === "/current") return <Current />;
-  return <Chooser />;
-}
+const path = window.location.pathname.replace(/\/+$/, "") || "/";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Suspense fallback={null}>{route()}</Suspense>
+    <Suspense fallback={null}>{path === "/current" ? <Legacy /> : <Site />}</Suspense>
   </React.StrictMode>,
 );
