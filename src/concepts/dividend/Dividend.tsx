@@ -100,15 +100,15 @@ function Calculator({ calc, setCalc, onSend }: { calc: Calc; setCalc: (c: Calc) 
       </div>
       <div className="dv-calc-outputs" aria-live="polite">
         <div className="dv-out dv-out-lead">
-          <span>Cost of the handoff, per year</span>
+          <span className="dv-out-label">Cost of the handoff, per year</span>
           <Counter value={r.costYear} format={(n) => money.format(n)} className="dv-out-num" />
         </div>
         <div className="dv-out">
-          <span>Hours lost, per year</span>
+          <span className="dv-out-label">Hours lost, per year</span>
           <Counter value={r.hoursYear} format={(n) => integer.format(n)} className="dv-out-num dv-out-num-sm" />
         </div>
         <div className="dv-out">
-          <span>Full-time equivalents carrying friction</span>
+          <span className="dv-out-label">Full-time equivalents carrying friction</span>
           <Counter value={r.ftes} format={(n) => oneDecimal.format(n)} className="dv-out-num dv-out-num-sm" />
         </div>
         <button type="button" className="dv-button" onClick={onSend}>

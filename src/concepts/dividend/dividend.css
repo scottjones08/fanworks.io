@@ -498,7 +498,7 @@
   border-top: 0;
 }
 
-.dv-out > span {
+.dv-out-label {
   font-size: 14px;
   color: rgba(247, 243, 234, 0.72);
 }
