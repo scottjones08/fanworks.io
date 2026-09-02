@@ -429,10 +429,44 @@
   white-space: nowrap;
 }
 
-/* work cards */
+/* sector cards, over the drawn-line loop */
 .w-work {
-  padding: clamp(40px, 6vw, 80px) 0 clamp(80px, 10vw, 140px);
-  background: #fff;
+  position: relative;
+  padding: clamp(80px, 10vw, 140px) 0 clamp(80px, 10vw, 140px);
+  overflow: hidden;
+  background: var(--black);
+  color: #fff;
+}
+
+.w-work-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.w-work-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  mix-blend-mode: screen;
+}
+
+.w-work-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(11, 11, 12, 0.9) 0%, rgba(11, 11, 12, 0.25) 30%, rgba(11, 11, 12, 0.25) 70%, rgba(11, 11, 12, 0.95) 100%),
+    linear-gradient(90deg, rgba(11, 11, 12, 0.6) 0%, rgba(11, 11, 12, 0) 35%, rgba(11, 11, 12, 0) 65%, rgba(11, 11, 12, 0.6) 100%);
+}
+
+.w-work > :not(.w-work-bg) {
+  position: relative;
+}
+
+.w-work .w-eyebrow-pad {
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .w-work h2 {
