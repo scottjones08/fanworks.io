@@ -13,6 +13,7 @@ import { PenArt, PenDefs } from "./Pen";
  *   back       the approach overshoots the anchor and doubles back to it
  *   line-start / line-end   a dead-straight run between the two
  * Elements carrying data-thread-note light up once the pen has reached them.
+ * Over elements carrying data-thread-quiet (the form) the pen fades to a ghost.
  */
 export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) {
   const reduced = useReducedMotion();
@@ -23,6 +24,7 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
   const [size, setSize] = useState({ w: 0, h: 0 });
   const samples = useRef<{ len: number; y: number }[]>([]);
   const notes = useRef<{ el: HTMLElement; y: number }[]>([]);
+  const quiet = useRef<{ top: number; bottom: number; left: number; right: number }[]>([]);
   const builtHeight = useRef(0);
   const rebuild = useRef<() => void>(() => undefined);
   const drawn = useRef(0);
@@ -87,6 +89,10 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
       notes.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-note]")).map((el) => {
         const r = el.getBoundingClientRect();
         return { el, y: r.top - hr.top + r.height / 2 };
+      });
+      quiet.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-quiet]")).map((el) => {
+        const r = el.getBoundingClientRect();
+        return { top: r.top - hr.top - 40, bottom: r.bottom - hr.top + 24, left: r.left - hr.left - 40, right: r.right - hr.left + 40 };
       });
     };
 
@@ -156,7 +162,7 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
         const heading = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI;
         const lean = Math.max(-14, Math.min(14, (heading - 90) * 0.12));
         const wobble = Math.sin(len / 38) * 1.6;
-        const scale = window.innerWidth < 640 ? 0.7 : 1;
+        const scale = window.innerWidth < 640 ? 0.52 : 1;
         const hostWidth = host.getBoundingClientRect().width;
         const flipped = p.x > hostWidth - 250 * scale;
         const base = (flipped ? -128 - lean : -52 + lean) + wobble;
@@ -169,7 +175,8 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
           "transform",
           `translate(${(p.x + lx).toFixed(1)} ${(p.y + ly).toFixed(1)}) rotate(${angle.current.toFixed(1)}) scale(${(scale * (1 + lift.current * 0.03)).toFixed(3)})`,
         );
-        pen.style.opacity = len > 2 && len < length - 2 ? "1" : "0";
+        const overQuiet = quiet.current.some((b) => p.y >= b.top && p.y <= b.bottom && p.x >= b.left && p.x <= b.right);
+        pen.style.opacity = len > 2 && len < length - 2 ? (overQuiet ? "0.22" : "1") : "0";
       }
       notes.current.forEach((note) => note.el.classList.toggle("is-lit", len >= length - 1 || p.y >= note.y - 8));
     };
