@@ -45,7 +45,7 @@ const rise: Variants = {
 function Counter({ value, format, className }: { value: number; format: (n: number) => string; className?: string }) {
   const reduced = useReducedMotion();
   const mv = useMotionValue(reduced ? value : 0);
-  const spring = useSpring(mv, { stiffness: 60, damping: 20, mass: 0.8 });
+  const spring = useSpring(mv, { stiffness: 90, damping: 26, mass: 0.6, restDelta: 0.001 });
   const text = useTransform(spring, (v) => format(v));
   useEffect(() => {
     mv.set(value);
