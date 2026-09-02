@@ -61,7 +61,14 @@ function marksFor(kinds: string[], x: number, y: number, narrow: boolean, f: (n:
   const check = kinds.find((k) => k in CHECKS);
   if (check) out += CHECKS[check](x, y);
   if (kinds.includes("knot")) {
-    out += " c 22 -18 40 6 18 22 c -22 16 -46 -10 -26 -26 c 20 -16 40 8 20 22 c -14 10 -30 -2 -12 -18";
+    const k = narrow ? 0.7 : 1;
+    const loops = [
+      [22, -18, 40, 6, 18, 22],
+      [-22, 16, -46, -10, -26, -26],
+      [20, -16, 40, 8, 20, 22],
+      [-14, 10, -30, -2, -12, -18],
+    ];
+    out += loops.map((c) => ` c ${c.map((v) => f(v * k)).join(" ")}`).join("");
   }
   if (kinds.includes("scribble")) {
     const k = narrow ? 0.55 : 1;
@@ -181,7 +188,7 @@ export function Thread({
         } else {
           const dy = b.y - a.y;
           const pull = Math.max(40, Math.abs(dy) * 0.55);
-          if (b.kinds.includes("back")) {
+          if (b.kinds.includes("back") && hr.width >= 640) {
             const swing = Math.min(110, Math.max(36, b.x - 28));
             const px = b.x - swing;
             const py = b.y + 140;

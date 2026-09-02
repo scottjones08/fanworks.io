@@ -1273,3 +1273,15 @@
     box-shadow: none;
   }
 }
+
+/* phones: the tangle starts under the headline, not through it, and the knots
+   stay clear of the friction titles */
+@media (max-width: 900px) {
+  .one-anchor-above {
+    top: -22px;
+  }
+
+  .one-frictions li .one-anchor {
+    left: 4px;
+  }
+}
