@@ -1,10 +1,3 @@
-export const navItems = [
-  { id: "diagnostic", label: "Map the day" },
-  { id: "method", label: "How we work" },
-  { id: "industries", label: "Industries" },
-  { id: "proof", label: "Why FanWorks" },
-] as const;
-
 export const stages = [
   {
     id: "intake",
@@ -170,7 +163,31 @@ export type FrictionId = (typeof frictions)[number]["id"];
 export type IndustryId = (typeof industries)[number]["id"];
 export type ToolName = (typeof tools)[number];
 
-export function scrollToId(id: string) {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-}
+export const offers = [
+  {
+    id: "mri",
+    kicker: "Diagnostic",
+    name: "Workday MRI",
+    summary:
+      "Days beside your team, not months. One map of where the day doubles back, ranked by what it costs the people and the customer.",
+    outcomes: ["Observed handoffs, not assumed ones", "Friction ranked by drag", "A rebuild plan the team already agrees with"],
+  },
+  {
+    id: "rebuild",
+    kicker: "Engagement",
+    name: "Operating line rebuild",
+    summary:
+      "We connect intake to invoice into one operating layer and take the retyping, chasing, and reconciling out of the day.",
+    outcomes: ["Entered once, seen everywhere", "Clear ownership at every handoff", "Automation and AI only where they earn a place"],
+  },
+  {
+    id: "run",
+    kicker: "Ongoing",
+    name: "Keep it owned",
+    summary:
+      "Your people run it. We stay close enough to keep it improving, and far enough that you never depend on us.",
+    outcomes: ["Training in the style that fits the staff", "Exceptions surfaced early", "A line that keeps getting simpler"],
+  },
+] as const;
+
+export const contactEmail = "hello@fanworks.io";
