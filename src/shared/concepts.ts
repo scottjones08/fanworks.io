@@ -41,6 +41,13 @@ export const concepts = [
     thesis: "Black on white modernism. An exposed grid, a rail that fills as you scroll, color only in the photographs.",
     palette: ["#ffffff", "#0a0a0a", "#8a8f98"],
   },
+  {
+    slug: "dividend",
+    number: "07",
+    name: "Dividend",
+    thesis: "Pitched to the executive. Human-centered design, animated, and priced in hours and dollars the visitor supplies.",
+    palette: ["#f7f3ea", "#5c1020", "#c9a227"],
+  },
 ] as const;
 
 export type ConceptSlug = (typeof concepts)[number]["slug"];

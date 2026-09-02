@@ -11,6 +11,7 @@ const Studio = lazy(() => import("./concepts/studio/Studio"));
 const Blueprint = lazy(() => import("./concepts/blueprint/Blueprint"));
 const Counter = lazy(() => import("./concepts/counter/Counter"));
 const Grid = lazy(() => import("./concepts/grid/Grid"));
+const Dividend = lazy(() => import("./concepts/dividend/Dividend"));
 
 function route() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
@@ -20,6 +21,7 @@ function route() {
   if (path === "/blueprint") return <Blueprint />;
   if (path === "/counter") return <Counter />;
   if (path === "/grid") return <Grid />;
+  if (path === "/dividend") return <Dividend />;
   if (path === "/current") return <Current />;
   return <Chooser />;
 }

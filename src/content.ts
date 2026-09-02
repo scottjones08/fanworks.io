@@ -217,3 +217,35 @@ export const beliefs = [
 ] as const;
 
 export const contactEmail = "hello@fanworks.io";
+
+/** Human-centered design, stated plainly for an executive audience. */
+export const hcdPillars = [
+  {
+    id: "people",
+    title: "People first",
+    body: "We start with the people who run the day, not the software they were handed. What they know is the spec.",
+  },
+  {
+    id: "process",
+    title: "Then the process",
+    body: "We trace the work end to end and remove the retyping, chasing, and reconciling that nobody budgeted for.",
+  },
+  {
+    id: "technology",
+    title: "Technology last",
+    body: "Automation and AI go in only where they give hours back. Nothing is added that the team will not keep using.",
+  },
+] as const;
+
+/** What an executive gets back. Framed as outcomes, not claims. */
+export const executiveOutcomes = [
+  { id: "hours", title: "Hours back, every week", body: "Handoffs that no longer need a person to carry the context." },
+  { id: "cost", title: "Cost you can finally see", body: "The price of friction, measured in your loaded hours, before and after." },
+  { id: "speed", title: "Shorter intake-to-invoice", body: "The job arrives with the decisions, materials, and owner attached." },
+  { id: "risk", title: "Fewer expensive surprises", body: "Exceptions surface early enough for the team to act, not after the customer calls." },
+  { id: "ownership", title: "A line your people own", body: "Trained in the style that fits the staff, so it is used from week one." },
+  { id: "ai", title: "AI that earns its place", body: "Applied one handoff at a time, where the return is measurable." },
+] as const;
+
+/** Defaults for the cost-of-the-handoff calculator. Example figures, adjustable by the visitor. */
+export const calculatorDefaults = { team: 40, rate: 65, hours: 4, weeks: 48, hoursPerFte: 2000 } as const;
