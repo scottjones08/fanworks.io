@@ -1,4 +1,4 @@
-/* fanworks — applied AI for the operator */
+/* fanworks — human-centered business systems */
 
 .w {
   --black: #0b0b0c;
@@ -1211,6 +1211,97 @@
   font-size: 13px;
 }
 
+/* the people we design for */
+.w-people {
+  padding: clamp(80px, 10vw, 140px) var(--pad);
+  background: #fff;
+}
+
+.w-people-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 40px;
+  margin-bottom: clamp(40px, 5vw, 64px);
+}
+
+.w-people-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.w-person {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: 220px;
+  padding: 28px;
+  border-radius: var(--radius);
+  background: var(--off);
+}
+
+.w-person-n {
+  color: var(--mute);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+.w-person h3 {
+  font-size: 26px;
+}
+
+.w-person p {
+  color: var(--ink-2);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.w-people-foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+  margin-top: clamp(32px, 4vw, 56px);
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+}
+
+.w-people-foot p {
+  max-width: 44ch;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(20px, 1.8vw, 26px);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.w-people-sectors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.w-people-sectors button {
+  padding: 10px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background 200ms,
+    color 200ms,
+    border-color 200ms;
+}
+
+.w-people-sectors button:hover {
+  background: var(--black);
+  border-color: var(--black);
+  color: #fff;
+}
+
 /* selected work */
 .w-selected {
   padding: clamp(80px, 10vw, 140px) var(--pad);
@@ -1658,7 +1749,8 @@
   .w-exp-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .w-stories {
+  .w-stories,
+  .w-people-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1692,12 +1784,21 @@
   .w-selected-head,
   .w-exp-head,
   .w-notes-head,
+  .w-people-head,
+  .w-people-foot,
   .w-own {
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
   }
-  .w-stories {
+  .w-people-sectors {
+    justify-content: flex-start;
+  }
+  .w-stories,
+  .w-people-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .w-person {
+    min-height: 0;
   }
   .w-story-pair {
     grid-template-columns: minmax(0, 1fr);
