@@ -2,7 +2,7 @@ import { List, X } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { navItems, scrollToId } from "../content";
-import { Lockup } from "./Logo";
+import { Lockup } from "../shared/Logo";
 
 type HeaderProps = {
   menuOpen: boolean;

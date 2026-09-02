@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Contact } from "./components/Contact";
 import { Diagnostic } from "./components/Diagnostic";
+import "./styles.css";
+import { ConceptSwitcher } from "./shared/ConceptSwitcher";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { IndustryLens } from "./components/IndustryLens";
@@ -46,6 +48,7 @@ export default function App() {
       <IndustryLens industry={industry} setIndustry={setIndustry} />
       <Proof />
       <Contact brief={brief} briefRequestVersion={briefRequestVersion} />
+      <ConceptSwitcher current="current" />
     </main>
   );
 }

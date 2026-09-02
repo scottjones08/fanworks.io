@@ -174,3 +174,46 @@ export function scrollToId(id: string) {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
 }
+
+export const offers = [
+  {
+    id: "mri",
+    kicker: "Diagnostic",
+    name: "Workday MRI",
+    summary:
+      "Days beside your team, not months. One map of where the day doubles back, ranked by what it costs the people and the customer.",
+    outcomes: ["Observed handoffs, not assumed ones", "Friction ranked by drag", "A rebuild plan the team already agrees with"],
+  },
+  {
+    id: "rebuild",
+    kicker: "Engagement",
+    name: "Operating line rebuild",
+    summary:
+      "We connect intake to invoice into one operating layer and take the retyping, chasing, and reconciling out of the day.",
+    outcomes: ["Entered once, seen everywhere", "Clear ownership at every handoff", "Automation and AI only where they earn a place"],
+  },
+  {
+    id: "run",
+    kicker: "Ongoing",
+    name: "Keep it owned",
+    summary:
+      "Your people run it. We stay close enough to keep it improving, and far enough that you never depend on us.",
+    outcomes: ["Training in the style that fits the staff", "Exceptions surfaced early", "A line that keeps getting simpler"],
+  },
+] as const;
+
+export const facts = [
+  { value: "20+", label: "Years improving operations" },
+  { value: "5", label: "Industries, one line of work" },
+  { value: "Intake → Invoice", label: "The whole line, not a tool" },
+  { value: "Richmond, VA", label: "Operators, on site" },
+] as const;
+
+export const beliefs = [
+  "The goal is not more technology. It is less work between the work.",
+  "Start with the person and the process. Shape the software around them.",
+  "The people closest to the work already know where it bends.",
+  "AI earns its place one handoff at a time.",
+] as const;
+
+export const contactEmail = "hello@fanworks.io";
