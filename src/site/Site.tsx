@@ -42,32 +42,6 @@ const CARD_TINTS = ["#1f3fd6", "#6b4a2b", "#1d4d3e", "#3d2f66", "#7a3b26", "#244
 
 type SheetRef = { kind: "work" | "sector" | "note"; id: string };
 
-/** A silent five-second loop behind a section. `base` is the file stem in /media; a -480 pair serves phones. */
-function LoopVideo({ base, poster, className, reduced }: { base: string; poster: string; className?: string; reduced: boolean }) {
-  const [ok, setOk] = useState(true);
-  const ref = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const v = ref.current;
-    if (!v) return;
-    const fail = () => setOk(false);
-    const last = v.querySelector("source:last-of-type");
-    v.addEventListener("error", fail);
-    last?.addEventListener("error", fail);
-    return () => {
-      v.removeEventListener("error", fail);
-      last?.removeEventListener("error", fail);
-    };
-  }, [ok, reduced]);
-  if (!ok || reduced) return <img className={className} src={poster} alt="" />;
-  return (
-    <video ref={ref} className={className} poster={poster} autoPlay muted loop playsInline>
-      <source src={`/media/${base}-480.webm`} type="video/webm" media="(max-width: 640px)" />
-      <source src={`/media/${base}-480.mp4`} type="video/mp4" media="(max-width: 640px)" />
-      <source src={`/media/${base}.webm`} type="video/webm" />
-      <source src={`/media/${base}.mp4`} type="video/mp4" />
-    </video>
-  );
-}
 
 function readHash(): SheetRef | null {
   const m = /^#(work|sector|note)\/([\w-]+)$/.exec(window.location.hash);
@@ -210,9 +184,6 @@ export default function Site() {
           <button type="button" onClick={() => go("work")}>
             Work
           </button>
-          <button type="button" onClick={() => go("sectors")}>
-            Sectors
-          </button>
           <button type="button" onClick={() => go("method")}>
             Method
           </button>
@@ -234,9 +205,6 @@ export default function Site() {
         <div className="w-menu" role="dialog" aria-label="Menu">
           <button type="button" onClick={() => go("work")}>
             Work
-          </button>
-          <button type="button" onClick={() => go("sectors")}>
-            Sectors
           </button>
           <button type="button" onClick={() => go("method")}>
             Method
@@ -329,6 +297,16 @@ export default function Site() {
           </Reveal>
         </section>
 
+        <section className="w-hear" aria-labelledby="w-hear-title">
+          <div className="w-hear-head">
+            <Reveal>
+              <p className="w-eyebrow">What we hear every week</p>
+              <h2 id="w-hear-title">The same story, in a different building.</h2>
+            </Reveal>
+          </div>
+          <Handwriting items={stages.map((s) => ({ label: s.label, before: s.before, after: s.after }))} />
+        </section>
+
         <section className="w-selected" id="work" aria-labelledby="w-selected-title">
           <div className="w-selected-head">
             <Reveal>
@@ -357,34 +335,6 @@ export default function Site() {
           </ol>
         </section>
 
-        <section className="w-work" id="sectors" aria-labelledby="w-work-title">
-          <div className="w-work-bg" aria-hidden="true">
-            <LoopVideo base="sectors-loop" poster="/media/sectors-poster.jpg" className="w-work-video" reduced={reduced} />
-            <div className="w-work-shade" />
-          </div>
-          <Reveal>
-            <p className="w-eyebrow w-eyebrow-pad">Sectors</p>
-            <h2 id="w-work-title">Solving the problems that move the business.</h2>
-          </Reveal>
-          <div className="w-cards" role="list">
-            {industries.map((ind, i) => (
-              <article className="w-card" role="listitem" key={ind.id} style={{ "--tint": CARD_TINTS[i] } as CSSProperties}>
-                <SectorCover id={ind.id} flow={ind.flow} />
-                <div className="w-card-top">
-                  <h3>{ind.headline}</h3>
-                  <span className="w-arrow" aria-hidden="true">
-                    ↗
-                  </span>
-                </div>
-                <div className="w-card-foot">
-                  <span>{ind.label}</span>
-                  <span>{ind.eyebrow}</span>
-                </div>
-                <button type="button" className="w-card-hit" aria-label={`${ind.label}: where work breaks and what we connect`} onClick={() => open("sector", ind.id)} />
-              </article>
-            ))}
-          </div>
-        </section>
 
         <section className="w-os" aria-labelledby="w-os-title">
           <div className="w-os-grain" aria-hidden="true" />
@@ -409,15 +359,6 @@ export default function Site() {
           </ol>
         </section>
 
-        <section className="w-hear" aria-labelledby="w-hear-title">
-          <div className="w-hear-head">
-            <Reveal>
-              <p className="w-eyebrow">What we hear every week</p>
-              <h2 id="w-hear-title">The same story, in a different building.</h2>
-            </Reveal>
-          </div>
-          <Handwriting items={stages.map((s) => ({ label: s.label, before: s.before, after: s.after }))} />
-        </section>
 
         <section className="w-method" id="method" aria-labelledby="w-method-title">
           <Reveal className="w-photo-wrap" y={0}>
@@ -720,9 +661,6 @@ export default function Site() {
             <span className="w-foot-k">Company</span>
             <button type="button" onClick={() => go("work")}>
               Work
-            </button>
-            <button type="button" onClick={() => go("sectors")}>
-              Sectors
             </button>
             <button type="button" onClick={() => go("method")}>
               Method
