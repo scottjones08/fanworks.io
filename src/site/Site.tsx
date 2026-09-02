@@ -1,11 +1,12 @@
 import "./site.css";
 import { motion } from "motion/react";
-import { type FormEvent, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { contactEmail, frictions, industries, methods, offers, stages, tools, type FrictionId, type ToolName } from "../content";
 import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
 import { useReducedMotion } from "../shared/useReducedMotion";
+import { InkBurst } from "./InkBurst";
 import { Thread } from "./Thread";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
@@ -55,6 +56,18 @@ export default function Site() {
   });
   const submit = (event: FormEvent<HTMLFormElement>) => void form.submit(event);
 
+  // Ballpoint confetti from the Send dot once the note is received.
+  const sendDotRef = useRef<HTMLSpanElement>(null);
+  const [burst, setBurst] = useState<{ x: number; y: number; key: number } | null>(null);
+  useEffect(() => {
+    if (form.state !== "sent") return;
+    const r = sendDotRef.current?.getBoundingClientRect();
+    if (!r) return;
+    setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2, key: Date.now() });
+    const id = window.setTimeout(() => setBurst(null), 4200);
+    return () => window.clearTimeout(id);
+  }, [form.state]);
+
   const cycleStage = () => setStage((s) => (s + 1) % stages.length);
   const cycleFriction = () => setFriction((f) => frictions[(frictions.findIndex((x) => x.id === f) + 1) % frictions.length].id);
   const toggleTool = (t: ToolName) => setPicked((p) => (p.includes(t) ? p.filter((x) => x !== t) : [...p, t]));
@@ -62,7 +75,7 @@ export default function Site() {
   const heroLines = ["Less work", "between", "the work."];
 
   return (
-    <div className="one" ref={hostRef}>
+    <div className={`one${burst ? " is-signing" : ""}`} ref={hostRef}>
       <Thread hostRef={hostRef} />
 
       <header className="one-nav">
@@ -296,7 +309,7 @@ export default function Site() {
             </label>
             <div className="one-form-foot">
               <button className="one-send" type="submit" disabled={form.busy}>
-                <span data-thread="end" className="one-send-dot" aria-hidden="true" />
+                <span ref={sendDotRef} data-thread="end" className={`one-send-dot${form.state === "sent" ? " is-sent" : ""}`} aria-hidden="true" />
                 {form.state === "sending" ? "Sending" : form.state === "sent" ? "Sent" : "Send"}
               </button>
               <small className="one-note one-note-send" data-thread-note>
@@ -309,6 +322,8 @@ export default function Site() {
           </form>
         </section>
       </main>
+
+      {burst ? <InkBurst key={burst.key} origin={burst} reduced={reduced} /> : null}
 
       <footer className="one-foot">
         <span>fanworks · Human-centered business consulting</span>

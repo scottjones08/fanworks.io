@@ -141,18 +141,19 @@
   stroke-linejoin: round;
 }
 
+.thread-wet {
+  fill: none;
+  stroke: #4a63f0;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  mix-blend-mode: multiply;
+}
+
 .thread-pen {
   opacity: 0;
   transition: opacity 400ms;
-}
-
-.thread-pen-ink {
-  fill: var(--thread);
-  opacity: 0.85;
-}
-
-.thread-pen-cap {
-  fill: var(--thread);
 }
 
 /* nav */
@@ -725,6 +726,58 @@
 
 .one-send:disabled {
   color: var(--mute);
+}
+
+.one-send-dot.is-sent {
+  animation: one-sent 900ms var(--ease);
+}
+
+@keyframes one-sent {
+  30% {
+    transform: scale(1.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ballpoint confetti */
+.ink-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ink-mark {
+  fill: none;
+  stroke: var(--thread);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  mix-blend-mode: multiply;
+}
+
+.ink-flourish {
+  fill: none;
+  stroke: var(--thread);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  mix-blend-mode: multiply;
+}
+
+.ink-pen {
+  opacity: 0;
+}
+
+.one.is-signing .thread-pen,
+.one.is-signing .thread-wet {
+  opacity: 0 !important;
 }
 
 .one-form-foot p {

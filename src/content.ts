@@ -1,10 +1,3 @@
-export const navItems = [
-  { id: "diagnostic", label: "Map the day" },
-  { id: "method", label: "How we work" },
-  { id: "industries", label: "Industries" },
-  { id: "proof", label: "Why FanWorks" },
-] as const;
-
 export const stages = [
   {
     id: "intake",
@@ -170,11 +163,6 @@ export type FrictionId = (typeof frictions)[number]["id"];
 export type IndustryId = (typeof industries)[number]["id"];
 export type ToolName = (typeof tools)[number];
 
-export function scrollToId(id: string) {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-}
-
 export const offers = [
   {
     id: "mri",
@@ -202,50 +190,4 @@ export const offers = [
   },
 ] as const;
 
-export const facts = [
-  { value: "20+", label: "Years improving operations" },
-  { value: "5", label: "Industries, one line of work" },
-  { value: "Intake → Invoice", label: "The whole line, not a tool" },
-  { value: "Richmond, VA", label: "Operators, on site" },
-] as const;
-
-export const beliefs = [
-  "The goal is not more technology. It is less work between the work.",
-  "Start with the person and the process. Shape the software around them.",
-  "The people closest to the work already know where it bends.",
-  "AI earns its place one handoff at a time.",
-] as const;
-
 export const contactEmail = "hello@fanworks.io";
-
-/** Human-centered design, stated plainly for an executive audience. */
-export const hcdPillars = [
-  {
-    id: "people",
-    title: "People first",
-    body: "We start with the people who run the day, not the software they were handed. What they know is the spec.",
-  },
-  {
-    id: "process",
-    title: "Then the process",
-    body: "We trace the work end to end and remove the retyping, chasing, and reconciling that nobody budgeted for.",
-  },
-  {
-    id: "technology",
-    title: "Technology last",
-    body: "Automation and AI go in only where they give hours back. Nothing is added that the team will not keep using.",
-  },
-] as const;
-
-/** What an executive gets back. Framed as outcomes, not claims. */
-export const executiveOutcomes = [
-  { id: "hours", title: "Hours back, every week", body: "Handoffs that no longer need a person to carry the context." },
-  { id: "cost", title: "Cost you can finally see", body: "The price of friction, measured in your loaded hours, before and after." },
-  { id: "speed", title: "Shorter intake-to-invoice", body: "The job arrives with the decisions, materials, and owner attached." },
-  { id: "risk", title: "Fewer expensive surprises", body: "Exceptions surface early enough for the team to act, not after the customer calls." },
-  { id: "ownership", title: "A line your people own", body: "Trained in the style that fits the staff, so it is used from week one." },
-  { id: "ai", title: "AI that earns its place", body: "Applied one handoff at a time, where the return is measurable." },
-] as const;
-
-/** Defaults for the cost-of-the-handoff calculator. Example figures, adjustable by the visitor. */
-export const calculatorDefaults = { team: 40, rate: 65, hours: 4, weeks: 48, hoursPerFte: 2000 } as const;

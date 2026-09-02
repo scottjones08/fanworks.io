@@ -1,5 +1,6 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "../shared/useReducedMotion";
+import { PenArt, PenDefs } from "./Pen";
 
 /**
  * One line through the page, drawn by a ballpoint pen as the reader scrolls.
@@ -16,6 +17,7 @@ import { useReducedMotion } from "../shared/useReducedMotion";
 export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) {
   const reduced = useReducedMotion();
   const pathRef = useRef<SVGPathElement>(null);
+  const wetRef = useRef<SVGPathElement>(null);
   const penRef = useRef<SVGGElement>(null);
   const [d, setD] = useState("");
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -25,6 +27,7 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
   const rebuild = useRef<() => void>(() => undefined);
   const drawn = useRef(0);
   const angle = useRef(-52);
+  const lift = useRef(0);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -111,10 +114,14 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
     });
     path.style.strokeDasharray = `${length}`;
     const pen = penRef.current;
+    const wet = wetRef.current;
+    const WET = 56;
+    if (wet) wet.style.strokeDasharray = `${WET} ${length + WET}`;
 
     if (reduced) {
       path.style.strokeDashoffset = "0";
       if (pen) pen.style.opacity = "0";
+      if (wet) wet.style.opacity = "0";
       notes.current.forEach((note) => note.el.classList.add("is-lit"));
       return;
     }
@@ -134,20 +141,34 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
       return len;
     };
 
-    const render = (len: number) => {
+    const render = (len: number, speed: number) => {
       path.style.strokeDashoffset = `${length - len}`;
+      if (wet) {
+        // A short run of fresher, wetter ink just behind the tip.
+        wet.style.strokeDashoffset = `${WET - len}`;
+        wet.style.opacity = len > 2 && len < length - 2 ? "1" : "0";
+      }
       const p = path.getPointAtLength(len);
       if (pen) {
-        // Lean the pen a little with the direction of the stroke.
+        // Lean the pen a little with the direction of the stroke, breathe as it
+        // writes, and lift slightly when it is travelling fast.
         const q = path.getPointAtLength(Math.min(length, len + 3));
         const heading = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI;
         const lean = Math.max(-14, Math.min(14, (heading - 90) * 0.12));
+        const wobble = Math.sin(len / 38) * 1.6;
         const scale = window.innerWidth < 640 ? 0.7 : 1;
-        // Near the right edge the pen switches hands so it stays on the page.
         const hostWidth = host.getBoundingClientRect().width;
-        const base = p.x > hostWidth - 250 * scale ? -128 - lean : -52 + lean;
+        const flipped = p.x > hostWidth - 250 * scale;
+        const base = (flipped ? -128 - lean : -52 + lean) + wobble;
         angle.current += (base - angle.current) * 0.12;
-        pen.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${angle.current.toFixed(1)}) scale(${scale})`);
+        lift.current += (Math.min(1, speed / 28) - lift.current) * 0.1;
+        const rad = (angle.current * Math.PI) / 180;
+        const lx = Math.cos(rad) * 5 * lift.current;
+        const ly = Math.sin(rad) * 5 * lift.current;
+        pen.setAttribute(
+          "transform",
+          `translate(${(p.x + lx).toFixed(1)} ${(p.y + ly).toFixed(1)}) rotate(${angle.current.toFixed(1)}) scale(${(scale * (1 + lift.current * 0.03)).toFixed(3)})`,
+        );
         pen.style.opacity = len > 2 && len < length - 2 ? "1" : "0";
       }
       notes.current.forEach((note) => note.el.classList.toggle("is-lit", len >= length - 1 || p.y >= note.y - 8));
@@ -159,14 +180,15 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
     let target = targetLength();
     const step = () => {
       const diff = target - drawn.current;
-      if (Math.abs(diff) < 0.5) {
+      if (Math.abs(diff) < 0.4) {
         drawn.current = target;
-        render(drawn.current);
+        render(drawn.current, 0);
         frame = 0;
         return;
       }
-      drawn.current += diff * 0.14;
-      render(drawn.current);
+      const move = diff * 0.11;
+      drawn.current += move;
+      render(drawn.current, Math.abs(move));
       frame = requestAnimationFrame(step);
     };
     const onScroll = () => {
@@ -188,31 +210,12 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
   return (
     <svg className="thread" width={size.w} height={size.h} viewBox={`0 0 ${size.w} ${size.h}`} aria-hidden="true">
       <defs>
-        <linearGradient id="pen-barrel" x1="0" y1="-1" x2="0" y2="1" gradientUnits="objectBoundingBox">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="0.9" />
-          <stop offset="0.5" stopColor="#f4f2ec" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#cfcbc2" stopOpacity="0.85" />
-        </linearGradient>
-        <linearGradient id="pen-cone" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#e6e1d6" />
-          <stop offset="0.5" stopColor="#b9b3a6" />
-          <stop offset="1" stopColor="#8e887c" />
-        </linearGradient>
-        <filter id="pen-shadow" x="-20%" y="-60%" width="140%" height="220%">
-          <feDropShadow dx="2" dy="6" stdDeviation="4" floodColor="#121212" floodOpacity="0.22" />
-        </filter>
+        <PenDefs />
       </defs>
       <path ref={pathRef} d={d} className="thread-path" />
+      <path ref={wetRef} d={d} className="thread-wet" />
       <g ref={penRef} className="thread-pen" filter="url(#pen-shadow)">
-        {/* tip at the origin; the barrel runs along +x and is rotated into the hand */}
-        <path d="M0 0 L30 -4.6 L30 4.6 Z" fill="url(#pen-cone)" />
-        <path d="M0 0 L9 -1.4 L9 1.4 Z" fill="#6f6a60" />
-        <rect x="29" y="-6.5" width="176" height="13" rx="2.5" fill="url(#pen-barrel)" stroke="rgba(18,18,18,0.35)" strokeWidth="1" />
-        <rect x="32" y="-2.4" width="152" height="4.8" rx="2.4" className="thread-pen-ink" />
-        <rect x="29" y="-6.5" width="176" height="2.6" rx="1.3" fill="#ffffff" opacity="0.7" />
-        <rect x="203" y="-7" width="26" height="14" rx="3" className="thread-pen-cap" />
-        <rect x="228" y="-3.4" width="8" height="6.8" rx="2" className="thread-pen-cap" />
-        <path d="M208 -7 L208 -18 L226 -18 L226 -12 L214 -12 L214 -7 Z" className="thread-pen-cap" opacity="0.9" />
+        <PenArt />
       </g>
     </svg>
   );
