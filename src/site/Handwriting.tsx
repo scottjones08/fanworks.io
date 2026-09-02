@@ -4,8 +4,8 @@ import { PenArt, PenDefs } from "./Pen";
 
 export type HandwritingItem = { label: string; before: string; after: string };
 
-const SPEED = 540; // px per second at the pen's tip
-const HOLD = 3200; // ms a finished line stays before the next one
+const SPEED = 260; // px per second at the pen's tip: a hand, not a printer
+const HOLD = 4200; // ms a finished line stays before the next one
 
 /**
  * A ballpoint pen writes each situation out by hand, line by line, then the
@@ -25,8 +25,8 @@ export function Handwriting({ items }: { items: HandwritingItem[] }) {
   const [phase, setPhase] = useState<"writing" | "hold">("writing");
 
   const narrow = width < 640;
-  const fontSize = narrow ? 30 : 46;
-  const lh = Math.round(fontSize * 1.18);
+  const fontSize = narrow ? 22 : 34;
+  const lh = Math.round(fontSize * 1.9);
   const pad = 14;
   const height = Math.max(1, lines.length) * lh + pad * 2;
   const item = items[index];
@@ -120,7 +120,7 @@ export function Handwriting({ items }: { items: HandwritingItem[] }) {
         rects[i]?.setAttribute("width", `${local + 6}`);
         if (drawn >= starts[i] && (drawn < starts[i] + w || i === widths.length - 1)) {
           px = local;
-          py = pad + i * lh + fontSize * 0.8;
+          py = pad + i * lh + fontSize * 1.1;
         }
       });
       const wob = Math.sin(now / 55) * 1.6;
@@ -158,16 +158,16 @@ export function Handwriting({ items }: { items: HandwritingItem[] }) {
                   clipRefs.current[i] = el;
                 }}
                 x={-4}
-                y={pad + i * lh - 8}
+                y={pad + i * lh - 10}
                 width="0"
-                height={lh + 16}
+                height={lh + 20}
               />
             </clipPath>
           ))}
         </defs>
         <text ref={measureRef} className="hw-line hw-measure" x={0} y={-300} style={{ fontSize }} />
         {lines.map((line, i) => (
-          <text key={`${index}-${i}`} className="hw-line" x={0} y={pad + i * lh + fontSize * 0.8} style={{ fontSize }} clipPath={`url(#hw-clip-${i})`}>
+          <text key={`${index}-${i}`} className="hw-line" x={0} y={pad + i * lh + fontSize * 1.1} style={{ fontSize }} clipPath={`url(#hw-clip-${i})`}>
             {line}
           </text>
         ))}

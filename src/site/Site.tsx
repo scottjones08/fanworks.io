@@ -6,6 +6,7 @@ import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
 import { useReducedMotion } from "../shared/useReducedMotion";
+import { SectorCover, StoryCover } from "./Covers";
 import { Handwriting } from "./Handwriting";
 import { InkBurst } from "./InkBurst";
 
@@ -37,7 +38,6 @@ const HERO_VIDEO = "/media/hero-flythrough.mp4";
 const HERO_VIDEO_SMALL = "/media/hero-flythrough-480.mp4";
 const HERO_STILL = "/media/hero-poster.jpg";
 
-const CARD_PHOTOS = ["/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp", "/fan-works-hero.webp", "/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp"];
 const CARD_TINTS = ["#1f3fd6", "#6b4a2b", "#1d4d3e", "#3d2f66", "#7a3b26", "#24466b", "#4a3a1e"];
 
 type SheetRef = { kind: "work" | "sector" | "note"; id: string };
@@ -344,7 +344,7 @@ export default function Site() {
               <Reveal as="li" key={st.id} delay={(i % 3) * 0.06} className="w-story-card">
                 <button type="button" onClick={() => open("work", st.id)}>
                   <span className="w-story-art" style={{ "--tint": CARD_TINTS[i % CARD_TINTS.length] } as CSSProperties}>
-                    <img src={CARD_PHOTOS[i % CARD_PHOTOS.length]} alt="" width={1800} height={1200} loading="lazy" />
+                    <StoryCover id={st.id} />
                   </span>
                   <span className="w-kicker">{st.sector}</span>
                   <h3>{st.title}</h3>
@@ -369,7 +369,7 @@ export default function Site() {
           <div className="w-cards" role="list">
             {industries.map((ind, i) => (
               <article className="w-card" role="listitem" key={ind.id} style={{ "--tint": CARD_TINTS[i] } as CSSProperties}>
-                <img src={CARD_PHOTOS[i]} alt="" loading="lazy" width={1800} height={1200} />
+                <SectorCover id={ind.id} flow={ind.flow} />
                 <div className="w-card-top">
                   <h3>{ind.headline}</h3>
                   <span className="w-arrow" aria-hidden="true">
@@ -598,7 +598,7 @@ export default function Site() {
                 return (
                   <>
                     <figure className="w-sheet-figure" style={{ "--tint": CARD_TINTS[si % CARD_TINTS.length] } as CSSProperties}>
-                      <img src={CARD_PHOTOS[si % CARD_PHOTOS.length]} alt="" width={1800} height={1200} />
+                      <StoryCover id={st.id} />
                     </figure>
                     <p className="w-kicker">Selected work · {st.sector}</p>
                     <h2>{st.title}</h2>
@@ -649,7 +649,7 @@ export default function Site() {
                   return (
                     <>
                       <figure className="w-sheet-figure" style={{ "--tint": CARD_TINTS[idx] } as CSSProperties}>
-                        <img src={CARD_PHOTOS[idx]} alt="" width={1800} height={1200} />
+                        <SectorCover id={ind.id} flow={ind.flow} wide />
                       </figure>
                       <p className="w-kicker">{ind.label} · {ind.eyebrow}</p>
                       <h2>{ind.headline}</h2>

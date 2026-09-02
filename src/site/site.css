@@ -498,26 +498,21 @@
   isolation: isolate;
 }
 
-.w-card img {
+.w-card .w-cover {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  mix-blend-mode: luminosity;
-  opacity: 0.82;
   transition: transform 900ms var(--ease);
 }
 
-.w-card:hover img {
-  transform: scale(1.04);
+.w-card:hover .w-cover {
+  transform: scale(1.03);
 }
 
 .w-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.55) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.35) 100%);
 }
 
 .w-card-top {
@@ -717,8 +712,7 @@
 }
 
 .hw-line {
-  font-family: var(--serif);
-  font-style: italic;
+  font-family: "Homemade Apple", "Caveat", "Bradley Hand", cursive;
   fill: var(--blue);
 }
 
@@ -1345,18 +1339,21 @@
   background: var(--tint, #1f3fd6);
 }
 
-.w-sheet-figure img,
-.w-story-art img,
 .w-people-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.w-sheet-figure img,
-.w-story-art img {
-  mix-blend-mode: luminosity;
-  opacity: 0.85;
+.w-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.w-sheet-figure .w-cover,
+.w-story-art .w-cover {
+  background: var(--tint, #1f3fd6);
 }
 
 .w-story-art {
