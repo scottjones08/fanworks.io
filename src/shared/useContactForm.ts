@@ -7,6 +7,8 @@ type Options = {
   briefVersion?: number;
   idleStatus?: string;
   briefStatus?: string;
+  /** Text sent ahead of the typed message, e.g. the sentence with blanks. */
+  prefix?: string;
 };
 
 /** Shared state machine for the /api/contact form, used by every concept. */
@@ -15,6 +17,7 @@ export function useContactForm({
   briefVersion = 0,
   idleStatus = "A few honest lines are enough.",
   briefStatus = "Your map was added as a draft. Edit anything you like.",
+  prefix = "",
 }: Options = {}) {
   const [state, setState] = useState<FormState>("idle");
   const [status, setStatus] = useState(idleStatus);
@@ -46,7 +49,7 @@ export function useContactForm({
         body: JSON.stringify({
           name: String(data.get("name") || ""),
           email: String(data.get("email") || ""),
-          message,
+          message: prefix ? `${prefix}\n\n${message}`.trim() : message,
           company: String(data.get("company") || ""),
         }),
       });

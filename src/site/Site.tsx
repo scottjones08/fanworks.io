@@ -26,6 +26,13 @@ function Reveal({ children, delay = 0, className }: { children: React.ReactNode;
   );
 }
 
+const TYPES = ["bodoni", "instrument", "fraunces", "cormorant", "newsreader"] as const;
+type TypeOption = (typeof TYPES)[number];
+function typeFromUrl(): TypeOption {
+  const t = new URLSearchParams(window.location.search).get("type");
+  return (TYPES as readonly string[]).includes(t || "") ? (t as TypeOption) : "bodoni";
+}
+
 function scrollTo(id: string) {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
@@ -35,12 +42,13 @@ export default function Site() {
   useDocumentTheme("#f1f0ec", "#f1f0ec");
   const reduced = useReducedMotion();
   const hostRef = useRef<HTMLDivElement>(null);
+  const [type] = useState<TypeOption>(typeFromUrl);
+  const today = useMemo(() => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), []);
 
   const [stage, setStage] = useState(2);
   const [friction, setFriction] = useState<FrictionId>("manual");
   const [picked, setPicked] = useState<ToolName[]>(["Email", "Sheets", "Paper"]);
   const [pickingTools, setPickingTools] = useState(false);
-  const [version, setVersion] = useState(0);
 
   const frictionItem = frictions.find((f) => f.id === friction) ?? frictions[0];
   const toolPhrase = picked.length === 0 ? "nothing yet" : picked.length === 1 ? picked[0] : `${picked.slice(0, -1).join(", ")} and ${picked[picked.length - 1]}`;
@@ -48,23 +56,21 @@ export default function Site() {
     () => `Our day doubles back at ${stages[stage].label.toLowerCase()}. The work crosses ${toolPhrase}. It feels like ${frictionItem.label.toLowerCase()}.`,
     [stage, toolPhrase, frictionItem.label],
   );
-  const form = useContactForm({
-    brief: `${sentence}\n\nWhat we should look at: `,
-    briefVersion: version,
-    idleStatus: "",
-    briefStatus: "The sentence is in your note. Add what we should know.",
-  });
+  const form = useContactForm({ idleStatus: "", prefix: sentence });
   const submit = (event: FormEvent<HTMLFormElement>) => void form.submit(event);
 
-  // Ballpoint confetti from the Send dot once the note is received.
+  // Pressing Send releases the parked pen; the confetti waits for it to arrive.
+  const released = form.state === "sending" || form.state === "sent";
   const sendDotRef = useRef<HTMLSpanElement>(null);
   const [burst, setBurst] = useState<{ x: number; y: number; key: number } | null>(null);
   useEffect(() => {
     if (form.state !== "sent") return;
-    const r = sendDotRef.current?.getBoundingClientRect();
-    if (!r) return;
-    setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2, key: Date.now() });
-  }, [form.state]);
+    const id = window.setTimeout(() => {
+      const r = sendDotRef.current?.getBoundingClientRect();
+      if (r) setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2, key: Date.now() });
+    }, reduced ? 0 : 1100);
+    return () => window.clearTimeout(id);
+  }, [form.state, reduced]);
   const endBurst = useCallback(() => setBurst(null), []);
 
   const cycleStage = () => setStage((s) => (s + 1) % stages.length);
@@ -74,8 +80,8 @@ export default function Site() {
   const heroLines = ["Less work", "between", "the work."];
 
   return (
-    <div className={`one${burst ? " is-signing" : ""}`} ref={hostRef}>
-      <Thread hostRef={hostRef} />
+    <div className={`one${burst ? " is-signing" : ""}`} ref={hostRef} data-type={type}>
+      <Thread hostRef={hostRef} released={released} />
 
       <header className="one-nav">
         <a href="/" className="one-brand" aria-label="fanworks home">
@@ -256,10 +262,28 @@ export default function Site() {
         </section>
 
         <section className="one-talk" id="talk" aria-labelledby="one-talk-title">
-          <Reveal>
-            <h2 id="one-talk-title">Bring us the hard handoff.</h2>
-          </Reveal>
-          <Reveal delay={0.08}>
+          <div className="one-talk-copy">
+            <Reveal>
+              <h2 id="one-talk-title">Bring us the hard handoff.</h2>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <p className="one-talk-lede">
+                Write us a note. Fill in the three blanks, add anything we should know, and send it. If we can help, we
+                will say how. If we cannot, we will say that too.
+              </p>
+              <a className="one-talk-mail" href={`mailto:${contactEmail}`}>
+                {contactEmail}
+              </a>
+            </Reveal>
+          </div>
+
+          <form className="one-form" onSubmit={submit}>
+            <span data-thread="park" className="one-anchor one-park" />
+            <div className="one-form-head">
+              <span>A note to fanworks</span>
+              <span>{today}</span>
+            </div>
+
             <p className="one-sentence">
               Our day doubles back at{" "}
               <button type="button" className="one-blank" onClick={cycleStage} aria-label={`Handoff: ${stages[stage].label}. Click to change.`}>
@@ -284,39 +308,37 @@ export default function Site() {
                 ))}
               </div>
             ) : null}
-            <button type="button" className="one-link one-link-quiet" onClick={() => setVersion((v) => v + 1)}>
-              Put this sentence in the note
-            </button>
-          </Reveal>
+            <p className="one-form-hint">Click a blank to change it. The sentence goes in with your note.</p>
 
-          <form className="one-form" onSubmit={submit} data-thread-quiet>
-            <label>
-              <span>Name</span>
-              <input name="name" autoComplete="name" required disabled={form.busy} />
-            </label>
-            <label>
-              <span>Email</span>
-              <input name="email" type="email" autoComplete="email" required disabled={form.busy} />
-            </label>
+            <div className="one-form-fields">
+              <label>
+                <span>Your name</span>
+                <input name="name" autoComplete="name" required minLength={2} disabled={form.busy} />
+              </label>
+              <label>
+                <span>Email</span>
+                <input name="email" type="email" autoComplete="email" required disabled={form.busy} />
+              </label>
+            </div>
             <label className="honeypot" aria-hidden="true">
               <span>Company</span>
               <input name="company" tabIndex={-1} autoComplete="off" />
             </label>
             <label className="one-form-message">
-              <span>What should we look at?</span>
-              <textarea ref={form.messageRef} name="message" rows={6} required minLength={8} value={form.message} onChange={(e) => form.setMessage(e.target.value)} placeholder="The handoff that costs us the most is…" disabled={form.busy} />
+              <span>Anything we should know <em>(optional)</em></span>
+              <textarea ref={form.messageRef} name="message" rows={5} value={form.message} onChange={(e) => form.setMessage(e.target.value)} placeholder="Who runs it, what it costs, what you have tried…" disabled={form.busy} />
             </label>
             <div className="one-form-foot">
+              <p role="status" aria-live="polite" className={form.state === "error" ? "is-error" : ""}>
+                {form.status || "Nothing is sent until you press Send."}
+              </p>
               <button className="one-send" type="submit" disabled={form.busy}>
-                <span ref={sendDotRef} data-thread="end" className={`one-send-dot${form.state === "sent" ? " is-sent" : ""}`} aria-hidden="true" />
                 {form.state === "sending" ? "Sending" : form.state === "sent" ? "Sent" : "Send"}
+                <span ref={sendDotRef} data-thread="end" className={`one-send-dot${form.state === "sent" ? " is-sent" : ""}`} aria-hidden="true" />
               </button>
               <small className="one-note one-note-send" data-thread-note>
                 the line ends with you
               </small>
-              <p role="status" aria-live="polite" className={form.state === "error" ? "is-error" : ""}>
-                {form.status}
-              </p>
             </div>
           </form>
         </section>
