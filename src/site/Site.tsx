@@ -1,6 +1,6 @@
 import "./site.css";
 import { motion } from "motion/react";
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { contactEmail, frictions, industries, methods, offers, stages, tools, type FrictionId, type ToolName } from "../content";
 import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
@@ -64,9 +64,8 @@ export default function Site() {
     const r = sendDotRef.current?.getBoundingClientRect();
     if (!r) return;
     setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2, key: Date.now() });
-    const id = window.setTimeout(() => setBurst(null), 4200);
-    return () => window.clearTimeout(id);
   }, [form.state]);
+  const endBurst = useCallback(() => setBurst(null), []);
 
   const cycleStage = () => setStage((s) => (s + 1) % stages.length);
   const cycleFriction = () => setFriction((f) => frictions[(frictions.findIndex((x) => x.id === f) + 1) % frictions.length].id);
@@ -290,7 +289,7 @@ export default function Site() {
             </button>
           </Reveal>
 
-          <form className="one-form" onSubmit={submit}>
+          <form className="one-form" onSubmit={submit} data-thread-quiet>
             <label>
               <span>Name</span>
               <input name="name" autoComplete="name" required disabled={form.busy} />
@@ -323,7 +322,7 @@ export default function Site() {
         </section>
       </main>
 
-      {burst ? <InkBurst key={burst.key} origin={burst} reduced={reduced} /> : null}
+      {burst ? <InkBurst key={burst.key} origin={burst} reduced={reduced} onDone={endBurst} /> : null}
 
       <footer className="one-foot">
         <span>fanworks · Human-centered business consulting</span>

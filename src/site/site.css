@@ -153,7 +153,7 @@
 
 .thread-pen {
   opacity: 0;
-  transition: opacity 400ms;
+  transition: opacity 500ms;
 }
 
 /* nav */
@@ -166,8 +166,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 26px var(--pad);
-  mix-blend-mode: multiply;
+  padding: 22px var(--pad);
+}
+
+.one-nav > * {
+  padding: 4px 10px;
+  margin: -4px -10px;
+  border-radius: 3px;
+  background: var(--stone);
+  box-shadow: 0 0 0 6px var(--stone);
 }
 
 .one-brand {
@@ -773,6 +780,70 @@
 
 .ink-pen {
   opacity: 0;
+  transition: opacity 400ms;
+}
+
+/* the stage: page dims to stone while the pen draws the mark and writes */
+.ink-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: var(--stone);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 900ms var(--ease);
+}
+
+.ink-stage.is-on {
+  opacity: 0.94;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ink-stage-art {
+  opacity: 0;
+  transition: opacity 600ms var(--ease);
+}
+
+.ink-stage-art.is-on {
+  opacity: 1;
+}
+
+.ink-logo path {
+  fill: var(--thread);
+  fill-opacity: 0;
+  stroke: var(--thread);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  transition: fill-opacity 1200ms var(--ease);
+}
+
+.ink-logo.is-inked path {
+  fill-opacity: 1;
+}
+
+.ink-words {
+  fill: var(--thread);
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.ink-hint {
+  fill: var(--mute);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 800ms var(--ease);
+}
+
+.ink-hint.is-on {
+  opacity: 1;
 }
 
 .one.is-signing .thread-pen,
@@ -863,6 +934,11 @@
     padding-left: 44px;
   }
   .one-nav {
-    padding: 18px 20px;
+    padding: 14px 20px;
+    background: var(--stone);
+    border-bottom: 1px solid var(--rule);
+  }
+  .one-nav > * {
+    box-shadow: none;
   }
 }
