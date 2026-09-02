@@ -284,6 +284,24 @@ export default function Site() {
               <p className="w-lede">Every business has a few people holding it together. We start with them. The systems follow.</p>
             </Reveal>
           </div>
+          <Reveal className="w-people-photo" y={12}>
+            <img
+              src="/media/people-running-the-business.webp"
+              width={1600}
+              height={1067}
+              loading="lazy"
+              decoding="async"
+              alt="Three warehouse operators coordinating work among inventory racks and pallets"
+              aria-describedby="w-people-photo-caption"
+            />
+            <div className="w-people-photo-shade" aria-hidden="true" />
+            <p id="w-people-photo-caption">
+              <span>The people closest to the work usually know where it gets stuck.</span>
+              <a href="https://www.pexels.com/photo/men-working-in-a-warehouse-4481259/" target="_blank" rel="noreferrer">
+                Photo: Tiger Lily / Pexels
+              </a>
+            </p>
+          </Reveal>
           <ol className="w-people-grid">
             {people.map((person, i) => (
               <Reveal as="li" key={person.role} delay={(i % 3) * 0.06} className="w-person">
