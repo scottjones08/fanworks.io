@@ -94,25 +94,25 @@ export const methods = [
     number: "01",
     verb: "Observe",
     title: "See the real work.",
-    body: "We sit beside the people doing it and watch the handoffs, workarounds, and decisions a process map misses.",
+    body: "We sit beside the people doing it and watch the handoffs a process map misses.",
   },
   {
     number: "02",
     verb: "Map",
     title: "Name the drag.",
-    body: "Together, we trace the work end to end and rank the friction by what it costs the team and the customer.",
+    body: "We trace the work end to end and rank the friction by what it costs.",
   },
   {
     number: "03",
     verb: "Rebuild",
     title: "Connect what matters.",
-    body: "We simplify the operating layer underneath the day—using automation and AI only where they earn a place.",
+    body: "We rebuild the operating layer under the day, with automation only where it earns a place.",
   },
   {
     number: "04",
     verb: "Hand off",
     title: "Leave it owned.",
-    body: "Your people train in the new way, understand why it works, and keep improving it without depending on us.",
+    body: "Your people run it, understand it, and keep improving it without us.",
   },
 ] as const;
 
@@ -227,7 +227,7 @@ export const offers = [
     kicker: "Diagnostic",
     name: "Workday MRI",
     summary:
-      "Days beside your team, not months. One map of where the day doubles back, ranked by what it costs the people and the customer.",
+      "Days beside your team. One map of where the day doubles back, ranked by what it costs.",
     outcomes: ["Observed handoffs, not assumed ones", "Friction ranked by drag", "A rebuild plan the team already agrees with"],
   },
   {
@@ -235,7 +235,7 @@ export const offers = [
     kicker: "Engagement",
     name: "Operating line rebuild",
     summary:
-      "We connect intake to invoice into one operating layer and take the retyping, chasing, and reconciling out of the day.",
+      "Intake to invoice as one operating layer. The retyping and chasing come out of the day.",
     outcomes: ["Entered once, seen everywhere", "Clear ownership at every handoff", "Automation and AI only where they earn a place"],
   },
   {
@@ -243,7 +243,7 @@ export const offers = [
     kicker: "Ongoing",
     name: "Keep it owned",
     summary:
-      "Your people run it. We stay close enough to keep it improving, and far enough that you never depend on us.",
+      "Your people run it. We stay close enough to help, far enough that you never depend on us.",
     outcomes: ["Training in the style that fits the staff", "Exceptions surfaced early", "A line that keeps getting simpler"],
   },
 ] as const;
@@ -505,26 +505,26 @@ export const trust = {
 export const people = [
   {
     role: "The front desk",
-    carries: "Knows which customer needs a call before the invoice goes out, and keeps that in a notebook the system has never seen.",
+    carries: "Knows which customer needs a call before the invoice goes out. Keeps it in a notebook.",
   },
   {
     role: "The shop floor lead",
-    carries: "Learns what the office promised from a phone call, then makes it true with a whiteboard and a memory.",
+    carries: "Learns what the office promised from a phone call. Makes it true with a whiteboard.",
   },
   {
     role: "The advisor",
-    carries: "Holds the whole client relationship in their head because the record only holds part of it.",
+    carries: "Holds the client relationship in their head. The record holds part of it.",
   },
   {
     role: "The paralegal",
-    carries: "Carries every deadline for the firm and finds the file by knowing who touched it last.",
+    carries: "Carries every deadline for the firm. Finds the file by knowing who touched it last.",
   },
   {
     role: "The practice manager",
-    carries: "Rebuilds the monthly numbers by hand from three systems that do not agree, and is the only one who can.",
+    carries: "Rebuilds the monthly numbers by hand from three systems that disagree.",
   },
   {
     role: "The controller",
-    carries: "Chases receipts, restarts the forecast from a blank sheet, and assembles the board pack the night before.",
+    carries: "Chases receipts and assembles the board pack the night before.",
   },
 ] as const;
