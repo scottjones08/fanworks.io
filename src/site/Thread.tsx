@@ -12,10 +12,11 @@ import { PenArt, PenDefs } from "./Pen";
  *   scribble   a large, messy tangle at the anchor
  *   back       the approach overshoots the anchor and doubles back to it
  *   line-start / line-end   a dead-straight run between the two
+ *   park       the pen stops here until `released` is true (the top of the form)
  * Elements carrying data-thread-note light up once the pen has reached them.
- * Over elements carrying data-thread-quiet (the form) the pen fades to a ghost.
+ * Over elements carrying data-thread-quiet the pen fades to a ghost.
  */
-export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) {
+export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLElement | null>; released?: boolean }) {
   const reduced = useReducedMotion();
   const pathRef = useRef<SVGPathElement>(null);
   const wetRef = useRef<SVGPathElement>(null);
@@ -26,6 +27,10 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
   const notes = useRef<{ el: HTMLElement; y: number }[]>([]);
   const quiet = useRef<{ top: number; bottom: number; left: number; right: number }[]>([]);
   const builtHeight = useRef(0);
+  const park = useRef<{ x: number; y: number } | null>(null);
+  const parkLen = useRef<number | null>(null);
+  const releasedRef = useRef(released);
+  releasedRef.current = released;
   const rebuild = useRef<() => void>(() => undefined);
   const drawn = useRef(0);
   const angle = useRef(-52);
@@ -83,6 +88,8 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
           path += loops.map((c) => ` c ${c.map((v) => f(v * k)).join(" ")}`).join("");
         }
       }
+      const parkPt = pts.find((pt) => pt.kinds.includes("park"));
+      park.current = parkPt ? { x: parkPt.x, y: parkPt.y } : null;
       setD(path);
       setSize({ w: hr.width, h: host.scrollHeight });
       builtHeight.current = host.scrollHeight;
@@ -119,6 +126,22 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
       return { len, y: path.getPointAtLength(len).y };
     });
     path.style.strokeDasharray = `${length}`;
+    // Where along the path the park anchor sits: the closest sample, refined.
+    parkLen.current = null;
+    if (park.current) {
+      const target = park.current;
+      let best = 0;
+      let bestD = Infinity;
+      for (let l = 0; l <= length; l += 4) {
+        const pt = path.getPointAtLength(l);
+        const dd = (pt.x - target.x) ** 2 + (pt.y - target.y) ** 2;
+        if (dd < bestD) {
+          bestD = dd;
+          best = l;
+        }
+      }
+      parkLen.current = best;
+    }
     const pen = penRef.current;
     const wet = wetRef.current;
     const WET = 56;
@@ -138,13 +161,14 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
       const hostTop = host.getBoundingClientRect().top + window.scrollY;
       const target = window.scrollY + window.innerHeight * 0.6 - hostTop;
       const atEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
-      if (atEnd || target >= samples.current[samples.current.length - 1].y) return length;
+      const cap = parkLen.current !== null && !releasedRef.current ? parkLen.current : length;
+      if (atEnd || target >= samples.current[samples.current.length - 1].y) return cap;
       let len = 0;
       for (let i = 0; i < samples.current.length; i += 1) {
         if (samples.current[i].y >= target) break;
         len = samples.current[i].len;
       }
-      return len;
+      return Math.min(len, cap);
     };
 
     const render = (len: number, speed: number) => {
@@ -212,6 +236,11 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
       if (frame) cancelAnimationFrame(frame);
     };
   }, [d, hostRef, reduced]);
+
+  // Releasing the pen lets it travel from the park point to the end.
+  useEffect(() => {
+    window.dispatchEvent(new Event("scroll"));
+  }, [released]);
 
   if (!d) return null;
   return (
