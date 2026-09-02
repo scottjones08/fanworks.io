@@ -13,7 +13,9 @@ import { PenArt, PenDefs } from "./Pen";
  *   line-start / line-end   a dead-straight run between the two
  *   tick         a short downward tick at the anchor
  *   dash         a short rightward dash at the anchor
- *   check        a check mark drawn inside the anchor (a box)
+ *   check, check2, check3   a handwritten check mark drawn over the anchor (a box);
+ *                each variant is a slightly different hand
+ *   lift         the pen lifts before this anchor instead of drawing to it
  *   circle       an ellipse drawn around the anchor element
  *   chart        the element carries its own drawing (data-thread-d in chart
  *                units, data-thread-w, -entry, -exit)
@@ -43,7 +45,38 @@ function placeNotes(notes: Note[], pts: Sample[]) {
 
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
-export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLElement | null>; released?: boolean }) {
+const CHECKS: Record<string, (x: number, y: number) => string> = {
+  check: (x, y) => ` M ${(x - 9).toFixed(1)} ${(y + 1).toFixed(1)} q 3 3 5 8 q 6 -13 16 -21`,
+  check2: (x, y) => ` M ${(x - 8).toFixed(1)} ${(y - 1).toFixed(1)} q 1 6 4 10 l 17 -20`,
+  check3: (x, y) => ` M ${(x - 10).toFixed(1)} ${(y + 3).toFixed(1)} q 5 1 7 6 q 5 -11 14 -19 q 2 -1 3 0`,
+};
+
+/** Marks appended at an anchor, after any approach. */
+function marksFor(kinds: string[], x: number, y: number, narrow: boolean, f: (n: number) => string) {
+  let out = "";
+  if (kinds.includes("tick")) out += " l 0 14 l 0 -14";
+  if (kinds.includes("dash")) out += " l 14 0 l -14 0";
+  const check = kinds.find((k) => k in CHECKS);
+  if (check) out += CHECKS[check](x, y);
+  if (kinds.includes("knot")) {
+    out += " c 22 -18 40 6 18 22 c -22 16 -46 -10 -26 -26 c 20 -16 40 8 20 22 c -14 10 -30 -2 -12 -18";
+  }
+  if (kinds.includes("scribble")) {
+    const k = narrow ? 0.55 : 1;
+    const loops = [
+      [60, -50, 110, 18, 50, 60],
+      [-60, 42, -126, -28, -72, -72],
+      [54, -44, 122, 24, 62, 66],
+      [-60, 42, -104, -14, -74, -70],
+      [30, -56, 96, -6, 62, 34],
+      [-34, 40, -72, 8, -28, -18],
+    ];
+    out += loops.map((c) => ` c ${c.map((v) => f(v * k)).join(" ")}`).join("");
+  }
+  return out;
+}
+
+export function Thread({ hostRef, released = false, delay = 0 }: { hostRef: RefObject<HTMLElement | null>; released?: boolean; delay?: number }) {
   const reduced = useReducedMotion();
   const partRefs = useRef<(SVGPathElement | null)[]>([]);
   const wetRef = useRef<SVGPathElement>(null);
@@ -110,11 +143,14 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
 
       let path = `M ${f(pts[0].x)} ${f(pts[0].y)}`;
       if (pts[0].shape) path += pts[0].shape;
+      path += marksFor(pts[0].kinds, pts[0].x, pts[0].y, hr.width < 640, f);
       for (let i = 1; i < pts.length; i += 1) {
         const prev = pts[i - 1];
         const a = prev.exit ?? prev;
         const b = pts[i];
-        if (b.kinds.includes("line-end")) {
+        if (b.kinds.includes("lift")) {
+          path += ` M ${f(b.x)} ${f(b.y)}`;
+        } else if (b.kinds.includes("line-end")) {
           path += ` L ${f(b.x)} ${f(b.y)}`;
         } else {
           const dy = b.y - a.y;
@@ -130,24 +166,7 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
           }
         }
         if (b.shape) path += b.shape;
-        if (b.kinds.includes("tick")) path += " l 0 14 l 0 -14";
-        if (b.kinds.includes("dash")) path += " l 14 0 l -14 0";
-        if (b.kinds.includes("check")) path += ` M ${f(b.x - 7)} ${f(b.y + 1)} l 5 6 l 11 -14`;
-        if (b.kinds.includes("knot")) {
-          path += " c 22 -18 40 6 18 22 c -22 16 -46 -10 -26 -26 c 20 -16 40 8 20 22 c -14 10 -30 -2 -12 -18";
-        }
-        if (b.kinds.includes("scribble")) {
-          const k = hr.width < 640 ? 0.55 : 1;
-          const loops = [
-            [60, -50, 110, 18, 50, 60],
-            [-60, 42, -126, -28, -72, -72],
-            [54, -44, 122, 24, 62, 66],
-            [-60, 42, -104, -14, -74, -70],
-            [30, -56, 96, -6, 62, 34],
-            [-34, 40, -72, 8, -28, -18],
-          ];
-          path += loops.map((c) => ` c ${c.map((v) => f(v * k)).join(" ")}`).join("");
-        }
+        path += marksFor(b.kinds, b.x, b.y, hr.width < 640, f);
       }
       const parkPt = pts.find((pt) => pt.kinds.includes("park"));
       park.current = parkPt ? { x: parkPt.x, y: parkPt.y } : null;
@@ -294,11 +313,11 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
     const from = Math.min(drawn.current, cap);
     const distance = cap - from;
     const duration = Math.max(900, Math.min(4800, (distance / 620) * 1000));
-    const start = performance.now();
+    const start = performance.now() + (from === 0 ? delay : 0);
     let last = from;
     let frame = 0;
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
+      const t = Math.max(0, Math.min(1, (now - start) / duration));
       const len = from + distance * easeInOut(t);
       render(len, Math.abs(len - last));
       last = len;
@@ -308,7 +327,7 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
     render(from, 0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [d, hostRef, reduced, visible, released]);
+  }, [d, hostRef, reduced, visible, released, delay]);
 
   partRefs.current.length = d ? d.split(/(?=M)/).length : 0;
 
@@ -340,14 +359,15 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
 export function Sketched({
   as: Tag = "section",
   released,
+  delay,
   children,
   ...rest
-}: { as?: "section" | "div"; released?: boolean; children: ReactNode } & Omit<React.HTMLAttributes<HTMLElement>, "children">) {
+}: { as?: "section" | "div"; released?: boolean; delay?: number; children: ReactNode } & Omit<React.HTMLAttributes<HTMLElement>, "children">) {
   const ref = useRef<HTMLElement>(null);
   return (
     <Tag ref={ref as RefObject<HTMLDivElement>} {...rest}>
       {children}
-      <Thread hostRef={ref} released={released} />
+      <Thread hostRef={ref} released={released} delay={delay} />
     </Tag>
   );
 }

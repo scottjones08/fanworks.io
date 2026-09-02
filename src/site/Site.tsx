@@ -2,11 +2,11 @@ import "./site.css";
 import { motion } from "motion/react";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { contactEmail, frictions, industries, methods, offers, stages, tools, type FrictionId, type ToolName } from "../content";
-import { FanMark } from "../shared/Logo";
 import { useContactForm } from "../shared/useContactForm";
 import { useDocumentTheme } from "../shared/useDocumentTheme";
 import { useReducedMotion } from "../shared/useReducedMotion";
 import { Flowchart } from "./Flowchart";
+import { LogoDraw } from "./LogoDraw";
 import { InkBurst } from "./InkBurst";
 import { Sketched } from "./Thread";
 
@@ -83,13 +83,13 @@ export default function Site() {
 
 
       <main>
-        <Sketched className="one-hero" aria-labelledby="one-title">
+        <Sketched className="one-hero" aria-labelledby="one-title" delay={900}>
           <header className="one-nav">
             <a href="/" className="one-brand" aria-label="fanworks home">
-              <FanMark className="one-mark" />
+              <LogoDraw className="one-mark" />
               <span>
                 fanworks
-                <i className="one-brand-period" data-thread="start fixed" aria-hidden="true" />
+                <i className="one-brand-period" aria-hidden="true" />
               </span>
             </a>
             <button type="button" className="one-link" onClick={() => scrollTo("talk")}>
@@ -105,13 +105,9 @@ export default function Site() {
                   transition={{ duration: 1.1, delay: 0.1 + i * 0.12, ease }}
                 >
                   {line}
-                  {i === 1 ? <span data-thread="scribble" className="one-anchor one-anchor-scribble" /> : null}
                 </motion.span>
               </span>
             ))}
-            <small className="one-note one-note-hero" data-thread-note>
-              your day, as it is actually run
-            </small>
           </h1>
           <motion.p
             className="one-hero-text"
@@ -121,7 +117,6 @@ export default function Site() {
           >
             fanworks is an operator-led consultancy in Richmond, Virginia. We find where the day doubles back and rebuild
             one line through the business, with the people who run it.
-            <span data-thread="hero" className="one-anchor" />
           </motion.p>
           <motion.div
             className="one-hero-follow"
@@ -130,9 +125,9 @@ export default function Site() {
             transition={{ duration: 0.9, delay: 1.1, ease }}
           >
             <ul className="one-checks" aria-label="What we do">
-              {["Find where the day doubles back", "Rebuild one line through the business", "Leave it owned by the people who run it"].map((item) => (
+              {["Find where the day doubles back", "Rebuild one line through the business", "Leave it owned by the people who run it"].map((item, i) => (
                 <li key={item}>
-                  <span className="one-check-box" data-thread="check" aria-hidden="true" />
+                  <span className="one-check-box" data-thread={`${i === 0 ? "" : "lift "}${["check", "check2", "check3"][i]}`} aria-hidden="true" />
                   <span className="one-check-label" data-thread-note>
                     {item}
                   </span>

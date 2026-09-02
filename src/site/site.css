@@ -199,6 +199,27 @@
 .one-mark {
   width: 22px;
   height: auto;
+  overflow: visible;
+}
+
+.logo-draw-mark path {
+  fill: var(--ink);
+  fill-opacity: 0;
+  stroke: var(--thread);
+  stroke-width: 6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: fill-opacity 500ms var(--ease), stroke-opacity 500ms var(--ease) 200ms;
+}
+
+.logo-draw.is-inked .logo-draw-mark path {
+  fill-opacity: 1;
+  stroke-opacity: 0;
+}
+
+.logo-draw-pen {
+  opacity: 0;
+  transition: opacity 200ms;
 }
 
 .one-brand-period {
