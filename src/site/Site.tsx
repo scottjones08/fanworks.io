@@ -43,7 +43,7 @@ export default function Site() {
   const reduced = useReducedMotion();
   const hostRef = useRef<HTMLDivElement>(null);
   const [type] = useState<TypeOption>(typeFromUrl);
-  const today = useMemo(() => new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), []);
+  const today = useMemo(() => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), []);
 
   const [stage, setStage] = useState(2);
   const [friction, setFriction] = useState<FrictionId>("manual");

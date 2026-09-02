@@ -689,6 +689,7 @@
   display: flex;
   justify-content: space-between;
   gap: 16px;
+  white-space: nowrap;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--ink);
   color: var(--mute);
