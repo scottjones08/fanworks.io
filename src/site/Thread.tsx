@@ -13,18 +13,42 @@ import { PenArt, PenDefs } from "./Pen";
  *   back       the approach overshoots the anchor and doubles back to it
  *   line-start / line-end   a dead-straight run between the two
  *   park       the pen stops here until `released` is true (the top of the form)
+ *   chart      the element carries its own drawing (data-thread-d in chart
+ *              units, data-thread-w, -entry, -exit); the thread enters at the
+ *              entry point, draws it scaled to the element, and leaves from the exit
  * Elements carrying data-thread-note light up once the pen has reached them.
  * Over elements carrying data-thread-quiet the pen fades to a ghost.
  */
+type Note = { el: HTMLElement; x: number; y: number; at: number };
+type Sample = { len: number; x: number; y: number };
+
+/** The path length at which the pen passes nearest each note. */
+function placeNotes(notes: Note[], pts: Sample[]) {
+  if (!pts.length) return;
+  notes.forEach((note) => {
+    let best = 0;
+    let bestD = Infinity;
+    pts.forEach((pt) => {
+      const dd = (pt.x - note.x) ** 2 + (pt.y - note.y) ** 2;
+      if (dd < bestD) {
+        bestD = dd;
+        best = pt.len;
+      }
+    });
+    note.at = best;
+  });
+}
+
 export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLElement | null>; released?: boolean }) {
   const reduced = useReducedMotion();
-  const pathRef = useRef<SVGPathElement>(null);
+  const partRefs = useRef<(SVGPathElement | null)[]>([]);
   const wetRef = useRef<SVGPathElement>(null);
   const penRef = useRef<SVGGElement>(null);
   const [d, setD] = useState("");
   const [size, setSize] = useState({ w: 0, h: 0 });
   const samples = useRef<{ len: number; y: number }[]>([]);
-  const notes = useRef<{ el: HTMLElement; y: number }[]>([]);
+  const notes = useRef<Note[]>([]);
+  const ptsRef = useRef<Sample[]>([]);
   const quiet = useRef<{ top: number; bottom: number; left: number; right: number }[]>([]);
   const builtHeight = useRef(0);
   const park = useRef<{ x: number; y: number } | null>(null);
@@ -50,12 +74,33 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
         // A "fixed" anchor lives in the fixed header: take its position as it
         // sits at the top of the page, whatever the current scroll.
         const top = kinds.includes("fixed") ? r.top - hr.top - window.scrollY : r.top - hr.top;
-        return { x: r.left - hr.left + r.width / 2, y: top + r.height / 2, kinds };
+        if (kinds.includes("chart")) {
+          const k = r.width / Number(el.dataset.threadW || 1000);
+          const ox = r.left - hr.left;
+          const oy = top;
+          const [ex, ey] = (el.dataset.threadEntry || "0,0").split(",").map(Number);
+          const [xx, xy] = (el.dataset.threadExit || "0,0").split(",").map(Number);
+          // Scale and offset every coordinate of the chart's absolute path.
+          let axis = 0;
+          const chart = (el.dataset.threadD || "").replace(/-?\d*\.?\d+|[MLCQZ]/g, (tok) => {
+            if (/[MLCQZ]/.test(tok)) {
+              axis = 0;
+              return tok;
+            }
+            const n = Number(tok);
+            const out = axis % 2 === 0 ? ox + n * k : oy + n * k;
+            axis += 1;
+            return out.toFixed(1);
+          });
+          return { x: ox + ex * k, y: oy + ey * k, kinds, chart, exit: { x: ox + xx * k, y: oy + xy * k } };
+        }
+        return { x: r.left - hr.left + r.width / 2, y: top + r.height / 2, kinds, chart: "", exit: null as { x: number; y: number } | null };
       });
       const f = (n: number) => n.toFixed(1);
       let path = `M ${f(pts[0].x)} ${f(pts[0].y)}`;
       for (let i = 1; i < pts.length; i += 1) {
-        const a = pts[i - 1];
+        const prev = pts[i - 1];
+        const a = prev.exit ?? prev;
         const b = pts[i];
         if (b.kinds.includes("line-end")) {
           path += ` L ${f(b.x)} ${f(b.y)}`;
@@ -71,6 +116,9 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
           path += ` C ${f(px + 90)} ${f(py + 60)}, ${f(b.x + 40)} ${f(b.y + 80)}, ${f(b.x)} ${f(b.y)}`;
         } else {
           path += ` C ${f(a.x)} ${f(a.y + pull)}, ${f(b.x)} ${f(b.y - pull)}, ${f(b.x)} ${f(b.y)}`;
+        }
+        if (b.chart) {
+          path += ` ${b.chart}`;
         }
         if (b.kinds.includes("knot")) {
           path += " c 22 -18 40 6 18 22 c -22 16 -46 -10 -26 -26 c 20 -16 40 8 20 22 c -14 10 -30 -2 -12 -18";
@@ -95,8 +143,9 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
       builtHeight.current = host.scrollHeight;
       notes.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-note]")).map((el) => {
         const r = el.getBoundingClientRect();
-        return { el, y: r.top - hr.top + r.height / 2 };
+        return { el, x: r.left - hr.left + r.width / 2, y: r.top - hr.top + r.height / 2, at: Infinity };
       });
+      placeNotes(notes.current, ptsRef.current);
       quiet.current = Array.from(host.querySelectorAll<HTMLElement>("[data-thread-quiet]")).map((el) => {
         const r = el.getBoundingClientRect();
         return { top: r.top - hr.top - 40, bottom: r.bottom - hr.top + 24, left: r.left - hr.left - 40, right: r.right - hr.left + 40 };
@@ -116,16 +165,38 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
   }, [hostRef]);
 
   useEffect(() => {
-    const path = pathRef.current;
     const host = hostRef.current;
-    if (!path || !host || !d) return;
-    const length = path.getTotalLength();
-    const n = Math.max(400, Math.round(length / 6));
-    samples.current = Array.from({ length: n + 1 }, (_, i) => {
-      const len = (i / n) * length;
-      return { len, y: path.getPointAtLength(len).y };
+    if (!host || !d) return;
+    // Dashes restart at every subpath in browsers, so each subpath is its own
+    // element and all of them are driven from one cumulative length.
+    const els = partRefs.current.filter((el): el is SVGPathElement => Boolean(el));
+    if (!els.length) return;
+    const lens = els.map((el) => el.getTotalLength());
+    const starts = lens.map((_, i) => lens.slice(0, i).reduce((a, b) => a + b, 0));
+    const length = lens.reduce((a, b) => a + b, 0);
+    els.forEach((el, i) => {
+      el.style.strokeDasharray = `${lens[i]}`;
     });
-    path.style.strokeDasharray = `${length}`;
+    const partAt = (len: number) => {
+      let i = 0;
+      while (i < lens.length - 1 && len >= starts[i] + lens[i]) i += 1;
+      return i;
+    };
+    const pointAt = (len: number) => {
+      const i = partAt(len);
+      return els[i].getPointAtLength(Math.max(0, Math.min(lens[i], len - starts[i])));
+    };
+
+    const n = Math.max(400, Math.round(length / 6));
+    const pts = Array.from({ length: n + 1 }, (_, i) => {
+      const len = (i / n) * length;
+      const pt = pointAt(len);
+      return { len, x: pt.x, y: pt.y };
+    });
+    samples.current = pts.map(({ len, y }) => ({ len, y }));
+    ptsRef.current = pts;
+    // Each note lights when the pen has passed the point of the path nearest it.
+    placeNotes(notes.current, pts);
     // Where along the path the park anchor sits: the closest sample, refined.
     parkLen.current = null;
     if (park.current) {
@@ -133,7 +204,7 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
       let best = 0;
       let bestD = Infinity;
       for (let l = 0; l <= length; l += 4) {
-        const pt = path.getPointAtLength(l);
+        const pt = pointAt(l);
         const dd = (pt.x - target.x) ** 2 + (pt.y - target.y) ** 2;
         if (dd < bestD) {
           bestD = dd;
@@ -145,10 +216,12 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
     const pen = penRef.current;
     const wet = wetRef.current;
     const WET = 56;
-    if (wet) wet.style.strokeDasharray = `${WET} ${length + WET}`;
+    let wetPart = -1;
 
     if (reduced) {
-      path.style.strokeDashoffset = "0";
+      els.forEach((el) => {
+        el.style.strokeDashoffset = "0";
+      });
       if (pen) pen.style.opacity = "0";
       if (wet) wet.style.opacity = "0";
       notes.current.forEach((note) => note.el.classList.add("is-lit"));
@@ -172,17 +245,28 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
     };
 
     const render = (len: number, speed: number) => {
-      path.style.strokeDashoffset = `${length - len}`;
+      const active = partAt(len);
+      els.forEach((el, i) => {
+        const local = Math.max(0, Math.min(lens[i], len - starts[i]));
+        el.style.strokeDashoffset = `${lens[i] - local}`;
+        // An untouched subpath would still show a dot from its round cap.
+        el.style.opacity = local > 0.5 ? "1" : "0";
+      });
       if (wet) {
-        // A short run of fresher, wetter ink just behind the tip.
-        wet.style.strokeDashoffset = `${WET - len}`;
+        // A short run of fresher, wetter ink just behind the tip, on the active subpath.
+        if (wetPart !== active) {
+          wetPart = active;
+          wet.setAttribute("d", els[active].getAttribute("d") || "");
+          wet.style.strokeDasharray = `${WET} ${lens[active] + WET}`;
+        }
+        wet.style.strokeDashoffset = `${WET - (len - starts[active])}`;
         wet.style.opacity = len > 2 && len < length - 2 ? "1" : "0";
       }
-      const p = path.getPointAtLength(len);
+      const p = pointAt(len);
       if (pen) {
         // Lean the pen a little with the direction of the stroke, breathe as it
         // writes, and lift slightly when it is travelling fast.
-        const q = path.getPointAtLength(Math.min(length, len + 3));
+        const q = pointAt(Math.min(starts[active] + lens[active], len + 3));
         const heading = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI;
         const lean = Math.max(-14, Math.min(14, (heading - 90) * 0.12));
         const wobble = Math.sin(len / 38) * 1.6;
@@ -202,7 +286,7 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
         const overQuiet = quiet.current.some((b) => p.y >= b.top && p.y <= b.bottom && p.x >= b.left && p.x <= b.right);
         pen.style.opacity = len > 2 && len < length - 2 ? (overQuiet ? "0.22" : "1") : "0";
       }
-      notes.current.forEach((note) => note.el.classList.toggle("is-lit", len >= length - 1 || p.y >= note.y - 8));
+      notes.current.forEach((note) => note.el.classList.toggle("is-lit", len >= length - 1 || len >= note.at - 6));
     };
 
     // The pen eases toward its target so it moves like a pen, and draws the
@@ -242,14 +326,25 @@ export function Thread({ hostRef, released = false }: { hostRef: RefObject<HTMLE
     window.dispatchEvent(new Event("scroll"));
   }, [released]);
 
+  partRefs.current.length = d ? d.split(/(?=M)/).length : 0;
+
   if (!d) return null;
   return (
     <svg className="thread" width={size.w} height={size.h} viewBox={`0 0 ${size.w} ${size.h}`} aria-hidden="true">
       <defs>
         <PenDefs />
       </defs>
-      <path ref={pathRef} d={d} className="thread-path" />
-      <path ref={wetRef} d={d} className="thread-wet" />
+      {d.split(/(?=M)/).map((part, i) => (
+        <path
+          key={i}
+          ref={(el) => {
+            partRefs.current[i] = el;
+          }}
+          d={part}
+          className="thread-path"
+        />
+      ))}
+      <path ref={wetRef} d="" className="thread-wet" />
       <g ref={penRef} className="thread-pen" filter="url(#pen-shadow)">
         <PenArt />
       </g>
