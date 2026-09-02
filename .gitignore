@@ -8,3 +8,5 @@ env.prod.bak
 .DS_Store
 *.log
 
+# Audit evidence may contain tenant, infrastructure, or access identifiers.
+compliance/evidence/
