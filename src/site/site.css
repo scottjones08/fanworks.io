@@ -5,11 +5,11 @@
   --mute: #8c8a84;
   --thread: #2036c9;
   --rule: rgba(18, 18, 18, 0.14);
-  --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-  --sans: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
   --display-weight: 400;
-  --display-tracking: -0.02em;
-  --display-scale: 1;
+  --display-tracking: -0.015em;
+  --display-scale: 1.06;
   --display-opsz: 96;
   --pad: clamp(24px, 6vw, 112px);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -48,45 +48,6 @@
 .one h2 {
   max-width: 14ch;
   font-size: calc(clamp(40px, 6.4vw, 104px) * var(--display-scale));
-}
-
-/* Type options, chosen with ?type= while deciding. Bodoni is the default. */
-.one[data-type="instrument"] {
-  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
-  --display-tracking: -0.015em;
-  --display-scale: 1.06;
-}
-
-.one[data-type="fraunces"] {
-  --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --display-weight: 300;
-  --display-tracking: -0.03em;
-  --display-scale: 0.98;
-  --display-opsz: 144;
-}
-
-.one[data-type="cormorant"] {
-  --serif: "Cormorant Garamond", "Garamond", Georgia, serif;
-  --sans: "Work Sans", "Helvetica Neue", Arial, sans-serif;
-  --display-weight: 500;
-  --display-tracking: -0.015em;
-  --display-scale: 1.08;
-}
-
-.one[data-type="newsreader"] {
-  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
-  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-  --display-weight: 400;
-  --display-tracking: -0.025em;
-  --display-scale: 1.02;
-  --display-opsz: 72;
-}
-
-.one h2 em,
-.one blockquote em {
-  font-style: italic;
-  font-weight: 400;
 }
 
 .one-anchor {
@@ -160,7 +121,18 @@
   max-width: none;
 }
 
-/* the thread */
+/* the sketches: one per section */
+.one-hero,
+.one-tangle,
+.one-line,
+.one-method,
+.one-how,
+.one-where,
+.one-quote,
+.one-talk {
+  position: relative;
+}
+
 .thread {
   position: absolute;
   inset: 0;
@@ -364,10 +336,49 @@
   gap: clamp(64px, 9vh, 104px);
 }
 
-.one-frictions .one-anchor {
+.one-frictions li .one-anchor {
   position: absolute;
   left: 8px;
   top: 12px;
+}
+
+.one-frictions,
+.one-steps ol {
+  position: relative;
+}
+
+.one-anchor-above {
+  position: absolute;
+  left: 8px;
+  top: -90px;
+}
+
+.one-anchor-below {
+  position: absolute;
+  left: 8px;
+  bottom: -70px;
+}
+
+.one-offers li {
+  position: relative;
+}
+
+.one-anchor-corner {
+  position: absolute;
+  left: 0;
+  top: -1px;
+}
+
+.one-anchor-corner-end {
+  position: absolute;
+  right: 0;
+  top: -1px;
+}
+
+.one-anchor-talk {
+  position: absolute;
+  left: 0;
+  bottom: -60px;
 }
 
 .one-frictions strong {
@@ -659,8 +670,7 @@
 .one-offers li {
   display: grid;
   gap: 10px;
-  padding-top: 18px;
-  border-top: 1px solid var(--ink);
+  padding-top: 22px;
 }
 
 .one-offers strong {
@@ -711,10 +721,8 @@
   color: var(--ink-2);
 }
 
-.one-quote cite .one-anchor {
-  position: absolute;
-  left: -40px;
-  bottom: 0;
+.one-quote p .one-anchor {
+  margin-right: -0.2em;
 }
 
 /* talk */
@@ -732,6 +740,10 @@
   top: 120px;
   display: grid;
   gap: 24px;
+}
+
+.one-talk-copy > div {
+  position: relative;
 }
 
 .one-talk-lede {
