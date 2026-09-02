@@ -94,12 +94,6 @@ function Sheet({ children, onClose }: { children: React.ReactNode; onClose: () =
   );
 }
 
-const facts = [
-  { big: "Days, not months", small: "to a map of where the day doubles back" },
-  { big: "Seven handoffs", small: "traced end to end, intake to invoice" },
-  { big: "AI where it earns a place", small: "and nowhere it does not" },
-  { big: "Owned by your people", small: "not by us" },
-] as const;
 
 export default function Site() {
   useDocumentTheme("#0b0b0c", "#0b0b0c");
@@ -127,6 +121,7 @@ export default function Site() {
     return () => window.removeEventListener("hashchange", onHash);
   }, [sheet]);
   const [menu, setMenu] = useState(false);
+  const [allNotes, setAllNotes] = useState(false);
   const go = (id: string) => {
     setMenu(false);
     setSheet(null);
@@ -285,7 +280,7 @@ export default function Site() {
               ))}
             </h1>
             <motion.p initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.55, ease }}>
-              fanworks is a human-centered business consultancy in Richmond, Virginia. We sit beside the people who run the day, find where the work doubles back, and rebuild the line underneath it with them.
+              A human-centered business consultancy in Richmond, Virginia. We sit beside the people who run the day and rebuild the work around them.
             </motion.p>
             <motion.div className="w-hero-actions" initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.7, ease }}>
               <button type="button" className="w-pill w-pill-light" onClick={() => go("talk")}>
@@ -296,10 +291,6 @@ export default function Site() {
               </button>
             </motion.div>
           </div>
-          <p className="w-hero-place">
-            <span>Richmond, Virginia</span>
-            <span>Operator-led since day one</span>
-          </p>
         </section>
 
         <section className="w-people" id="people" aria-labelledby="w-people-title">
@@ -309,10 +300,13 @@ export default function Site() {
               <h2 id="w-people-title">Built around the people who run the business.</h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="w-lede">Every business has a few people holding it together with judgment, memory, and a spreadsheet nobody else can read. We start with them. The systems follow.</p>
+              <p className="w-lede">Every business has a few people holding it together. We start with them. The systems follow.</p>
             </Reveal>
           </div>
           <ol className="w-people-grid">
+            <li className="w-people-photo" aria-hidden="true">
+              <img src="/media/mri/team-handoff.webp" alt="" width={1800} height={1200} loading="lazy" />
+            </li>
             {people.map((person, i) => (
               <Reveal as="li" key={person.role} delay={(i % 3) * 0.06} className="w-person">
                 <span className="w-person-n">{String(i + 1).padStart(2, "0")}</span>
@@ -322,7 +316,7 @@ export default function Site() {
             ))}
           </ol>
           <Reveal delay={0.1} className="w-people-foot">
-            <p>We do not replace them. We move what they know into the line of work, with their name still on it, so the business owns what they built.</p>
+            <p>We do not replace them. We move what they know into the line of work, with their name still on it.</p>
             <ul className="w-people-sectors" aria-label="Sectors">
               {industries.map((ind) => (
                 <li key={ind.id}>
@@ -342,16 +336,18 @@ export default function Site() {
               <h2 id="w-selected-title">Encountered, changed, and learned.</h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="w-lede">Seven engagements, anonymized on purpose. No client names, and no number that has not been measured and approved.</p>
+              <p className="w-lede">Seven engagements. No client names, no unapproved numbers.</p>
             </Reveal>
           </div>
           <ol className="w-stories">
             {work.map((st, i) => (
               <Reveal as="li" key={st.id} delay={(i % 3) * 0.06} className="w-story-card">
                 <button type="button" onClick={() => open("work", st.id)}>
+                  <span className="w-story-art" style={{ "--tint": CARD_TINTS[i % CARD_TINTS.length] } as CSSProperties}>
+                    <img src={CARD_PHOTOS[i % CARD_PHOTOS.length]} alt="" width={1800} height={1200} loading="lazy" />
+                  </span>
                   <span className="w-kicker">{st.sector}</span>
                   <h3>{st.title}</h3>
-                  <p>{st.deck}</p>
                   <span className="w-more">
                     Read the story <span aria-hidden="true">↗</span>
                   </span>
@@ -380,7 +376,6 @@ export default function Site() {
                     ↗
                   </span>
                 </div>
-                <p className="w-card-body">{ind.body}</p>
                 <div className="w-card-foot">
                   <span>{ind.label}</span>
                   <span>{ind.eyebrow}</span>
@@ -403,7 +398,6 @@ export default function Site() {
             <h2 id="w-os-title">One line through the business, from intake to invoice.</h2>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="w-os-sub">The operating layer under the day. Designed with the people who run it, entered once, seen everywhere, and owned by them.</p>
             <button type="button" className="w-pill w-pill-light" onClick={() => go("method")}>
               See the method
             </button>
@@ -421,19 +415,8 @@ export default function Site() {
               <p className="w-eyebrow">What we hear every week</p>
               <h2 id="w-hear-title">The same story, in a different building.</h2>
             </Reveal>
-            <Reveal delay={0.1}>
-              <p className="w-lede">Seven handoffs, intake to invoice. Every one of them is a place the day doubles back. Written down the way we hear it, then the way it reads after the rebuild.</p>
-            </Reveal>
           </div>
           <Handwriting items={stages.map((s) => ({ label: s.label, before: s.before, after: s.after }))} />
-          <ul className="w-frictions" aria-label="Five kinds of friction">
-            {frictions.map((f) => (
-              <li key={f.id}>
-                <span>{f.number}</span>
-                {f.label}
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section className="w-method" id="method" aria-labelledby="w-method-title">
@@ -442,7 +425,7 @@ export default function Site() {
               <img src="/media/mri/operator-observation.webp" alt="Two operators walking a working shop floor with the person who runs it" loading="lazy" width={1800} height={1200} />
               <div className="w-photo-copy">
                 <h2 id="w-method-title">People first. Then systems.</h2>
-                <p>We sit beside the people who run the day, build it with them, then hand it over and get out of the way. Automation and AI come in only where they earn a place.</p>
+                <p>We build it beside the people who run the day, then hand it over. Automation and AI only where they earn a place.</p>
                 <button type="button" className="w-pill w-pill-light" onClick={() => go("engagements")}>
                   See the model
                 </button>
@@ -454,19 +437,10 @@ export default function Site() {
               <Reveal as="li" key={m.number} delay={i * 0.06} className="w-step">
                 <span className="w-step-n">{m.number}</span>
                 <h3>{m.verb}</h3>
-                <p className="w-step-t">{m.title}</p>
                 <p>{m.body}</p>
               </Reveal>
             ))}
           </ol>
-          <ul className="w-facts" aria-label="How we work">
-            {facts.map((f) => (
-              <li key={f.big}>
-                <strong>{f.big}</strong>
-                <span>{f.small}</span>
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section className="w-exp" aria-labelledby="w-exp-title">
@@ -479,14 +453,6 @@ export default function Site() {
               <p className="w-lede">{experience.lede}</p>
             </Reveal>
           </div>
-          <ul className="w-exp-grid">
-            {experience.themes.map((t, i) => (
-              <Reveal as="li" key={t} delay={(i % 4) * 0.05}>
-                <span className="w-exp-n">{String(i + 1).padStart(2, "0")}</span>
-                {t}
-              </Reveal>
-            ))}
-          </ul>
         </section>
 
         <section className="w-notes" id="notes" aria-labelledby="w-notes-title">
@@ -495,18 +461,14 @@ export default function Site() {
               <p className="w-eyebrow">Field notes</p>
               <h2 id="w-notes-title">Short pieces from the floor.</h2>
             </Reveal>
-            <Reveal delay={0.1}>
-              <p className="w-lede">Written by the people who sat in the room. A few paragraphs each, about the things that actually slow a business down.</p>
-            </Reveal>
           </div>
           <ol className="w-note-list">
-            {fieldNotes.map((n, i) => (
+            {fieldNotes.slice(0, allNotes ? fieldNotes.length : 5).map((n, i) => (
               <li key={n.id}>
                 <button type="button" onClick={() => open("note", n.id)}>
                   <span className="w-note-n">{String(i + 1).padStart(2, "0")}</span>
                   <span className="w-note-t">
                     <strong>{n.title}</strong>
-                    <span>{n.deck}</span>
                   </span>
                   <span className="w-note-arrow" aria-hidden="true">
                     ↗
@@ -515,6 +477,11 @@ export default function Site() {
               </li>
             ))}
           </ol>
+          {!allNotes ? (
+            <button type="button" className="w-more w-more-notes" onClick={() => setAllNotes(true)}>
+              All {fieldNotes.length} notes <span aria-hidden="true">↓</span>
+            </button>
+          ) : null}
         </section>
 
         <section className="w-offers" id="engagements" aria-labelledby="w-offers-title">
@@ -528,11 +495,6 @@ export default function Site() {
                 <span className="w-kicker">{o.kicker}</span>
                 <h3>{o.name}</h3>
                 <p>{o.summary}</p>
-                <ul>
-                  {o.outcomes.map((x) => (
-                    <li key={x}>{x}</li>
-                  ))}
-                </ul>
               </Reveal>
             ))}
           </ol>
@@ -545,9 +507,7 @@ export default function Site() {
             <h2 id="w-own-title">{trust.title}</h2>
           </Reveal>
           <Reveal delay={0.1} className="w-own-body">
-            {trust.body.map((para) => (
-              <p key={para}>{para}</p>
-            ))}
+            <p>Understandable, inspectable, portable. When we leave, the system, the documentation, and the memory stay with you.</p>
           </Reveal>
         </section>
 
@@ -558,7 +518,7 @@ export default function Site() {
               <h2 id="w-talk-title">Bring us the hard handoff.</h2>
             </Reveal>
             <Reveal delay={0.08}>
-              <p className="w-lede">Write us a note. Fill in the three blanks, add anything we should know, and send it. If we can help, we will say how. If we cannot, we will say that too.</p>
+              <p className="w-lede">Fill in the blanks, add anything we should know, and send it. If we can help, we will say how.</p>
               <a className="w-mail" href={`mailto:${contactEmail}`}>
                 {contactEmail}
               </a>
@@ -594,7 +554,6 @@ export default function Site() {
                 ))}
               </div>
             ) : null}
-            <p className="w-form-hint">Tap a blank to change it. The sentence goes in with your note.</p>
 
             <div className="w-fields">
               <label>
@@ -635,8 +594,12 @@ export default function Site() {
             ? (() => {
                 const st = work.find((x) => x.id === sheet.id);
                 if (!st) return null;
+                const si = work.findIndex((x) => x.id === st.id);
                 return (
                   <>
+                    <figure className="w-sheet-figure" style={{ "--tint": CARD_TINTS[si % CARD_TINTS.length] } as CSSProperties}>
+                      <img src={CARD_PHOTOS[si % CARD_PHOTOS.length]} alt="" width={1800} height={1200} />
+                    </figure>
                     <p className="w-kicker">Selected work · {st.sector}</p>
                     <h2>{st.title}</h2>
                     <p className="w-lede">{st.deck}</p>
@@ -682,8 +645,12 @@ export default function Site() {
               ? (() => {
                   const ind = industries.find((x) => x.id === sheet.id);
                   if (!ind) return null;
+                  const idx = industries.findIndex((x) => x.id === ind.id);
                   return (
                     <>
+                      <figure className="w-sheet-figure" style={{ "--tint": CARD_TINTS[idx] } as CSSProperties}>
+                        <img src={CARD_PHOTOS[idx]} alt="" width={1800} height={1200} />
+                      </figure>
                       <p className="w-kicker">{ind.label} · {ind.eyebrow}</p>
                       <h2>{ind.headline}</h2>
                       <p className="w-lede">{ind.body}</p>
