@@ -8,12 +8,18 @@ const Chooser = lazy(() => import("./concepts/Chooser"));
 const Line = lazy(() => import("./concepts/line/Line"));
 const Signal = lazy(() => import("./concepts/signal/Signal"));
 const Studio = lazy(() => import("./concepts/studio/Studio"));
+const Blueprint = lazy(() => import("./concepts/blueprint/Blueprint"));
+const Counter = lazy(() => import("./concepts/counter/Counter"));
+const Grid = lazy(() => import("./concepts/grid/Grid"));
 
 function route() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   if (path === "/line") return <Line />;
   if (path === "/signal") return <Signal />;
   if (path === "/studio") return <Studio />;
+  if (path === "/blueprint") return <Blueprint />;
+  if (path === "/counter") return <Counter />;
+  if (path === "/grid") return <Grid />;
   if (path === "/current") return <Current />;
   return <Chooser />;
 }

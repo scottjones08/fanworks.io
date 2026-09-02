@@ -20,6 +20,27 @@ export const concepts = [
     thesis: "Warm, human, photographic. People first, and it looks like it.",
     palette: ["#f3ede3", "#c4633a", "#1f3d2e"],
   },
+  {
+    slug: "blueprint",
+    number: "04",
+    name: "Blueprint",
+    thesis: "An engineering drawing set. Every section is a numbered sheet with a title block.",
+    palette: ["#eef2f6", "#1d3fbf", "#f26b1d"],
+  },
+  {
+    slug: "counter",
+    number: "05",
+    name: "The Counter",
+    thesis: "A supply-house counter. Slab type, an awning stripe, and a paper work ticket.",
+    palette: ["#faf6ee", "#17233d", "#1f7a4d"],
+  },
+  {
+    slug: "grid",
+    number: "06",
+    name: "Grid",
+    thesis: "Black on white modernism. An exposed grid, a rail that fills as you scroll, color only in the photographs.",
+    palette: ["#ffffff", "#0a0a0a", "#8a8f98"],
+  },
 ] as const;
 
 export type ConceptSlug = (typeof concepts)[number]["slug"];
