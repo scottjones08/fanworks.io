@@ -6,6 +6,7 @@ import { useReducedMotion } from "../shared/useReducedMotion";
  *
  * Every element carrying data-thread is an anchor; the path is built through
  * them in document order. Kinds combine with spaces:
+ *   fixed      the anchor sits in the fixed header; measured as at scroll 0
  *   knot       a small tangle at the anchor
  *   scribble   a large, messy tangle at the anchor
  *   back       the approach overshoots the anchor and doubles back to it
@@ -35,7 +36,11 @@ export function Thread({ hostRef }: { hostRef: RefObject<HTMLElement | null> }) 
       if (anchors.length < 2) return;
       const pts = anchors.map((el) => {
         const r = el.getBoundingClientRect();
-        return { x: r.left - hr.left + r.width / 2, y: r.top - hr.top + r.height / 2, kinds: (el.dataset.thread || "").split(/\s+/) };
+        const kinds = (el.dataset.thread || "").split(/\s+/);
+        // A "fixed" anchor lives in the fixed header: take its position as it
+        // sits at the top of the page, whatever the current scroll.
+        const top = kinds.includes("fixed") ? r.top - hr.top - window.scrollY : r.top - hr.top;
+        return { x: r.left - hr.left + r.width / 2, y: top + r.height / 2, kinds };
       });
       const f = (n: number) => n.toFixed(1);
       let path = `M ${f(pts[0].x)} ${f(pts[0].y)}`;

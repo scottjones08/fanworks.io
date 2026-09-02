@@ -68,7 +68,10 @@ export default function Site() {
       <header className="one-nav">
         <a href="/" className="one-brand" aria-label="fanworks home">
           <FanMark className="one-mark" />
-          <span>fanworks</span>
+          <span>
+            fanworks
+            <i className="one-brand-period" data-thread="start fixed" aria-hidden="true" />
+          </span>
         </a>
         <button type="button" className="one-link" onClick={() => scrollTo("talk")}>
           Talk to us
@@ -77,7 +80,6 @@ export default function Site() {
 
       <main>
         <section className="one-hero" aria-labelledby="one-title">
-          <span data-thread="start" className="one-anchor one-anchor-start" />
           <h1 id="one-title">
             {heroLines.map((line, i) => (
               <span className="one-mask" key={line}>

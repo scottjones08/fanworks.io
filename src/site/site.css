@@ -184,6 +184,16 @@
   height: auto;
 }
 
+.one-brand-period {
+  display: inline-block;
+  width: 0.2em;
+  height: 0.2em;
+  margin-left: 0.05em;
+  border-radius: 50%;
+  background: var(--thread);
+  vertical-align: baseline;
+}
+
 .one-link {
   position: relative;
   display: inline-flex;
@@ -272,12 +282,6 @@
 
 .one-hero {
   position: relative;
-}
-
-.one-anchor-start {
-  position: absolute;
-  top: 48px;
-  left: calc(var(--pad) + 34px);
 }
 
 .one-hero h1 {
