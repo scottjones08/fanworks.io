@@ -35,7 +35,7 @@ function scrollTo(id: string) {
 /** The hero's moving picture: an aerial of Richmond when the clip is present, a slow photograph otherwise. */
 const HERO_VIDEO = "/media/hero-flythrough.mp4";
 const HERO_VIDEO_SMALL = "/media/hero-flythrough-480.mp4";
-const HERO_STILL = "/media/mri/workday-table-hero.webp";
+const HERO_STILL = "/media/hero-poster.jpg";
 
 const CARD_PHOTOS = ["/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp", "/fan-works-hero.webp", "/media/mri/operator-observation.webp", "/media/mri/team-handoff.webp", "/media/mri/workday-table-hero.webp"];
 const CARD_TINTS = ["#1f3fd6", "#6b4a2b", "#1d4d3e", "#3d2f66", "#7a3b26", "#24466b", "#4a3a1e"];
@@ -237,7 +237,9 @@ export default function Site() {
           <div className="w-hero-media" aria-hidden="true">
             {videoOk && !reduced ? (
               <video ref={videoRef} className="w-hero-video" poster={HERO_STILL} autoPlay muted loop playsInline>
+                <source src={HERO_VIDEO_SMALL.replace(".mp4", ".webm")} type="video/webm" media="(max-width: 640px)" />
                 <source src={HERO_VIDEO_SMALL} type="video/mp4" media="(max-width: 640px)" />
+                <source src={HERO_VIDEO.replace(".mp4", ".webm")} type="video/webm" />
                 <source src={HERO_VIDEO} type="video/mp4" />
               </video>
             ) : (
