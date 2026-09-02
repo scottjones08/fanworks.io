@@ -47,7 +47,7 @@ function boxPath(b: Box) {
 function layout(narrow: boolean) {
   const n = stages.length;
   if (!narrow) {
-    const W = 1000, H = 440, bw = 108, bh = 56, x0 = 50, y = 150;
+    const W = 1000, H = 340, bw = 108, bh = 54, x0 = 50, y = 130;
     const gap = (W - 2 * x0 - n * bw) / (n - 1);
     const boxes: Box[] = stages.map((_, i) => {
       const x = x0 + i * (bw + gap);
@@ -58,25 +58,21 @@ function layout(narrow: boolean) {
       const s = i % 2 ? -1 : 1;
       return `M ${a.x + a.w - 10} ${a.cy + 14 * s} C ${a.x + a.w + 50} ${a.cy - 110 * s}, ${b.x - 50} ${a.cy + 110 * s}, ${b.x + 10} ${b.cy - 14 * s}`;
     });
-    const back = [
-      `M ${boxes[3].cx} ${boxes[3].y + bh} C ${boxes[3].cx} ${y + bh + 120}, ${boxes[1].cx} ${y + bh + 120}, ${boxes[1].cx} ${boxes[1].y + bh + 4}`,
-      `M ${boxes[5].cx} ${boxes[5].y} C ${boxes[5].cx} ${y - 90}, ${boxes[2].cx} ${y - 90}, ${boxes[2].cx} ${boxes[2].y - 4}`,
-    ];
+    const back = [`M ${boxes[4].cx} ${boxes[4].y + bh} C ${boxes[4].cx} ${y + bh + 96}, ${boxes[1].cx} ${y + bh + 96}, ${boxes[1].cx} ${boxes[1].y + bh + 4}`];
     const notes = [
-      { x: boxes[1].x + 40, y: 118, text: "retyped" },
-      { x: boxes[2].cx - 40, y: y + bh + 140, text: "chased twice" },
-      { x: boxes[3].cx - 30, y: y - 100, text: "who owns this?" },
+      { x: boxes[1].x + 30, y: y - 22, text: "retyped" },
+      { x: boxes[2].cx + 10, y: y + bh + 112, text: "who owns this?" },
     ];
     const ly = y + bh - 12;
     const line = `M ${boxes[0].x - 6} ${ly} ${boxes.map((b, i) => `L ${b.x + b.w + (i < n - 1 ? 6 : 0)} ${ly + (i % 2 ? 1.5 : -1.5)}`).join(" ")}`;
     const captions = [
-      { x: boxes[1].x, y: y + bh + 48, text: "entered once" },
-      { x: boxes[3].x, y: y + bh + 48, text: "seen everywhere" },
-      { x: boxes[5].x - 30, y: y + bh + 48, text: "owned by your people" },
+      { x: boxes[1].x, y: y + bh + 44, text: "entered once" },
+      { x: boxes[3].x, y: y + bh + 44, text: "seen everywhere" },
+      { x: boxes[5].x - 30, y: y + bh + 44, text: "owned by your people" },
     ];
-    return { W, H, boxes, forward, back, notes, line, captions, title: { x: 50, y: 78 }, titleSize: 34, labelSize: 19, noteSize: 22, erase: "x" as const };
+    return { W, H, boxes, forward, back, notes, line, captions, title: { x: 50, y: 66 }, titleSize: 30, labelSize: 19, noteSize: 21, erase: "x" as const };
   }
-  const W = 420, H = 1000, bw = 132, bh = 50, x = 150, y0 = 120;
+  const W = 420, H = 860, bw = 132, bh = 48, x = 150, y0 = 110;
   const step = (H - y0 - 80 - bh) / (n - 1);
   const boxes: Box[] = stages.map((_, i) => {
     const y = y0 + i * step;
@@ -87,13 +83,9 @@ function layout(narrow: boolean) {
     const s = i % 2 ? -1 : 1;
     return `M ${a.cx} ${a.y + a.h} C ${a.cx - 70 * s} ${a.y + a.h + 20}, ${b.cx + 70 * s} ${b.y - 20}, ${b.cx} ${b.y}`;
   });
-  const back = [
-    `M ${boxes[3].x} ${boxes[3].cy} C ${x - 110} ${boxes[3].cy}, ${x - 110} ${boxes[1].cy}, ${boxes[1].x - 4} ${boxes[1].cy}`,
-    `M ${boxes[5].x + bw} ${boxes[5].cy} C ${x + bw + 110} ${boxes[5].cy}, ${x + bw + 110} ${boxes[2].cy}, ${boxes[2].x + bw + 4} ${boxes[2].cy}`,
-  ];
+  const back = [`M ${boxes[4].x} ${boxes[4].cy} C ${x - 110} ${boxes[4].cy}, ${x - 110} ${boxes[1].cy}, ${boxes[1].x - 4} ${boxes[1].cy}`];
   const notes = [
     { x: x + bw + 14, y: boxes[0].cy + step / 2 + 6, text: "retyped" },
-    { x: 20, y: boxes[2].cy - 6, text: "chased" },
     { x: x + bw + 14, y: boxes[3].cy + step / 2 + 6, text: "who owns this?" },
   ];
   const lx = x + 18;
@@ -147,27 +139,24 @@ export function Sketch() {
     steps.push({ id, at: t, dur, kind });
     t += dur + gap;
   };
-  add("title-before", 1.4, "text", 0.3);
+  add("title-before", 0.9, "text", 0.15);
   L.boxes.forEach((_, i) => {
-    add(`box-${i}`, 0.42, "path", 0.02);
-    add(`label-${i}`, 0.34, "text", 0.05);
+    add(`box-${i}`, 0.26, "path", 0);
+    add(`label-${i}`, 0.22, "text", 0.02);
   });
-  t += 0.2;
-  L.forward.forEach((_, i) => add(`fwd-${i}`, 0.36, "path", 0.04));
-  add("back-0", 0.6, "path", 0.04);
-  add("note-1", 0.55, "text", 0.05);
-  add("back-1", 0.6, "path", 0.04);
-  add("note-2", 0.7, "text", 0.05);
-  add("note-0", 0.5, "text", 0.05);
-  t += 1.1;
-  add("erase-tangle", 2.4, "erase", 0.5);
-  add("title-after", 1.2, "text", 0.3);
-  add("line", 1.7, "path", 0.15);
-  L.boxes.forEach((_, i) => add(`owner-${i}`, 0.16, "path", 0.03));
-  L.captions.forEach((_, i) => add(`cap-${i}`, 0.7, "text", 0.1));
-  t += 3.6;
-  add("erase-all", 2.2, "erase", 0.2);
-  const total = t + 0.4;
+  L.forward.forEach((_, i) => add(`fwd-${i}`, 0.22, "path", 0.02));
+  add("note-0", 0.4, "text", 0.03);
+  add("back-0", 0.45, "path", 0.03);
+  add("note-1", 0.5, "text", 0.03);
+  t += 0.7;
+  add("erase-tangle", 1.5, "erase", 0.25);
+  add("title-after", 0.8, "text", 0.15);
+  add("line", 1.1, "path", 0.08);
+  L.boxes.forEach((_, i) => add(`owner-${i}`, 0.1, "path", 0.02));
+  L.captions.forEach((_, i) => add(`cap-${i}`, 0.45, "text", 0.05));
+  t += 2.6;
+  add("erase-all", 1.3, "erase", 0.1);
+  const total = t + 0.3;
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -222,7 +211,8 @@ export function Sketch() {
       const s = (now - start) / 1000;
       const at: { pen: { x: number; y: number } | null; eraser: { x: number; y: number } | null } = { pen: null, eraser: null };
       steps.forEach((st) => {
-        const p = Math.max(0, Math.min(1, (s - st.at) / st.dur));
+        const raw = Math.max(0, Math.min(1, (s - st.at) / st.dur));
+        const p = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
         const active = s >= st.at && s < st.at + st.dur;
         if (st.kind === "path") {
           const pd = paths.get(st.id);
