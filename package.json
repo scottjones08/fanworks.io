@@ -7,8 +7,12 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "start": "node server/index.js",
-    "test": "node --test server/contact.test.js",
-    "preview": "vite preview --host 127.0.0.1"
+    "test": "node --test server/contact.test.js workspace/server/*.test.js",
+    "preview": "vite preview --host 127.0.0.1",
+    "build:workspace": "vite build --config workspace/vite.config.ts && tsc --noEmit --project workspace/tsconfig.json",
+    "dev:workspace": "vite --config workspace/vite.config.ts",
+    "start:workspace": "node workspace/server/index.js",
+    "workspace:create-admin": "node workspace/server/create-admin.js"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -16,6 +20,7 @@
     "express": "^4.21.2",
     "lucide-react": "^0.468.0",
     "motion": "^13.1.0",
+    "pg": "^8.23.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "vite": "^8.1.0"

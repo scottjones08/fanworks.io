@@ -8,3 +8,5 @@ env.prod.bak
 .DS_Store
 *.log
 
+
+workspace/dist
