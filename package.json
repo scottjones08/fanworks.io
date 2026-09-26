@@ -15,6 +15,9 @@
     "workspace:create-admin": "node workspace/server/create-admin.js"
   },
   "dependencies": {
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/inter-tight": "^5.3.0",
     "@phosphor-icons/react": "^2.1.10",
     "@vitejs/plugin-react": "^6.0.3",
     "express": "^4.21.2",

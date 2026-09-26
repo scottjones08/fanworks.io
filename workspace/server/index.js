@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 const fail = (res, code, message) => res.status(code).json({ error: message });
 const clean = (value, max = 1000) => typeof value === "string" ? value.trim().slice(0, max) : "";
 const email = (value) => clean(value, 254).toLowerCase();
-const color = (value) => /^#[0-9a-fA-F]{6}$/.test(value || "") ? value : "#c68b3c";
+const color = (value) => /^#[0-9a-fA-F]{6}$/.test(value || "") ? value : "#2036c9";
 const statuses = new Set(["backlog", "planned", "in_progress", "review", "done"]);
 const priorities = new Set(["low", "normal", "high", "urgent"]);
 const validDate = (value) => value == null || value === "" || /^\d{4}-\d{2}-\d{2}$/.test(value);
