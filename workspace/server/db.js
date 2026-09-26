@@ -1,6 +1,10 @@
 import pg from "pg";
 
-const { Pool } = pg;
+const { Pool, types } = pg;
+
+// Return DATE columns as "YYYY-MM-DD" strings instead of local-midnight Date objects,
+// so card updates round-trip due dates without validation failures or timezone shifts.
+types.setTypeParser(types.builtins.DATE, (value) => value);
 
 export function makePool(connectionString = process.env.DATABASE_URL) {
   if (!connectionString) throw new Error("DATABASE_URL is required for the workspace");
