@@ -4,12 +4,14 @@ import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { makePool, migrate } from "./db.js";
 import { COOKIE_NAME, SESSION_AGE_MS, cookieOptions, getCookie, hashPassword, newToken, tokenHash, verifyPassword } from "./auth.js";
+import { STATE_AGE_MS, STATE_COOKIE, exchangeCode, googleConfig, readStateCookie, startGoogleLogin, validateClaims } from "./google.js";
 
 const app = express();
 const route = (method, url, handler) => app[method](url, (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next));
 const pool = makePool();
 const origin = process.env.APP_ORIGIN || "http://localhost:4174";
 const production = process.env.NODE_ENV === "production";
+const google = googleConfig();
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
 app.use(express.json({ limit: "128kb" }));
@@ -55,10 +57,46 @@ route("post", "/api/login", async (req, res) => {
     return fail(res, 401, "Invalid email or password");
   }
   loginAttempts.delete(key);
-  const token = newToken();
-  await query("INSERT INTO workspace_sessions(token_hash,user_id,expires_at) VALUES($1,$2,$3)", [tokenHash(token), user.id, new Date(now + SESSION_AGE_MS)]);
-  res.cookie(COOKIE_NAME, token, cookieOptions(req));
+  await startSession(req, res, user.id);
   res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+});
+
+async function startSession(req, res, userId) {
+  const token = newToken();
+  await query("INSERT INTO workspace_sessions(token_hash,user_id,expires_at) VALUES($1,$2,$3)", [tokenHash(token), userId, new Date(Date.now() + SESSION_AGE_MS)]);
+  res.cookie(COOKIE_NAME, token, cookieOptions(req));
+}
+
+// Google Workspace sign-in. Lives outside /api so the redirect round-trip skips the JSON/origin checks.
+route("get", "/auth/providers", (_req, res) => res.json({ google: google ? { domain: google.domain } : null }));
+route("get", "/auth/google", (req, res) => {
+  if (!google) return res.redirect("/?auth_error=" + encodeURIComponent("Google sign-in is not configured"));
+  const { url, cookie } = startGoogleLogin(google, origin);
+  // Lax, not strict: the cookie must come back on Google's top-level redirect to the callback.
+  res.cookie(STATE_COOKIE, cookie, { ...cookieOptions(req), sameSite: "lax", path: "/auth/google", maxAge: STATE_AGE_MS });
+  res.redirect(url);
+});
+route("get", "/auth/google/callback", async (req, res) => {
+  const back = (message) => res.redirect("/?auth_error=" + encodeURIComponent(message));
+  const saved = readStateCookie(getCookie(req, STATE_COOKIE));
+  res.clearCookie(STATE_COOKIE, { ...cookieOptions(req), sameSite: "lax", path: "/auth/google", maxAge: undefined });
+  if (!google) return back("Google sign-in is not configured");
+  if (req.query.error) return back("Google sign-in was cancelled");
+  if (!saved || typeof req.query.state !== "string" || req.query.state !== saved.state || typeof req.query.code !== "string") return back("Sign-in expired. Please try again.");
+  let identity;
+  try { identity = validateClaims(await exchangeCode(google, origin, req.query.code, saved.verifier), { clientId: google.clientId, domain: google.domain, nonce: saved.nonce }); }
+  catch (error) { console.warn("Google sign-in rejected:", error.message); return back(error.message.startsWith("Use your @") ? error.message : "Google sign-in failed. Please try again."); }
+  let user = (await query("SELECT id,active,google_sub FROM workspace_users WHERE google_sub=$1 OR email=$2 ORDER BY (google_sub=$1) DESC NULLS LAST LIMIT 1", [identity.sub, identity.email])).rows[0];
+  if (user && user.google_sub && user.google_sub !== identity.sub) return back("This email is linked to a different Google account");
+  if (user && !user.active) return back("Your workspace access has been turned off. Contact an admin.");
+  if (user && !user.google_sub) await query("UPDATE workspace_users SET google_sub=$2 WHERE id=$1", [user.id, identity.sub]);
+  if (!user) {
+    if (!google.autoProvision) return back("Ask a workspace admin to add you first");
+    user = (await query("INSERT INTO workspace_users(id,name,email,password_hash,role,google_sub) VALUES($1,$2,$3,NULL,'member',$4) ON CONFLICT(email) DO NOTHING RETURNING id", [randomUUID(), identity.name, identity.email, identity.sub])).rows[0];
+    if (!user) return back("Sign-in failed. Please try again.");
+  }
+  await startSession(req, res, user.id);
+  res.redirect("/");
 });
 
 app.use("/api", async (req, res, next) => {

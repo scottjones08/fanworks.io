@@ -18,6 +18,8 @@ export async function migrate(pool) {
       password_hash text NOT NULL, role text NOT NULL CHECK (role IN ('admin','member')),
       active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now()
     );
+    ALTER TABLE workspace_users ADD COLUMN IF NOT EXISTS google_sub text UNIQUE;
+    ALTER TABLE workspace_users ALTER COLUMN password_hash DROP NOT NULL;
     CREATE TABLE IF NOT EXISTS workspace_sessions (
       token_hash text PRIMARY KEY, user_id uuid NOT NULL REFERENCES workspace_users(id) ON DELETE CASCADE,
       expires_at timestamptz NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
