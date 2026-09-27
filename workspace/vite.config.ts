@@ -4,6 +4,6 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   root: "workspace",
   plugins: [react()],
-  server: { port: 5173, proxy: { "/api": "http://localhost:4174", "/health": "http://localhost:4174" } },
+  server: { port: 5173, proxy: { "/api": "http://localhost:4174", "/health": "http://localhost:4174", "/auth": "http://localhost:4174" } },
   build: { outDir: "dist", emptyOutDir: true },
 });

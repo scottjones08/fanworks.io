@@ -11,6 +11,22 @@ Private, database-backed board for FanWorks client work. Each client has a five-
 
 The server creates tables and indexes on startup. Sign-in requires an account created by an admin. Admins can add or deactivate team members. Each member can change their password; this revokes their other sessions. Client archiving is available to admins.
 
+## Google Workspace sign-in
+
+Staff sign in with their Google Workspace account. The server checks the domain on Google's reply, so personal Gmail and other domains are refused. Email and password sign-in stays available as a fallback for admins.
+
+1. In Google Cloud Console, pick or create a project owned by the fanworks Google Workspace. Under **Google Auth Platform → Branding**, set the app name and support email. Under **Audience**, choose **Internal** so only your Workspace users can sign in.
+2. Under **Clients**, create an **OAuth client ID** of type **Web application**. Add these authorized redirect URIs:
+   - `https://app.fanworks.io/auth/google/callback`
+   - `http://localhost:4174/auth/google/callback` for local testing. Use `APP_ORIGIN=http://localhost:4174` and open the app on port 4174 after `npm run build:workspace`.
+3. Set these on the workspace service:
+   - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from that client.
+   - `GOOGLE_WORKSPACE_DOMAIN=fanworks.io`.
+   - Optional: `GOOGLE_AUTO_PROVISION=false`. By default, anyone with a verified address in the domain gets a **member** account on first sign-in. With this set to `false`, only people an admin has already added can sign in.
+4. Redeploy. The sign-in page shows **Continue with Google** once all three required values are set.
+
+An existing account links to Google the first time its owner signs in with the same email. Deactivating a member in **Team** blocks their Google sign-in too. Admin rights are still granted inside the workspace, not by Google.
+
 ## Production setup for `app.fanworks.io`
 
 1. Create a **separate Railway service** from this repository and set `/railway.workspace.json` as its config file path. Keep the public website service on `railway.json`.
@@ -24,4 +40,4 @@ Do not point the subdomain at the public website service. Do not store `ADMIN_PA
 
 ## Current scope
 
-This first release covers structured work tracking. It does not yet include file attachments, email notifications, client logins, integrations, or automated backups. Those need their own storage, delivery, and access decisions.
+This first release covers structured work tracking. It does not yet include file attachments, email notifications, client logins, integrations beyond Google sign-in, or automated backups. Those need their own storage, delivery, and access decisions.

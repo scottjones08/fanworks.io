@@ -1,6 +1,10 @@
 import pg from "pg";
 
-const { Pool } = pg;
+const { Pool, types } = pg;
+
+// Return DATE columns as "YYYY-MM-DD" strings instead of local-midnight Date objects,
+// so card updates round-trip due dates without validation failures or timezone shifts.
+types.setTypeParser(types.builtins.DATE, (value) => value);
 
 export function makePool(connectionString = process.env.DATABASE_URL) {
   if (!connectionString) throw new Error("DATABASE_URL is required for the workspace");
@@ -14,6 +18,8 @@ export async function migrate(pool) {
       password_hash text NOT NULL, role text NOT NULL CHECK (role IN ('admin','member')),
       active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now()
     );
+    ALTER TABLE workspace_users ADD COLUMN IF NOT EXISTS google_sub text UNIQUE;
+    ALTER TABLE workspace_users ALTER COLUMN password_hash DROP NOT NULL;
     CREATE TABLE IF NOT EXISTS workspace_sessions (
       token_hash text PRIMARY KEY, user_id uuid NOT NULL REFERENCES workspace_users(id) ON DELETE CASCADE,
       expires_at timestamptz NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
